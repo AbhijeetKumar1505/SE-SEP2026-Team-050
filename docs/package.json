@@ -1,0 +1,12 @@
+{
+  "name": "team-050-docs",
+  "private": true,
+  "type": "module",
+  "description": "Builds milestone PDFs from the Markdown sources in this folder.",
+  "scripts": {
+    "pdf": "node build-pdf.mjs milestone-1"
+  },
+  "devDependencies": {
+    "marked": "12.0.2"
+  }
+}

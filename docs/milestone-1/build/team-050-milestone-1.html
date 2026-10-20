@@ -1,0 +1,2058 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Team 050 — milestone-1</title>
+<style>@page { size: A4; margin: 18mm 16mm; }
+
+:root {
+  --ink: #1d1d1f;
+  --muted: #5b5b66;
+  --rule: #c9ccd3;
+  --head-bg: #eef1f6;
+  --accent: #1f4e8c;
+  --todo-bg: #fff1c2;
+}
+
+body {
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.45;
+  color: var(--ink);
+  background: #fff;
+}
+
+h1, h2, h3, h4 { color: var(--accent); line-height: 1.2; break-after: avoid; }
+h1 { font-size: 24pt; margin: 0 0 6pt; }
+h2 { font-size: 16pt; margin: 18pt 0 8pt; border-bottom: 1.5px solid var(--accent); padding-bottom: 3pt; }
+h3 { font-size: 12.5pt; margin: 14pt 0 6pt; }
+p, li { orphans: 3; widows: 3; }
+strong { color: #000; }
+
+.page-break { break-after: page; }
+
+.title-page { padding-top: 70mm; }
+.title-page h1 { font-size: 28pt; }
+.title-page h2 { border: 0; color: var(--muted); font-weight: 500; margin-bottom: 18pt; }
+.title-page p { font-size: 11.5pt; }
+
+table { width: 100%; border-collapse: collapse; margin: 8pt 0 12pt; font-size: 9.5pt; break-inside: auto; }
+thead { display: table-header-group; }
+tr { break-inside: avoid; }
+th, td { border: 1px solid var(--rule); padding: 4pt 6pt; vertical-align: top; text-align: left; }
+th { background: var(--head-bg); font-weight: 600; }
+.id { white-space: nowrap; }
+
+blockquote {
+  margin: 8pt 0;
+  padding: 6pt 10pt;
+  border-left: 3px solid var(--accent);
+  background: #f6f8fb;
+  color: #2b2b33;
+}
+blockquote p { margin: 3pt 0; }
+
+/* Inline code marks placeholders that still need filling in. */
+code {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 9pt;
+  background: var(--todo-bg);
+  padding: 0 2pt;
+  border-radius: 2pt;
+}
+pre {
+  background: #f4f5f7;
+  border: 1px solid var(--rule);
+  padding: 8pt;
+  font-size: 8.5pt;
+  white-space: pre-wrap;
+  break-inside: avoid;
+}
+pre code { background: none; padding: 0; }
+
+/* Key-value tables written with an empty header row (| | |) render without it. */
+thead tr:has(> th:empty + th:empty:last-child) { display: none; }
+</style></head>
+<body><div class="title-page">
+
+<h1>Student Mentoring and Career Support Platform</h1>
+<h2>Milestone 1 — User Identification, User Research and SMART User Stories</h2>
+<p><strong>Course:</strong> IITM BS Software Engineering, September 2026 term<br><strong>Team:</strong> 050<br><strong>Problem statement:</strong> Option 2 — Student Mentoring and Career Support Platform<br><strong>Client:</strong> IIC, IITM BS programme administration<br><strong>Submission date:</strong> 25 October 2026</p>
+<table>
+<thead>
+<tr>
+<th>Team member</th>
+<th>Roll number</th>
+<th>Project roles</th>
+<th>Contribution to Milestone 1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Abhijeet Kumar</td>
+<td>24f2007359</td>
+<td>Backend Developer, Code Reviewer</td>
+<td>Interviews M01 and S02, synthesis, report</td>
+</tr>
+<tr>
+<td>Priyanshu Yadav</td>
+<td>23f1000018</td>
+<td>Tester, Backend Developer</td>
+<td><code>[contribution]</code></td>
+</tr>
+<tr>
+<td>Saloni Puri</td>
+<td>23f3003439</td>
+<td>Product Manager, Scrum Master</td>
+<td><code>[contribution]</code></td>
+</tr>
+<tr>
+<td>Shreya Pal</td>
+<td>21f1002298</td>
+<td>Tester, Frontend Developer</td>
+<td><code>[contribution]</code></td>
+</tr>
+<tr>
+<td>Khushi Dhankhar</td>
+<td>23f3003132</td>
+<td>Frontend Developer, Scrum Master</td>
+<td><code>[contribution]</code></td>
+</tr>
+</tbody></table>
+</div>
+
+<div class="page-break"></div>
+
+<h2>Contents</h2>
+<ul>
+<li>Introduction</li>
+<li>Section 1: Users Identified</li>
+<li>Section 2: Stories Heard and Pain Points Analysed</li>
+<li>Section 3: SMART User Stories</li>
+<li>Section 4: Summary and Traceability</li>
+<li>Appendices: interview guides and consent script (A), evidence log (B), recording evidence index (C)</li>
+</ul>
+<h2>Introduction</h2>
+<p>Students nearing graduation from the IITM BS Degree Program have to make decisions about jobs, higher studies, entrepreneurship and other career paths. Many of them cannot easily reach people who have recently made the same decisions. The client, IIC (the IITM BS team that runs mentoring), wants a platform that connects current students with alumni mentors. It should support verified sign-up, IIC-led matching, ongoing mentoring and programme-level insight.</p>
+<p>The problem statement lists seven expected outcomes. Every user story in Section 3 maps to at least one of them.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Expected outcome</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id">PS-1</span></td>
+<td>Students can create and communicate their mentoring needs and interests.</td>
+</tr>
+<tr>
+<td><span class="id">PS-2</span></td>
+<td>Alumni have mentoring profiles showing the areas they can guide in.</td>
+</tr>
+<tr>
+<td><span class="id">PS-3</span></td>
+<td>Students can discover, or be matched with, suitable mentors.</td>
+</tr>
+<tr>
+<td><span class="id">PS-4</span></td>
+<td>Requests, acceptance/rejection and management of mentoring relationships are supported.</td>
+</tr>
+<tr>
+<td><span class="id">PS-5</span></td>
+<td>Interactions and mentoring activities can be tracked.</td>
+</tr>
+<tr>
+<td><span class="id">PS-6</span></td>
+<td>Students, mentors and administrators each get role-appropriate functionality.</td>
+</tr>
+<tr>
+<td><span class="id">PS-7</span></td>
+<td>The programme gets insight into participation and effectiveness.</td>
+</tr>
+</tbody></table>
+<p><strong>How to read this report.</strong> Participants are identified only by ID: S = student, M = alumnus/mentor, A = client (IIC). Quotes from S01, S02 and M01 are verbatim from automatic transcripts, with clarifications in [square brackets]. A01 entries are the team&#39;s notes of what the client said. Pain points are labelled <span class="id">P-01</span> to <span class="id">P-13</span> so that each story can cite the evidence behind it.</p>
+<div class="page-break"></div>
+
+<h2>Section 1: Users Identified</h2>
+<p>We classify users using the definitions from the course lectures:</p>
+<ul>
+<li><strong>Primary users</strong> use the product most frequently and directly; the product succeeds or fails on whether it serves them.</li>
+<li><strong>Secondary users</strong> use it less often, or use it in support of the primary users, usually through a different interface or permission set.</li>
+<li><strong>Tertiary users</strong> do not operate the product, but are affected by its output or influence how it is adopted.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>User group</th>
+<th>How they use the platform</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Primary</strong></td>
+<td>Current IITM BS students seeking guidance</td>
+<td>Sign up if registered with IIC, complete their profile, submit the problem they need help with, contact the mentor IIC assigns, track next steps, give feedback, ask to change mentor</td>
+</tr>
+<tr>
+<td><strong>Primary</strong></td>
+<td>IIC coordinators (programme administrators; TAs during the project)</td>
+<td>Keep the registered-student list, add mentors each cycle, assign a mentor to every problem from the system&#39;s recommendations, monitor mentorships, resolve cases</td>
+</tr>
+<tr>
+<td><strong>Secondary</strong></td>
+<td>Alumni and recent-graduate mentors (volunteers)</td>
+<td>Keep availability and contact preference current, receive assigned students, log meetings, send progress feedback</td>
+</tr>
+<tr>
+<td><strong>Tertiary</strong></td>
+<td>IITM BS programme leadership</td>
+<td>Read aggregate reports on demand, supply and outcomes</td>
+</tr>
+<tr>
+<td><strong>Tertiary</strong></td>
+<td>Alumni not yet volunteering</td>
+<td>Recruited each cycle based on the demand the platform reveals</td>
+</tr>
+<tr>
+<td><strong>Tertiary</strong></td>
+<td>Student wellbeing support</td>
+<td>Receives referrals when a student&#39;s need is about wellbeing rather than career</td>
+</tr>
+</tbody></table>
+<h3>1.1 Primary users</h3>
+<p><strong>Students.</strong> Students are the people the platform exists for, and every mentorship starts with one of them. All three user interviews confirmed the need. S01, a degree-level student planning a master&#39;s or PhD abroad, needs advice &quot;a lot of times&quot; but finds it only by posting in groups and hoping someone replies. S02, a graduating student choosing between a job, a startup and the family business, finds seniors only through WhatsApp groups and friends. M01, now an alumnus, described the same struggle from their own student years. Students use the platform directly and repeatedly: to sign up, state the problem they need help with, contact the mentor IIC assigns, keep track of the mentorship, and give feedback. They do not search for mentors themselves.</p>
+<p><strong>IIC coordinators.</strong> We first expected administrators to be tertiary users. The client session (A01) showed otherwise. Only students registered with IIC may sign up. IIC reviews every student&#39;s problem and assigns every mentor (&quot;each mentorship needs to be approved, automatic won&#39;t work&quot;), adds the mentor pool each cycle, and plans to monitor mentorships weekly or biweekly. That is frequent, hands-on use, so IIC coordinators are primary operational users. TAs will play this role during the project.</p>
+<h3>1.2 Secondary users</h3>
+<p><strong>Alumni mentors.</strong> Mentors are IITM BS graduates who volunteer to give back. They are working or in higher studies, may be anywhere in the world, and must not be micromanaged (A01). They use the platform directly but occasionally: to keep their availability current, see the students IIC has assigned to them, log meetings and send progress feedback. Conversations happen over the mentor&#39;s own channel, such as email or a call. M01 illustrates the role well: they already guide juniors, but only in &quot;five minutes … in between&quot; other commitments. Because mentors use the platform in support of the students, through their own interface, they are secondary users.</p>
+<h3>1.3 Tertiary users</h3>
+<p><strong>Programme leadership.</strong> IITM BS management decides whether the mentoring programme continues and how many mentors to recruit. They do not run day-to-day matching, but they consume the platform&#39;s aggregate reports (<span class="id">PS-7</span>) to make those decisions.</p>
+<p><strong>Alumni not yet volunteering.</strong> IIC invites alumni to volunteer each cycle (A01). The demand the platform records, for example many students asking for computer-vision guidance and no mentor available, determines whom IIC approaches next, so these alumni are affected without using the system.</p>
+<p><strong>Student wellbeing support.</strong> The client noted that students sometimes come to IIC feeling overwhelmed rather than with a career question. Those cases need to reach the right support service, so that team is affected by the platform even though it never logs in.</p>
+<p><strong>Not users:</strong> the placement team. The client confirmed that placement is out of scope.</p>
+<div class="page-break"></div>
+
+<h2>Section 2: Stories Heard and Pain Points Analysed</h2>
+<p>We held two meetings with the client: a problem-statement discussion on 11 Oct 2026, and a requirements session on 15 Oct 2026 (A01). We also ran three semi-structured user interviews, of 11–17 minutes each. Every interview asked about real past events (&quot;Tell me about the last time…&quot;) rather than about features (guides in Appendix A). Each story below is written from the transcript or notes. Nothing has been added, and pain points come from what the participant described.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>User group</th>
+<th>Profile (anonymised)</th>
+<th>Date</th>
+<th>Mode</th>
+<th>Duration</th>
+<th>Interviewer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S01</td>
+<td>Student</td>
+<td>Degree level; plans a master&#39;s or PhD abroad in neuroscience / deep learning</td>
+<td><code>[date]</code></td>
+<td><code>[mode]</code></td>
+<td><code>[min]</code></td>
+<td><code>[member]</code></td>
+</tr>
+<tr>
+<td>S02</td>
+<td>Student</td>
+<td>Graduating; choosing between a job, a startup and the family business</td>
+<td>12 Oct 2026</td>
+<td>Google Meet (recorded)</td>
+<td>~11 min</td>
+<td>Abhijeet Kumar (24f2007359)</td>
+</tr>
+<tr>
+<td>M01</td>
+<td>Alumnus / mentor</td>
+<td>IITM BS graduate; informally guides juniors</td>
+<td>13 Oct 2026</td>
+<td>Google Meet (recorded)</td>
+<td>~16 min</td>
+<td>Abhijeet Kumar (24f2007359)</td>
+</tr>
+<tr>
+<td>A01</td>
+<td>Client (IIC)</td>
+<td>IIC representative, IITM BS admin team</td>
+<td>15 Oct 2026</td>
+<td><code>[mode]</code></td>
+<td><code>[min]</code></td>
+<td><code>[member]</code></td>
+</tr>
+</tbody></table>
+<h3>Interview S01: niche electives and mentoring that stops after one conversation</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Interviewer</strong></td>
+<td><code>[member, roll no.]</code></td>
+</tr>
+<tr>
+<td><strong>Interviewee</strong></td>
+<td>Anonymous degree-level student</td>
+</tr>
+<tr>
+<td><strong>Topic</strong></td>
+<td>Finding guidance for higher studies, niche courses and a niche project</td>
+</tr>
+<tr>
+<td><strong>Recording</strong></td>
+<td>Automatic transcript (team drive); consent for excerpt use to be confirmed in writing</td>
+</tr>
+</tbody></table>
+<p><strong>Story</strong></p>
+<p>The interviewee plans a master&#39;s or PhD abroad in neuroscience and deep learning. They need advice &quot;a lot of times&quot;. When they do, they post a message in unofficial student groups or use official resources and hope someone answers: &quot;it&#39;s not always guaranteed, I&#39;ll get help.&quot; Sometimes they have to work things out alone.</p>
+<p>Recently they wanted to take electives in speech technology and deep learning for computer vision, but found it &quot;very hard to find a student who had taken those courses&quot;, because few students take them. They also needed someone who had worked on a similar problem for a niche project. They could not find anyone (&quot;it is a niche topic and not a lot of people know about it&quot;), and reaching people beyond their own degree track was hard. They still have not found help.</p>
+<p>They judge advice by the adviser&#39;s intentions and whether the adviser has relevant domain knowledge. If either is missing they take it &quot;with a pinch of salt&quot; and cross-check with others or online. They have tried mentoring a couple of times, and &quot;every single time it ended after a single conversation&quot;, because the person did not have the domain knowledge the problem needed. Their one good experience came from a friend a term ahead, who had relevant experience and shared notes for a hard AI course. They see people posting requests for help &quot;every day&quot;.</p>
+<p><strong>Pain points</strong></p>
+<ul>
+<li>Requests for help posted in groups may go unanswered; there is no reliable way to reach someone.</li>
+<li>Almost nobody with experience of niche electives can be found.</li>
+<li>There is still no help for their niche project, and reaching people outside their degree track is hard.</li>
+<li>They have to judge an adviser&#39;s credibility themselves and cross-check the advice elsewhere.</li>
+<li>Every mentoring attempt ended after one conversation.</li>
+<li>The only good guidance came through a personal friend.</li>
+</ul>
+<h3>Interview S02: advice that reflects someone else&#39;s situation</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Interviewer</strong></td>
+<td>Abhijeet Kumar (24f2007359)</td>
+</tr>
+<tr>
+<td><strong>Interviewee</strong></td>
+<td>Anonymous graduating student</td>
+</tr>
+<tr>
+<td><strong>Topic</strong></td>
+<td>Career choice, course planning, and how advice is found and judged</td>
+</tr>
+<tr>
+<td><strong>Recording</strong></td>
+<td>Fathom recording, 12 Oct 2026 (team drive); consent for excerpt use to be confirmed in writing</td>
+</tr>
+</tbody></table>
+<p><strong>Story</strong></p>
+<p>The interviewee is choosing between a job, starting a startup and joining the family business, &quot;whichever is giving me a good growth in my career&quot;. At the start of the degree they found seniors through WhatsApp groups and connections made online.</p>
+<p>When they asked about which courses to take, people answered from their own perspective even though &quot;my condition is different, they are thinking with their perspectives&quot;. So the interviewee described their whole situation to ChatGPT and did their own analysis. They also find that some people give advice casually &quot;for the sake of the connection&quot;, without really putting in effort, so they never follow advice blindly.</p>
+<p>Two close friends give them good advice on courses and CGPA, and they keep going back to those friends. This term a friend suggested two easy and two hard courses; the interviewee checked the course portal&#39;s week-by-week content before deciding. Asked what would worry them about a mentoring platform, they said a mentor might be biased or &quot;not liking my vibe&quot;, and they did not want a bad interaction to take their time or affect their mental health.</p>
+<p><strong>Pain points</strong></p>
+<ul>
+<li>Seniors can only be found through informal channels such as WhatsApp groups and online connections.</li>
+<li>Advice reflects the adviser&#39;s situation rather than theirs, so they have to verify it themselves (ChatGPT, course pages).</li>
+<li>Some advice is given casually, without real effort.</li>
+<li>Useful guidance depends on two close friends.</li>
+<li>They worry that a biased or badly matched mentor would waste their time and affect their wellbeing. They described this as a risk, not something that has happened.</li>
+</ul>
+<h3>Interview M01: helping juniors around a busy schedule</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Interviewer</strong></td>
+<td>Abhijeet Kumar (24f2007359)</td>
+</tr>
+<tr>
+<td><strong>Interviewee</strong></td>
+<td>Anonymous IITM BS graduate</td>
+</tr>
+<tr>
+<td><strong>Topic</strong></td>
+<td>Their own path after graduating, and how they help juniors</td>
+</tr>
+<tr>
+<td><strong>Recording</strong></td>
+<td>Fathom recording, 13 Oct 2026 (team drive); suggested excerpt ≈ 08:09–11:45; consent to be confirmed in writing</td>
+</tr>
+</tbody></table>
+<p><strong>Story</strong></p>
+<p>The interviewee has been applying for jobs since February. They have not got one through the official placement portal, but got &quot;two, three internships&quot; through friends. They estimate that over 2,000 degree-level students and graduates are in the program&#39;s WhatsApp groups, yet &quot;I don&#39;t actually feel … connected with them&quot;.</p>
+<p>They help juniors, but &quot;not everyone, but at least the people I know and I respect&quot;. They advise juniors on how many subjects to take based on capacity and time, give basic advice on GATE, which they qualified, and help students stuck on projects. They were stuck on projects themselves as a student: &quot;It felt like total blindness … I had to bit by bit text a whole lot of people to ask them doubts and convince them to come in to meet.&quot; Now they offer help in WhatsApp groups, but do not spoon-feed: &quot;They themselves have to want to complete it.&quot;</p>
+<p>On time, they said &quot;you might not have half an hour to give someone but five minutes you can give in between&quot;: a short call, or a late-night slot when both are free. It depends on how motivated and flexible the student is.</p>
+<p><strong>Pain points</strong></p>
+<ul>
+<li>As a student, getting help meant texting many people one by one and persuading them to meet.</li>
+<li>Large WhatsApp groups do not create real connections.</li>
+<li>Their help reaches mainly people they already know, so access depends on personal networks.</li>
+<li>A mentor&#39;s free time comes in short, irregular slots.</li>
+<li>Mentoring works only when the student brings a specific problem and puts in effort.</li>
+</ul>
+<h3>Client session A01: how IIC runs mentoring today</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Taken by</strong></td>
+<td><code>[member(s)]</code></td>
+</tr>
+<tr>
+<td><strong>Participant</strong></td>
+<td>IIC representative, IITM BS admin team (the client)</td>
+</tr>
+<tr>
+<td><strong>Date</strong></td>
+<td>15 Oct 2026 (preceded by a problem-statement meeting on 11 Oct 2026)</td>
+</tr>
+<tr>
+<td><strong>Record</strong></td>
+<td>Team notes, <code>docs/milestone-1/transcripts/A01.md</code></td>
+</tr>
+</tbody></table>
+<p><strong>What the client told us</strong></p>
+<p>IIC supplies the mentors. They are alumni volunteers, working or in higher studies, who want to give back and must not be micromanaged. They do not register themselves: IIC asks alumni every cycle, or about twice a year. Students approach IIC asking for mentors. They register with their background, CGPA, courses and the specific problem they need help with, and they are approved. The system should then &quot;throw available mentors&quot; that fit. IIC approves every match (&quot;automatic won&#39;t work&quot;), and it is one mentor to one student. If a mentor already has a student, IIC may ask them to take another.</p>
+<p>Mentorship is short-term, for one term or one problem, with no minimum or maximum number of meetings. Conversations are confidential and IIC does not listen in, but IIC should see how many meetings took place and get feedback, mainly from mentors, on whether progress is being made. There is no rating system. A student can ask to change mentor; IIC then hears the mentor&#39;s side. Either side can end a mentorship. One complaint does not remove a mentor, but profiles flagged for misconduct are removed. &quot;There is no current monitoring system for students,&quot; and tracking a mentee&#39;s progress &quot;tangibly&quot; is the expected challenge.</p>
+<p><strong>Out of scope:</strong> placement, payments, language preference. An AI agent is optional.</p>
+<p><strong>Pain points and constraints</strong></p>
+<ul>
+<li>Every student registration and every match needs IIC&#39;s approval, and both are handled by hand: IIC works out each student&#39;s needs and finds an available mentor itself.</li>
+<li>No monitoring exists, and any monitoring must not expose conversation content.</li>
+<li>Volunteers must not be flooded with requests (&quot;don&#39;t trouble mentors by messaging all matching mentors&quot;).</li>
+<li>Mentors are recruited only periodically; when demand grows, IIC asks mentors one by one.</li>
+<li>Changing or ending a mentorship needs a fair process that hears both sides.</li>
+</ul>
+<h3>2.1 Consolidated pain points</h3>
+<p>The same problems came up across interviews. We grouped them into 13 pain points. <strong>Frequency</strong> counts the user interviews that reported a problem (out of 3; out of 1 for mentor-only problems) and notes when the client confirmed it.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Group</th>
+<th>Pain point</th>
+<th>Evidence</th>
+<th>Frequency</th>
+<th>Confidence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id">P-01</span></td>
+<td>Students</td>
+<td>Asking for help means broadcasting in groups or messaging people one by one, with no guarantee of a reply</td>
+<td>S01, S02, M01</td>
+<td>3/3</td>
+<td>High</td>
+</tr>
+<tr>
+<td><span class="id">P-02</span></td>
+<td>Students</td>
+<td>People with experience of a niche course, topic or problem are very hard to find</td>
+<td>S01, M01; A01</td>
+<td>2/3 + client</td>
+<td>High</td>
+</tr>
+<tr>
+<td><span class="id">P-03</span></td>
+<td>Students</td>
+<td>Access to guidance depends on personal networks</td>
+<td>S01, S02, M01</td>
+<td>3/3</td>
+<td>High</td>
+</tr>
+<tr>
+<td><span class="id">P-04</span></td>
+<td>Students</td>
+<td>Advice reflects the adviser&#39;s own situation or is given casually, so students must verify it themselves</td>
+<td>S01, S02</td>
+<td>2/3</td>
+<td>High</td>
+</tr>
+<tr>
+<td><span class="id">P-05</span></td>
+<td>Students</td>
+<td>Guidance stops after one conversation</td>
+<td>S01; A01</td>
+<td>1/3 + client</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><span class="id">P-06</span></td>
+<td>Mentors</td>
+<td>Mentors&#39; free time is short and irregular, and they may be in other time zones</td>
+<td>M01; A01</td>
+<td>1/1 + client</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><span class="id">P-07</span></td>
+<td>Mentors</td>
+<td>Mentoring only works when the student brings a specific problem and effort</td>
+<td>M01; A01</td>
+<td>1/1 + client</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><span class="id">P-08</span></td>
+<td>Mentors</td>
+<td>Volunteers must not be flooded with unsolicited requests or micromanaged</td>
+<td>A01; M01</td>
+<td>Client</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><span class="id">P-09</span></td>
+<td>IIC</td>
+<td>Student approval and matching are done by hand</td>
+<td>A01</td>
+<td>Client</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><span class="id">P-10</span></td>
+<td>IIC</td>
+<td>No visibility of whether mentorships are active or helping, and conversations must stay confidential</td>
+<td>A01; S01</td>
+<td>Client + 1/3</td>
+<td>High</td>
+</tr>
+<tr>
+<td><span class="id">P-11</span></td>
+<td>All</td>
+<td>No fair, structured way to change or end a mentorship</td>
+<td>A01</td>
+<td>Client</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><span class="id">P-12</span></td>
+<td>IIC</td>
+<td>Mentor supply is recruited periodically; extra capacity is requested one mentor at a time</td>
+<td>A01</td>
+<td>Client</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><span class="id">P-13</span></td>
+<td>Students</td>
+<td>Fear that a poorly matched mentor will waste time and affect wellbeing</td>
+<td>S02; A01</td>
+<td>1/3 + client</td>
+<td>Low (anticipated)</td>
+</tr>
+</tbody></table>
+<p><strong>What already works:</strong> a near-peer with directly relevant experience who stays available (S01&#39;s senior; S02&#39;s two friends), and short calls that give direction rather than answers (M01).</p>
+<p><strong>Observed but not carried forward:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>Source</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Placement portal and AI-interview problems</td>
+<td>M01</td>
+<td>Placement is out of scope (client)</td>
+</tr>
+<tr>
+<td>Students would pay for good matching</td>
+<td>S01</td>
+<td>Volunteer programme, no payments (client)</td>
+</tr>
+<tr>
+<td>Rating mentors</td>
+<td>Our initial draft</td>
+<td>No rating system (client)</td>
+</tr>
+<tr>
+<td>Alumni-facing dashboard of student profiles</td>
+<td>M01 suggestion</td>
+<td>Conflicts with IIC approval and confidentiality; aggregate insight goes to leadership instead (<span class="id">US-19</span>)</td>
+</tr>
+<tr>
+<td>Students searching for and choosing mentors themselves</td>
+<td>S01 suggestion; our first draft</td>
+<td>IIC assigns every mentor. Students submit their problem instead (<span class="id">US-03</span>), and topic tags keep matching specific (<span class="id">US-04</span>)</td>
+</tr>
+<tr>
+<td>Personality questionnaire and automated matching model</td>
+<td>S02 suggestion</td>
+<td>IIC assigns every mentor; the underlying concern is covered by <span class="id">US-20</span></td>
+</tr>
+</tbody></table>
+<p><strong>Limitations.</strong> The sample is small: two students and one alumnus, plus the client. All three interviews ended with a question inviting feature suggestions. We did not treat those answers as evidence, and every pain point above comes from an experience the participant described. Transcripts are automatic and contain errors. Participants were recruited through our own network.</p>
+<div class="page-break"></div>
+
+<h2>Section 3: SMART User Stories</h2>
+<p>Each requirement is written in the format required by the course:</p>
+<blockquote>
+<p>As a <strong>[type of user]</strong>,<br>I want <strong>[an action]</strong>,<br>So that <strong>[a benefit/value]</strong>.</p>
+</blockquote>
+<p>Each story also includes:</p>
+<ul>
+<li><strong>SMART check:</strong> how the story satisfies each criterion (Specific, Measurable, Achievable, Relevant, Time-bound).</li>
+<li><strong>Acceptance criteria:</strong> testable Given / When / Then conditions that define &quot;done&quot;.</li>
+<li><strong>Interview evidence:</strong> the pain points and participants behind the story. These are problems people described, never their feature requests.</li>
+<li><strong>Platform feature:</strong> the epic and problem-statement outcome (PS-x) the story belongs to.</li>
+</ul>
+<p><strong>Time-bound</strong> means the sprint in which the story is built and tested: Sprint 1 = Milestone 3 (due 22 Nov 2026), Sprint 2 = Milestone 4 (due 06 Dec 2026). <strong>Priority</strong> uses MoSCoW. <strong>Status</strong> is <em>Validated</em> (required by the client or supported by two or more sources), or <em>Partially validated</em> (one source).</p>
+<h3>Story index</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Role</th>
+<th>Title</th>
+<th>Priority</th>
+<th>Sprint</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id">US-01</span></td>
+<td>Student</td>
+<td>Sign up only if I am registered with IIC</td>
+<td>Must</td>
+<td>1</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-02</span></td>
+<td>Student</td>
+<td>Complete my basic profile</td>
+<td>Must</td>
+<td>1</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-03</span></td>
+<td>Student</td>
+<td>Submit the problem I need help with</td>
+<td>Must</td>
+<td>1</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-05</span></td>
+<td>Student</td>
+<td>Track my request and connect with my assigned mentor</td>
+<td>Must</td>
+<td>1</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-06</span></td>
+<td>Student</td>
+<td>Keep track of our goal and next steps</td>
+<td>Should</td>
+<td>2</td>
+<td>Partially validated</td>
+</tr>
+<tr>
+<td><span class="id">US-07</span></td>
+<td>Student</td>
+<td>Ask to change or end my mentorship</td>
+<td>Should</td>
+<td>2</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-08</span></td>
+<td>Student</td>
+<td>Give feedback on my mentorship</td>
+<td>Should</td>
+<td>2</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-20</span></td>
+<td>Student</td>
+<td>Say how I like to be guided</td>
+<td>Could</td>
+<td>2</td>
+<td>Partially validated</td>
+</tr>
+<tr>
+<td><span class="id">US-09</span></td>
+<td>Mentor</td>
+<td>Hear only about students assigned to me, with context</td>
+<td>Must</td>
+<td>1</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-10</span></td>
+<td>Mentor</td>
+<td>Set my availability, contact preference and capacity</td>
+<td>Must</td>
+<td>1</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-11</span></td>
+<td>Mentor</td>
+<td>Log a meeting without recording what was said</td>
+<td>Must</td>
+<td>2</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-12</span></td>
+<td>Mentor</td>
+<td>Send progress feedback on my mentee</td>
+<td>Must</td>
+<td>2</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-13</span></td>
+<td>Mentor</td>
+<td>End a mentorship from my side</td>
+<td>Should</td>
+<td>2</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-14</span></td>
+<td>IIC</td>
+<td>Add mentors to the pool</td>
+<td>Must</td>
+<td>1</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-15</span></td>
+<td>IIC</td>
+<td>Keep the list of IIC-registered students up to date</td>
+<td>Must</td>
+<td>1</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-04</span></td>
+<td>IIC</td>
+<td>See 3–4 recommended mentors for each problem</td>
+<td>Must</td>
+<td>1</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-16</span></td>
+<td>IIC</td>
+<td>Assign a mentor to each student&#39;s problem</td>
+<td>Must</td>
+<td>1</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-17</span></td>
+<td>IIC</td>
+<td>Monitor active mentorships</td>
+<td>Must</td>
+<td>2</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-18</span></td>
+<td>IIC</td>
+<td>Resolve change, termination and misconduct cases</td>
+<td>Should</td>
+<td>2</td>
+<td>Validated</td>
+</tr>
+<tr>
+<td><span class="id">US-19</span></td>
+<td>Leadership</td>
+<td>See demand, supply and outcomes</td>
+<td>Should</td>
+<td>2</td>
+<td>Partially validated</td>
+</tr>
+</tbody></table>
+<p>Students do not search for or choose mentors: they submit their problem, and IIC assigns a mentor from the system&#39;s recommendations. <span class="id">US-04</span> was first written as a student story and is now an IIC story, so it is listed with the IIC stories.</p>
+<div class="page-break"></div>
+
+<h3>3.1 Student stories</h3>
+<p><strong><span class="id">US-01</span> — Sign up only if I am registered with IIC</strong><br>As an IITM BS student who wants a mentor,<br>I want to sign up with my roll number and institute email and have them checked against IIC&#39;s list of registered students,<br>So that I can start as soon as IIC has registered me, while people IIC has not registered cannot use the platform.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>Sign-up with roll number and institute email, checked against the IIC registered-student list (<span class="id">US-15</span>).</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>A matching record creates the account and opens profile completion (<span class="id">US-02</span>); no match creates no account and shows &quot;You are not registered with IIC&quot;; one account per roll number.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>A lookup against one imported table before the account is created.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The client requires every student to be approved before taking part (A01); today IIC does this by hand (<span class="id">P-09</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 1, Milestone 3 (22 Nov 2026).</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given my roll number and institute email match a record in IIC&#39;s registered-student list, when I sign up, then my account is created and I am taken to complete my profile.</li>
+<li>Given no record matches, when I sign up, then no account is created and I see &quot;You are not registered with IIC. Please contact IIC to register.&quot;</li>
+<li>Given an account already exists for my roll number, when I try to sign up again, then I am told to log in instead.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-09</span>. A01: &quot;Students register, will have to give a lot of info, will have to be approved.&quot; Checking against IIC&#39;s own list replaces a manual approval queue: IIC approves a student by registering them (<span class="id">US-15</span>).</p>
+<p><em>Platform feature:</em> Onboarding &amp; profiles · <span class="id">PS-6</span></p>
+<hr>
+<p><strong><span class="id">US-02</span> — Complete my basic profile</strong><br>As a student who has just signed up,<br>I want to complete a short profile with my level (BSc or BS), CGPA, completed courses and career interest,<br>So that IIC and my future mentor know my academic background without asking me for it each time.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>A profile form with level, CGPA, completed courses and career interest (job, higher studies, entrepreneurship or other); name and roll number come from the IIC record.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Level accepts only BSc or BS; CGPA must be 0–10; at least one completed course; the problem the student needs help with is not part of the profile (<span class="id">US-03</span>); no problem can be submitted until the profile is complete.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>One form with server-side validation.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The client asks students for their &quot;background, cgpa, courses&quot; and limits the programme to students past the Diploma level (&quot;only for diploma passout&quot;, A01); mentors need this context before they can help (<span class="id">P-07</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 1, Milestone 3.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given I have just signed up, when I open my profile, then my name and roll number are filled in from the IIC record and cannot be edited.</li>
+<li>Given I choose my level, when the options are shown, then only BSc and BS are available.</li>
+<li>Given a required field is missing or my CGPA is outside 0–10, when I save, then nothing is saved and each invalid field is named.</li>
+<li>Given my profile is incomplete, when I try to submit a problem (<span class="id">US-03</span>), then I am asked to complete my profile first.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-04</span>, <span class="id">P-07</span>. S01 plans higher studies abroad and S02 is choosing between a job, a startup and the family business; advice that ignored their situation did not help (&quot;my condition is different&quot;). M01 advises juniors &quot;according to their capacity … and their time constraints&quot;, which needs that context up front.</p>
+<p><em>Platform feature:</em> Onboarding &amp; profiles · <span class="id">PS-1</span></p>
+<hr>
+<p><strong><span class="id">US-03</span> — Submit the problem I need help with</strong><br>As a student with a complete profile,<br>I want to describe the specific problem I need help with, tag its topics and say what I hope to achieve,<br>So that IIC can find me a mentor who has dealt with exactly that problem, instead of my posting in groups and hoping for a reply.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>A problem form with a description, 1–5 topic tags from a fixed list and an optional desired outcome; optional guidance preferences can be added on the same form (<span class="id">US-20</span>). It goes to IIC, not to mentors.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Description 30–1000 characters; 1–5 tags; one open problem per student and none while a mentorship is active; saved as <em>Submitted</em>; editable or withdrawable until a mentor is assigned; never visible to mentors before assignment.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>One form and a status field.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The most common problem across all three interviews: no reliable way to reach the right person (<span class="id">P-01</span>, <span class="id">P-03</span>), especially for niche needs (<span class="id">P-02</span>). The client says students must be &quot;very specific about their requirements&quot; (A01) and mentors must not receive unsolicited requests (<span class="id">P-08</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 1, Milestone 3.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given my profile is complete and I have no open problem or active mentorship, when I submit a description of 30–1000 characters with 1–5 topic tags, then it is saved as <em>Submitted</em> and appears in IIC&#39;s queue (<span class="id">US-16</span>).</li>
+<li>Given I already have an open problem or an active mentorship, when I try to submit another, then I am refused (&quot;one mentor per student&quot;).</li>
+<li>Given my problem has not been assigned yet, when I edit or withdraw it, then the change is saved, and a withdrawn problem leaves IIC&#39;s queue.</li>
+<li>Given my problem has not been assigned to a mentor, when that mentor opens their dashboard, then they cannot see it.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-01</span>, <span class="id">P-02</span>, <span class="id">P-03</span>, <span class="id">P-07</span>, <span class="id">P-08</span>. S01: &quot;put out a message and hope that someone would answer for me and it&#39;s not always guaranteed&quot;; S01 could not find anyone for &quot;speech technology and deep learning for computer vision&quot;. A01: &quot;IIC is approached by students asking for mentors&quot;; &quot;Students need to be very specific about their requirements.&quot;</p>
+<p><em>Platform feature:</em> Mentor matching · <span class="id">PS-1</span>, <span class="id">PS-4</span></p>
+<hr>
+<p><strong><span class="id">US-05</span> — Track my request and connect with my assigned mentor</strong><br>As a student who has submitted a problem,<br>I want to see its status and, once IIC assigns a mentor, see their expertise, experience and contact details,<br>So that I know where I stand and can contact a mentor whose background I can judge, without searching through groups.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>A status tracker for the student&#39;s problem and, after assignment, the mentor&#39;s profile (expertise tags and experience entries) and contact details.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Statuses <em>Submitted</em>, <em>Under review</em>, <em>Mentor assigned</em>, <em>Closed by IIC</em> (with reason) and <em>Withdrawn</em>; the student is notified of every change; no mentor details appear before assignment; a mentor&#39;s contact details are visible only to their assigned mentee.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>A status field, notifications and a read-only profile view.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>Students currently post and &quot;hope that someone would answer&quot; (<span class="id">P-01</span>) and judge advice by the adviser&#39;s domain knowledge (<span class="id">P-04</span>). The client says each mentor states their preferred mode of communication when they join (A01).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 1, Milestone 3.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given I have submitted a problem, when I open my dashboard, then I see its current status.</li>
+<li>Given IIC assigns a mentor, when the assignment is saved, then I am notified and can see the mentor&#39;s expertise tags, experience entries (type, title and duration), preferred contact mode and contact details.</li>
+<li>Given my problem has not been assigned, when I open my dashboard, then no mentor details are shown.</li>
+<li>Given IIC closes my problem, when the decision is saved, then I see the reason and can submit a new problem.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-01</span>, <span class="id">P-04</span>. S01: &quot;it&#39;s not always guaranteed, I&#39;ll get help&quot;; S01 judges advice by &quot;relevant domain knowledge&quot;, and S02 found that advice &quot;thinking with their perspectives&quot; did not fit them. A01: &quot;Mentor mentions primary mode of communication when added to the program (professional form is email).&quot; Conversations then take place over that channel, so they stay confidential.</p>
+<p><em>Platform feature:</em> Mentor matching · <span class="id">PS-4</span></p>
+<hr>
+<p><strong><span class="id">US-06</span> — Keep track of our goal and next steps</strong><br>As a student in an active mentorship,<br>I want to record the mentorship&#39;s goal and the next steps agreed at each meeting, and mark them done,<br>So that the guidance turns into action instead of ending after one conversation.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>A goal per mentorship and next steps per meeting, each markable as done.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Each step has a status (open/done) and completion date; non-participants are denied access.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>Two small records linked to a mentorship.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>S01&#39;s mentoring always stopped after one conversation (<span class="id">P-05</span>); the client has no way to see progress.</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 2, Milestone 4.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given an active mentorship, when I set its goal, then my mentor and IIC can see it.</li>
+<li>Given a logged meeting (<span class="id">US-11</span>), when I add next steps, then each step has a status (open or done) and a completion date.</li>
+<li>Given I am not part of the mentorship, when I try to read its goal or steps, then access is denied.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-05</span>. S01: &quot;every single time it ended after a single conversation.&quot; A01: &quot;There is no current monitoring system for students.&quot;</p>
+<p><em>Platform feature:</em> Mentorship tracking &amp; feedback · <span class="id">PS-5</span></p>
+<hr>
+<p><strong><span class="id">US-07</span> — Ask to change or end my mentorship</strong><br>As a student whose mentorship is not working,<br>I want to ask IIC to change my mentor or end the mentorship, with feedback,<br>So that I can get suitable help without having to confront the mentor myself.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>A change or end request with written feedback that opens a case for IIC.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Feedback must be at least 30 characters; the mentorship stays active until IIC decides; the student is notified of the outcome.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>A case record with a status.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The client allows mentor changes after hearing both sides (A01); S02 fears being stuck with a badly matched mentor (<span class="id">P-13</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 2, Milestone 4.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given an active mentorship, when I submit a change or end request with feedback of at least 30 characters, then a case opens with status <em>Under review</em> and the mentorship stays active until IIC decides.</li>
+<li>Given IIC decides, when the decision is saved, then I am notified; if a change is granted, my problem returns to IIC&#39;s queue for a new mentor (<span class="id">US-16</span>).</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-11</span>, <span class="id">P-13</span>. A01: &quot;Can request for mentor to be changed, needs to give feedback, IIC will approach the mentor and ask for their side of the story.&quot; S02: &quot;I don&#39;t want this kind of suffering.&quot;</p>
+<p><em>Platform feature:</em> Changes, termination &amp; safety · <span class="id">PS-4</span></p>
+<hr>
+<p><strong><span class="id">US-08</span> — Give feedback on my mentorship</strong><br>As a student at a checkpoint or at the end of my mentorship,<br>I want to tell IIC whether the mentorship is helping me,<br>So that IIC can see whether mentoring is working without anyone being given a star rating.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>A progress status (no progress, some progress, goal met) with a comment, visible only to IIC.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Only the three values are accepted; the form has no rating field; visibility is IIC-only.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>A short form.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The client wants feedback from both sides but explicitly no ratings (A01); progress is currently invisible (<span class="id">P-10</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 2, Milestone 4.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given an active or just-ended mentorship, when I submit a progress status with a comment, then it is stored and visible only to IIC.</li>
+<li>Given the feedback form is shown, when I look at it, then it has no numeric or star rating of the mentor.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-10</span>. A01: &quot;No rating system&quot;; &quot;Mentors and students can give feedback for each other&quot;; &quot;There should be feedback system to check if there is progress or not.&quot;</p>
+<p><em>Platform feature:</em> Mentorship tracking &amp; feedback · <span class="id">PS-7</span></p>
+<hr>
+<p><strong><span class="id">US-20</span> — Say how I like to be guided</strong><br>As a student who worries about being matched with someone who does not suit me,<br>I want to say, when I share my problem, how I prefer to be guided (for example, direction or detailed steps; short calls or written exchanges),<br>So that IIC can consider fit as well as expertise when assigning a mentor for that problem.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>An optional multi-select of guidance preferences on the problem submission form (<span class="id">US-03</span>).</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>The field is optional and never blocks submission; preferences are saved with that problem; they are shown beside the mentor&#39;s style in the IIC assignment view (<span class="id">US-16</span>) and hidden from everyone else.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>One extra field on the problem form.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>S02 worried about a mentor who is biased or &quot;not liking my vibe&quot; (<span class="id">P-13</span>); IIC already assigns every mentor, so it can use this.</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 2, Milestone 4.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given I am submitting or editing a problem (<span class="id">US-03</span>), when I choose zero or more options from a fixed list, then they are saved with that problem.</li>
+<li>Given I leave the preferences empty, when I submit my problem, then it is still accepted.</li>
+<li>Given my problem has preferences, when IIC reviews it, then they are shown next to each recommended mentor&#39;s stated mentoring style.</li>
+<li>Given my problem has preferences, when other students or mentors not assigned to me view anything about me, then the preferences are not shown.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-13</span>, <span class="id">P-04</span>. S02: &quot;sometimes a person could be a bias or … he was not liking my vibe … I don&#39;t want it this kind of person to take my time.&quot; Only one participant raised this, so it is a <em>Could</em> story. Preferences belong to the problem rather than the profile, because the right kind of guidance can differ from one problem to the next.</p>
+<p><em>Platform feature:</em> Mentor matching · <span class="id">PS-1</span>, <span class="id">PS-3</span></p>
+<div class="page-break"></div>
+
+<h3>3.2 Mentor stories</h3>
+<p><strong><span class="id">US-09</span> — Hear only about students assigned to me, with context</strong><br>As a volunteer mentor,<br>I want to be told only about students IIC has assigned to me, together with their profile and the problem they need help with,<br>So that my limited time goes to students I can actually help, without first asking basic questions.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>A notification and dashboard entry for each assignment, containing the student&#39;s profile and problem.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Unassigned problems and recommendations never appear to mentors; the notification includes level, completed courses, career interest, topic tags and problem statement; the student&#39;s contact details are shown once assigned.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>A notification triggered by the assignment event.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>M01 needs a specific problem and won&#39;t spoon-feed (<span class="id">P-07</span>); the client forbids messaging every matching mentor (<span class="id">P-08</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 1, Milestone 3.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given IIC assigns a student to me, when it is saved, then I am notified with the student&#39;s level, completed courses, career interest, topic tags and problem statement.</li>
+<li>Given a problem has not been assigned to me, even if I was recommended for it, when I open my dashboard, then it does not appear.</li>
+<li>Given a student is assigned to me, when I view them, then I see their contact details.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-07</span>, <span class="id">P-08</span>. M01: &quot;I try to not spoon feed them … They themselves have to want to complete it.&quot; A01: &quot;Don&#39;t trouble mentors by messaging all matching mentors.&quot;</p>
+<p><em>Platform feature:</em> Mentor matching · <span class="id">PS-4</span></p>
+<hr>
+<p><strong><span class="id">US-10</span> — Set my availability, contact preference and capacity</strong><br>As a volunteer mentor with irregular free time,<br>I want to mark myself available or unavailable, set my preferred contact mode and time zone, and agree to take an extra student when IIC asks,<br>So that I am matched only when I can actually help.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>Availability toggle, contact mode, time zone and capacity on the mentor profile.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Unavailable or at-capacity mentors are never recommended or assignable; capacity defaults to 1; accepting an IIC request raises capacity by 1; changes show to the mentee immediately.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>Profile fields plus a filter on recommendations.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>Mentor time is short and irregular (<span class="id">P-06</span>); the client runs 1 mentor : 1 student and asks mentors individually for more (<span class="id">P-12</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 1, Milestone 3.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given I mark myself unavailable, when IIC looks for a mentor, then I am not recommended and cannot be assigned; my current mentorship continues.</li>
+<li>Given my capacity is 1 and I have one active mentee, when IIC looks for a mentor, then I am not recommended and cannot be assigned.</li>
+<li>Given IIC asks me to take an extra student, when I accept, then my capacity rises by 1; when I decline, it is unchanged.</li>
+<li>Given I change my contact mode or time zone, when my mentee views the mentorship, then they see the new value.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-06</span>, <span class="id">P-12</span>. M01: &quot;you might not have half an hour to give someone but five minutes you can give in between.&quot; A01: mentors &quot;can be from all across the globe&quot;; &quot;If there are too many students, IIC can go back and ask mentors if they&#39;ll take another student.&quot;</p>
+<p><em>Platform feature:</em> Onboarding &amp; profiles · <span class="id">PS-2</span></p>
+<hr>
+<p><strong><span class="id">US-11</span> — Log a meeting without recording what was said</strong><br>As a mentor,<br>I want to log each meeting&#39;s date, duration and topic category, without recording what we discussed,<br>So that IIC can count meetings while our conversations stay confidential.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>A meeting log with date, duration and topic category only.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Date cannot be in the future; duration is 5–240 minutes; the meeting count increases by 1; the other participant can confirm; there is no content field.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>One meeting record per session.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The client wants meeting counts without listening to conversations (<span class="id">P-10</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 2, Milestone 4.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given an active mentorship, when either participant logs a meeting with a valid date, duration and topic category, then the meeting count increases by 1.</li>
+<li>Given one participant logged a meeting, when the other views it, then they can confirm it, and IIC sees both logged and confirmed counts.</li>
+<li>Given the meeting form is shown, when I look at it, then it has no field for conversation content; an optional private note is visible only to its author.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-10</span>. A01: &quot;IIC should have access to the count of meetings&quot;; &quot;Not listening to conversations, confidential.&quot;</p>
+<p><em>Platform feature:</em> Mentorship tracking &amp; feedback · <span class="id">PS-5</span></p>
+<hr>
+<p><strong><span class="id">US-12</span> — Send progress feedback on my mentee</strong><br>As a mentor,<br>I want to send IIC short progress feedback on my mentee at regular checkpoints,<br>So that IIC knows whether the mentorship is helping without supervising our sessions.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>A progress status and optional comment from the mentor at each checkpoint.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>One reminder per checkpoint (every 2 weeks, configurable); feedback is IIC-only and time-stamped; 7 days overdue raises a flag.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>A scheduled reminder plus a short form.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The client named &quot;Feedback (mainly from mentor)&quot; and a &quot;tracking system&quot; as top priorities (<span class="id">P-10</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 2, Milestone 4.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given an active mentorship, when a checkpoint falls due, then I receive one reminder.</li>
+<li>Given I submit a progress status with an optional comment, when it is saved, then it is time-stamped and visible only to IIC.</li>
+<li>Given feedback is 7 days overdue, when IIC opens the monitoring view (<span class="id">US-17</span>), then the mentorship is flagged <em>Feedback overdue</em>.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-10</span>. A01: &quot;Mentor will give IIC feedback&quot;; &quot;Expected challenge: How to track progress of a mentee. Tangibly.&quot;</p>
+<p><em>Platform feature:</em> Mentorship tracking &amp; feedback · <span class="id">PS-7</span></p>
+<hr>
+<p><strong><span class="id">US-13</span> — End a mentorship from my side</strong><br>As a volunteer mentor who can no longer continue,<br>I want to end a mentorship and give a reason,<br>So that the student can be reassigned quickly instead of waiting on me.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>An end action with a reason (no longer available, goal achieved, not a good fit, other).</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Status becomes <em>Ended by mentor</em>; student and IIC are notified; capacity is freed; unavailability lists the student for reassignment.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>One status transition plus notifications.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>Mentors&#39; availability is not fixed (<span class="id">P-06</span>); the client allows mentors to end from their side (<span class="id">P-11</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 2, Milestone 4.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given an active mentorship, when I end it with a reason, then its status becomes <em>Ended by mentor</em>, the student and IIC are notified, and my capacity is freed.</li>
+<li>Given I ended it because I am no longer available, when IIC views it, then the student is listed for reassignment.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-06</span>, <span class="id">P-11</span>. A01: &quot;Mentor can terminate from their side&quot;; &quot;How long mentors are available is not fixed.&quot;</p>
+<p><em>Platform feature:</em> Changes, termination &amp; safety · <span class="id">PS-4</span></p>
+<div class="page-break"></div>
+
+<h3>3.3 IIC and leadership stories</h3>
+<p><strong><span class="id">US-14</span> — Add mentors to the pool</strong><br>As an IIC coordinator,<br>I want to add volunteer mentors one at a time or from a CSV file, with their expertise, experience, mentoring style and preferred contact mode,<br>So that mentors do not have to register themselves and the pool is ready at the start of each cycle.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>Single add and CSV import of mentor profiles.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Invalid rows are reported with row number and reason and never partly saved; re-importing an email updates rather than duplicates; non-IIC users get 403.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>CSV parsing with row-level validation.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The client recruits mentors each cycle and mentors do not self-register (<span class="id">P-12</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 1, Milestone 3.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given a CSV in the documented template, when I import it, then valid rows become mentor profiles and invalid rows are listed with row number and reason.</li>
+<li>Given a mentor&#39;s email already exists, when the same mentor is imported again, then the existing profile is updated, not duplicated.</li>
+<li>Given I am not an IIC coordinator, when I call the add or import endpoint, then I receive a 403 response.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-12</span>. A01: &quot;Mentors don&#39;t register. IIC ask after every cycle or maybe twice a year if alumni want to volunteer&quot;; &quot;For project, prepare a database with details of mentors.&quot;</p>
+<p><em>Platform feature:</em> Onboarding &amp; profiles · <span class="id">PS-2</span></p>
+<hr>
+<p><strong><span class="id">US-15</span> — Keep the list of IIC-registered students up to date</strong><br>As an IIC coordinator,<br>I want to import and update the list of students registered with IIC (name, roll number and institute email),<br>So that only those students can sign up, without my approving each account by hand.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>CSV import, plus single add and remove, of registered students.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Invalid rows are reported with row number and reason; re-importing a roll number updates rather than duplicates; a student removed from the list cannot sign up or submit a new problem; non-IIC users get 403.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>CSV parsing with row-level validation, the same pattern as <span class="id">US-14</span>.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The client requires students to be approved before they take part (A01); checking sign-ups against IIC&#39;s own list replaces approving each one by hand (<span class="id">P-09</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 1, Milestone 3.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given a CSV in the documented template, when I import it, then valid rows are added to the registered-student list and invalid rows are listed with row number and reason.</li>
+<li>Given a roll number is already on the list, when it is imported again, then the record is updated, not duplicated.</li>
+<li>Given I remove a student from the list, when they try to sign up or submit a new problem, then they are refused with &quot;You are not registered with IIC&quot;.</li>
+<li>Given I am not an IIC coordinator, when I call the import endpoint, then I receive a 403 response.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-09</span>. A01: &quot;Students register, will have to give a lot of info, will have to be approved.&quot; Open question: which identifier IIC holds for registered students (Section 4.4).</p>
+<p><em>Platform feature:</em> Onboarding &amp; profiles · <span class="id">PS-6</span></p>
+<hr>
+<p><strong><span class="id">US-04</span> — See 3–4 recommended mentors for each problem</strong><br>As an IIC coordinator reviewing a student&#39;s problem,<br>I want the system to recommend 3–4 available mentors ranked by how well their expertise matches the problem, with the reasons shown,<br>So that I can assign a suitable mentor quickly without checking the whole mentor pool by hand.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>Up to 4 recommended mentors per problem, drawn only from mentors who are available and below capacity, each with the shared topic tags and current load.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>The ranking is deterministic: most shared topic tags first, then fewest active mentees; at most 4 are shown, and fewer than 3 only when fewer qualify; unavailable or at-capacity mentors never appear; with no shared tag the list is empty and IIC can browse all available mentors.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>A simple scoring rule over mentor tags and availability; no machine learning.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The client wants the system to &quot;throw available mentors&quot; once a student&#39;s requirements are known (A01); matching is done by hand today (<span class="id">P-09</span>) and niche needs are hard to match (<span class="id">P-02</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 1, Milestone 3.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given a submitted problem, when I open it, then I see up to 4 available mentors ordered by number of shared topic tags, then by fewest active mentees.</li>
+<li>Given a recommendation is shown, when I look at it, then I see the shared tags, the mentor&#39;s availability and their active mentees against capacity.</li>
+<li>Given a mentor is unavailable or at capacity, when recommendations are generated, then they are not included.</li>
+<li>Given no available mentor shares a tag, when I open the problem, then the list is empty and I can browse all available mentors instead.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-02</span>, <span class="id">P-03</span>, <span class="id">P-09</span>. A01: &quot;IIC is approached by students asking for mentors. After understanding the student&#39;s requirements, the system should throw available mentors.&quot; S01 asked for &quot;not broad terms like data science … maybe a mentor for computer vision&quot;, so recommendations match on specific topic tags. This story was first written for students; it now belongs to IIC because students do not choose their mentor.</p>
+<p><em>Platform feature:</em> Mentor matching · <span class="id">PS-3</span></p>
+<hr>
+<p><strong><span class="id">US-16</span> — Assign a mentor to each student&#39;s problem</strong><br>As an IIC coordinator,<br>I want to review each submitted problem with the student&#39;s profile, choose one of the recommended mentors (or another available mentor) and assign them,<br>So that every mentorship is a deliberate pairing and mentors only hear about students assigned to them.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>A queue of submitted problems; each opens a review page with the student&#39;s profile, problem, guidance preferences (<span class="id">US-20</span>) and recommended mentors (<span class="id">US-04</span>), and an assign action.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>The queue is ordered oldest first; opening a problem sets it <em>Under review</em>; assigning creates a mentorship, notifies both sides and raises the mentor&#39;s active count by 1; assignment beyond capacity is blocked; closing a problem requires a reason.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>A queue and an assign action with a capacity check.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The client insists a person approves every match (&quot;automatic won&#39;t work&quot;, <span class="id">P-09</span>) and that mentors are not flooded with requests (<span class="id">P-08</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 1, Milestone 3.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given problems have been submitted, when I open the queue, then I see them oldest first, and opening one sets its status to <em>Under review</em>.</li>
+<li>Given I open a problem, when the page loads, then I see the student&#39;s profile, problem, topic tags and guidance preferences (<span class="id">US-20</span>) next to the recommended mentors (<span class="id">US-04</span>).</li>
+<li>Given I assign a mentor, when I save, then a mentorship is created, the student and mentor are notified (<span class="id">US-05</span>, <span class="id">US-09</span>), and the mentor&#39;s active count rises by 1.</li>
+<li>Given the assignment would exceed the mentor&#39;s capacity, when I try to assign, then it is blocked until the mentor agrees to take an extra student (<span class="id">US-10</span>).</li>
+<li>Given I close a problem without assigning a mentor (for example, it is out of scope), when I save, then a reason is required and the student is notified.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-01</span>, <span class="id">P-03</span>, <span class="id">P-08</span>, <span class="id">P-09</span>, <span class="id">P-13</span>. A01: &quot;Each mentorship needs to be approved. Automatic won&#39;t work&quot;; &quot;Mentor match will be approved by admin&quot;; &quot;Don&#39;t trouble mentors by messaging all matching mentors.&quot; Because IIC assigns every student a mentor, help no longer depends on someone answering a group post (<span class="id">P-01</span>) or on whom a student already knows (<span class="id">P-03</span>).</p>
+<p><em>Platform feature:</em> Mentor matching · <span class="id">PS-3</span>, <span class="id">PS-4</span></p>
+<hr>
+<p><strong><span class="id">US-17</span> — Monitor active mentorships</strong><br>As an IIC coordinator doing a weekly or biweekly check,<br>I want to see every active mentorship with its meeting count, last meeting date and latest progress feedback, with inactive ones flagged,<br>So that I can step in on stalled mentorships without reading any conversation.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>A monitoring table of active mentorships with activity and progress columns and flags.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>No logged meeting for 14 days (configurable) flags <em>Inactive</em>; flag filters work; no conversation content or private notes appear.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>An aggregation query over meetings and feedback.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The client has &quot;no current monitoring system&quot; and plans weekly or biweekly checks (<span class="id">P-10</span>); S01&#39;s mentoring stalled unnoticed (<span class="id">P-05</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 2, Milestone 4.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given there are active mentorships, when I open the monitoring view, then each row shows student, mentor, start date, logged and confirmed meetings, last meeting date and latest progress status.</li>
+<li>Given no meeting has been logged for 14 days, when I open the view, then that mentorship is flagged <em>Inactive</em>.</li>
+<li>Given I filter by a flag, when results load, then only mentorships with that flag are shown.</li>
+<li>Given the view is shown, when I look at it, then no conversation content or private notes appear.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-05</span>, <span class="id">P-10</span>. A01: &quot;IIC will then monitor maybe weekly or biweekly&quot;; &quot;There is no current monitoring system for students.&quot;</p>
+<p><em>Platform feature:</em> Mentorship tracking &amp; feedback · <span class="id">PS-5</span>, <span class="id">PS-7</span></p>
+<hr>
+<p><strong><span class="id">US-18</span> — Resolve change, termination and misconduct cases fairly</strong><br>As an IIC coordinator,<br>I want to handle change requests, terminations and misconduct concerns as cases where I record both sides before deciding,<br>So that no mentor is removed over a single complaint, and students are protected when there is real misconduct.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>A case page showing the submission, the other party&#39;s response and a decision form.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>No automatic removal on a concern; a decision requires a reason; outcome, coordinator and time are logged; a removed mentor is never recommended or assignable again.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>A case record with a decision and an audit entry.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>The client wants both sides heard and no removal over one complaint (<span class="id">P-11</span>).</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 2, Milestone 4.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given a student or mentor raises a concern or change request, when I open the case, then I see their submission and can record the other party&#39;s response.</li>
+<li>Given a misconduct concern is raised, when it is saved, then the mentor is not removed automatically; removal needs a coordinator decision.</li>
+<li>Given I decide to reassign, end, or remove a mentor, when I save, then a reason is required and the outcome, coordinator and time are logged.</li>
+<li>Given a mentor is removed, when IIC looks for a mentor, then that mentor is not recommended or assignable and has no active mentorships.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-11</span>. A01: &quot;One feedback from a student won&#39;t cause a mentor to be removed. A lot of other questions will be asked&quot;; &quot;When a profile is flagged for misconduct, profiles will be removed.&quot;</p>
+<p><em>Platform feature:</em> Changes, termination &amp; safety · <span class="id">PS-6</span></p>
+<hr>
+<p><strong><span class="id">US-19</span> — See demand, supply and outcomes across the programme</strong><br>As an IITM BS programme manager,<br>I want a report, for a chosen period, of student demand by topic against mentor supply, time to assign a mentor, active mentorships and progress outcomes,<br>So that I can decide which expertise to recruit next cycle and judge whether the programme is working.</p>
+<table>
+<thead>
+<tr>
+<th>SMART check</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S&nbsp;—&nbsp;Specific</strong></td>
+<td>One report covering demand vs supply by topic, time to assignment, active mentorships and outcomes.</td>
+</tr>
+<tr>
+<td><strong>M&nbsp;—&nbsp;Measurable</strong></td>
+<td>Per-topic counts for the chosen range; median time from problem submission to assignment; outcomes by progress status; CSV export contains aggregates only.</td>
+</tr>
+<tr>
+<td><strong>A&nbsp;—&nbsp;Achievable</strong></td>
+<td>Aggregation queries over existing records.</td>
+</tr>
+<tr>
+<td><strong>R&nbsp;—&nbsp;Relevant</strong></td>
+<td>Queries to IIC cluster around specific topics (<span class="id">P-02</span>) and mentors are recruited periodically (<span class="id">P-12</span>); <span class="id">PS-7</span> asks for programme insight.</td>
+</tr>
+<tr>
+<td><strong>T&nbsp;—&nbsp;Time&#8209;bound</strong></td>
+<td>Sprint 2, Milestone 4.</td>
+</tr>
+</tbody></table>
+<p><em>Acceptance criteria</em></p>
+<ul>
+<li>Given a date range, when I open the report, then each topic shows the number of problems submitted, mentors available and problems still unassigned.</li>
+<li>Given mentors were assigned in the range, when I view the report, then it shows the median time from problem submission to assignment.</li>
+<li>Given mentorships ended in the range, when I view outcomes, then it shows counts by final progress status.</li>
+<li>Given I export the report, when the CSV downloads, then it contains only aggregates, with no names or contact details.</li>
+</ul>
+<p><em>Interview evidence:</em> <span class="id">P-02</span>, <span class="id">P-12</span>. A01: &quot;Most common queries asked to IIC are about specific industry requirements, how to improve DSA &amp; SQL skills&quot;; mentors are recruited &quot;after every cycle&quot;. Programme leadership has not been interviewed directly, so this story is partially validated.</p>
+<p><em>Platform feature:</em> Programme insights · <span class="id">PS-7</span></p>
+<div class="page-break"></div>
+
+<h2>Section 4: Summary and Traceability</h2>
+<h3>4.1 Story count</h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Stories</th>
+<th>Share</th>
+<th>Sprint 1</th>
+<th>Sprint 2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Student</td>
+<td>8</td>
+<td>40%</td>
+<td>4</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Mentor</td>
+<td>5</td>
+<td>25%</td>
+<td>2</td>
+<td>3</td>
+</tr>
+<tr>
+<td>IIC coordinator</td>
+<td>6</td>
+<td>30%</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Programme leadership</td>
+<td>1</td>
+<td>5%</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>20</strong></td>
+<td><strong>100%</strong></td>
+<td><strong>10</strong></td>
+<td><strong>10</strong></td>
+</tr>
+</tbody></table>
+<p>By priority: 13 Must, 6 Should, 1 Could.</p>
+<h3>4.2 Pain point to story mapping</h3>
+<p>Every pain point leads to at least one story, and every story traces back to at least one pain point.</p>
+<table>
+<thead>
+<tr>
+<th>Pain point from the research</th>
+<th>Sources</th>
+<th>Stories that address it</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id">P-01</span> No reliable way to reach someone who can help</td>
+<td>S01, S02, M01</td>
+<td><span class="id">US-03</span>, <span class="id">US-05</span>, <span class="id">US-16</span></td>
+</tr>
+<tr>
+<td><span class="id">P-02</span> Niche expertise is hard to find</td>
+<td>S01, M01, A01</td>
+<td><span class="id">US-03</span>, <span class="id">US-04</span>, <span class="id">US-19</span></td>
+</tr>
+<tr>
+<td><span class="id">P-03</span> Access depends on personal networks</td>
+<td>S01, S02, M01</td>
+<td><span class="id">US-03</span>, <span class="id">US-04</span>, <span class="id">US-16</span></td>
+</tr>
+<tr>
+<td><span class="id">P-04</span> Advice doesn&#39;t fit the student&#39;s situation</td>
+<td>S01, S02</td>
+<td><span class="id">US-02</span>, <span class="id">US-05</span>, <span class="id">US-20</span></td>
+</tr>
+<tr>
+<td><span class="id">P-05</span> Guidance stops after one conversation</td>
+<td>S01, A01</td>
+<td><span class="id">US-06</span>, <span class="id">US-17</span></td>
+</tr>
+<tr>
+<td><span class="id">P-06</span> Mentors&#39; time is short and irregular</td>
+<td>M01, A01</td>
+<td><span class="id">US-10</span>, <span class="id">US-13</span></td>
+</tr>
+<tr>
+<td><span class="id">P-07</span> Students arrive without a specific problem</td>
+<td>M01, A01</td>
+<td><span class="id">US-02</span>, <span class="id">US-03</span>, <span class="id">US-09</span></td>
+</tr>
+<tr>
+<td><span class="id">P-08</span> Volunteers must not be flooded or micromanaged</td>
+<td>A01, M01</td>
+<td><span class="id">US-03</span>, <span class="id">US-09</span>, <span class="id">US-16</span></td>
+</tr>
+<tr>
+<td><span class="id">P-09</span> Student approval and matching are done by hand</td>
+<td>A01</td>
+<td><span class="id">US-01</span>, <span class="id">US-04</span>, <span class="id">US-15</span>, <span class="id">US-16</span></td>
+</tr>
+<tr>
+<td><span class="id">P-10</span> No visibility of progress; conversations confidential</td>
+<td>A01, S01</td>
+<td><span class="id">US-08</span>, <span class="id">US-11</span>, <span class="id">US-12</span>, <span class="id">US-17</span></td>
+</tr>
+<tr>
+<td><span class="id">P-11</span> No fair way to change or end a mentorship</td>
+<td>A01</td>
+<td><span class="id">US-07</span>, <span class="id">US-13</span>, <span class="id">US-18</span></td>
+</tr>
+<tr>
+<td><span class="id">P-12</span> Mentor supply is limited and periodic</td>
+<td>A01</td>
+<td><span class="id">US-10</span>, <span class="id">US-14</span>, <span class="id">US-19</span></td>
+</tr>
+<tr>
+<td><span class="id">P-13</span> Fear of a bad match</td>
+<td>S02, A01</td>
+<td><span class="id">US-07</span>, <span class="id">US-16</span>, <span class="id">US-20</span></td>
+</tr>
+</tbody></table>
+<h3>4.3 What the research changed</h3>
+<table>
+<thead>
+<tr>
+<th>Assumption we started with</th>
+<th>Result</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Students struggle to find people with relevant experience</td>
+<td><strong>Validated</strong></td>
+<td>S01, S02, M01; client confirms demand</td>
+</tr>
+<tr>
+<td>Any IITM BS student can sign up</td>
+<td><strong>Contradicted</strong>: only students registered with IIC, at BSc or BS level</td>
+<td>A01</td>
+</tr>
+<tr>
+<td>Students search for and choose their own mentor</td>
+<td><strong>Contradicted</strong>: students submit their problem; IIC assigns a mentor from the system&#39;s recommendations</td>
+<td>A01</td>
+</tr>
+<tr>
+<td>Broad career categories are enough for matching</td>
+<td><strong>Contradicted</strong>: needs are niche and specific</td>
+<td>S01, A01</td>
+</tr>
+<tr>
+<td>Students&#39; good guidance comes from people they already know</td>
+<td><strong>Validated</strong></td>
+<td>S01, S02, M01</td>
+</tr>
+<tr>
+<td>Students value seeing mentors&#39; concrete experience</td>
+<td><strong>Validated</strong>, shown once a mentor is assigned (<span class="id">US-05</span>)</td>
+<td>S01, S02; M01 suggestion</td>
+</tr>
+<tr>
+<td>Mentoring relationships tend not to last</td>
+<td><strong>Partially validated</strong></td>
+<td>S01; A01 has no monitoring today</td>
+</tr>
+<tr>
+<td>Mentors create their own profiles</td>
+<td><strong>Contradicted</strong>: IIC adds mentors</td>
+<td>A01</td>
+</tr>
+<tr>
+<td>Mentors accept or decline student requests</td>
+<td><strong>Contradicted</strong>: IIC assigns every mentor</td>
+<td>A01</td>
+</tr>
+<tr>
+<td>A mentor can take several students</td>
+<td><strong>Contradicted</strong>: 1:1 by default, more only on request</td>
+<td>A01</td>
+</tr>
+<tr>
+<td>Students rate mentors</td>
+<td><strong>Contradicted</strong>: no rating system</td>
+<td>A01</td>
+</tr>
+<tr>
+<td>Administrators are tertiary users</td>
+<td><strong>Contradicted</strong>: IIC uses the platform frequently, so primary</td>
+<td>A01</td>
+</tr>
+<tr>
+<td>Students would pay for mentoring</td>
+<td><strong>Out of scope</strong>: volunteer programme</td>
+<td>S01 vs A01</td>
+</tr>
+<tr>
+<td>Programme leadership needs demand and supply insight</td>
+<td><strong>Hypothesis</strong>: leadership not interviewed</td>
+<td>Inferred from A01 and <span class="id">PS-7</span></td>
+</tr>
+</tbody></table>
+<h3>4.4 Open questions for the client</h3>
+<ol>
+<li>&quot;Only for diploma passout&quot;: we read this as students at BSc or BS level only (<span class="id">US-02</span>). Is that right, and does it restrict mentors too?</li>
+<li>The notes list three &quot;important&quot; points but the third was missed. What was it?</li>
+<li>Which student details may a mentor see? For example, CGPA. Which feedback may each side see?</li>
+<li>Should meeting counts be logged by one side and confirmed by the other (our proposal, <span class="id">US-11</span>), or captured another way?</li>
+<li>Which measurable outcomes show progress? The notes mention grades. Will grades exist in the dummy database?</li>
+<li>Defaults for us to confirm: progress checkpoint every 2 weeks; &quot;inactive&quot; after 14 days with no logged meeting; capacity 1 mentee per mentor.</li>
+<li>Can a mentor refuse a student IIC has assigned to them, or is consent assumed when they volunteer?</li>
+<li>What should happen when a student&#39;s need is about wellbeing rather than career?</li>
+<li>Would IIC find it useful to see a student&#39;s stated guidance preferences, and a mentor&#39;s mentoring style, when assigning a mentor (<span class="id">US-20</span>)?</li>
+<li>Which identifier does IIC hold for registered students (roll number, institute email or both), so that sign-up can be checked against it (<span class="id">US-01</span>, <span class="id">US-15</span>)?</li>
+<li>Once a mentor is assigned, should the student and mentor talk over the mentor&#39;s stated contact mode (our current design, <span class="id">US-05</span>), or should the platform also offer messaging?</li>
+</ol>
+
+<div class="page-break"></div>
+
+<h2>Appendix A — Interview guides</h2>
+<h3>A.0 How we ran every interview</h3>
+<ul>
+<li><strong>Length:</strong> 15–25 minutes. Choose 4–5 main questions per interview; you do not need to ask every probe.</li>
+<li><strong>Ask about real past events.</strong> Start with &quot;Tell me about the last time…&quot; rather than &quot;Would you…?&quot;</li>
+<li><strong>Never ask about features.</strong> Do not ask &quot;Would a matching feature help you?&quot; or &quot;Would you use an app that…?&quot; If a participant suggests a feature, ask <em>&quot;What problem would that solve for you? When did you last run into it?&quot;</em></li>
+<li><strong>Use neutral follow-ups:</strong> &quot;Can you tell me more?&quot;, &quot;What happened next?&quot;, &quot;How did that affect you?&quot;, &quot;How often does that happen?&quot;, &quot;What do you do about it today?&quot;</li>
+<li><strong>Capture for each pain point:</strong> what happened, how often, what it cost (time, a missed opportunity, a decision), and the current workaround.</li>
+<li><strong>Two people per interview where possible:</strong> one asks questions, one takes notes and keeps time.</li>
+</ul>
+<h3>A.1 Opening and consent script (read it out after recording starts)</h3>
+<blockquote>
+<p>&quot;Thank you for joining. We are Team 050 from the IITM BS Software Engineering course. We are studying how students get career guidance and how alumni and the programme support them. There are no right or wrong answers. We want to hear about your own experiences.</p>
+<p>With your permission, we would like to record this conversation. The recording will be used only for our coursework: our team, course instructors and peer reviewers may see a short excerpt. We will not use your name in our report; you will be identified only by a participant ID. You can skip any question or stop at any time.</p>
+<p><strong>Do you agree to this conversation being recorded and to a short excerpt being used as evidence for our course submission?</strong>&quot;</p>
+</blockquote>
+<p><em>Wait for a clear spoken &quot;yes&quot; on the recording. If the participant declines, do not record; take written notes only and mark &quot;Consent recorded: No&quot; in the evidence log.</em></p>
+<p><strong>Warm-up (1 minute):</strong> &quot;Could you briefly tell us where you are in the programme (or your career) right now?&quot;</p>
+<h3>A.2 Guide A — Students (primary users)</h3>
+<p><em>Goal: understand how students make career decisions, find guidance, and follow up on it.</em></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Main question</th>
+<th>Probes</th>
+<th>Listen for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S1</td>
+<td>Can you describe how you are currently deciding what to do after your IITM BS degree?</td>
+<td>Which options are you considering? What is hardest about the decision? What information are you still missing?</td>
+<td>Pathway, uncertainties, information gaps</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>Tell me about the last time you needed advice about your career, higher studies or a startup idea. What did you do?</td>
+<td>Whom did you approach? How did you find or contact them? How long did it take to get useful guidance?</td>
+<td>Channels (LinkedIn, Discord, WhatsApp, seniors), effort, delays</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>Have you ever struggled to find someone with relevant experience to guide you? What happened?</td>
+<td>What made the search hard? What else did you try? What happened because you could not find the right person?</td>
+<td>Barriers, workarounds, consequences</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>When you get career advice, how do you decide whether it applies to your situation?</td>
+<td>What makes you trust or doubt it? Have you had advice that did not fit you?</td>
+<td>Trust signals, relevance criteria, mismatches</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>Have you been guided by a senior, a graduate or a working professional? Walk me through that experience.</td>
+<td>How did it start? What worked, and what did not? Did the conversation continue afterwards?</td>
+<td>What already works, friction, why it stopped</td>
+</tr>
+<tr>
+<td>S6</td>
+<td>Think about the last guidance you received. What did you do afterwards, and what got in the way?</td>
+<td>Did you follow up? How did you keep track of next steps? Did it lead to a concrete action?</td>
+<td>Follow-up, drop-off, outcomes</td>
+</tr>
+</tbody></table>
+<p><strong>Closing:</strong> &quot;Is there anything about getting career guidance that we did not ask about but you think is important?&quot;</p>
+<h3>A.3 Guide B — Alumni and recent graduates (secondary users)</h3>
+<p><em>Goal: understand how alumni give guidance, judge requests, manage their time, and keep mentoring relationships going.</em></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Main question</th>
+<th>Probes</th>
+<th>Listen for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>M1</td>
+<td>Can you tell me about your path after the IITM BS programme and the big decisions you made along the way?</td>
+<td>Which decisions were hardest? What helped? What do you wish you had known earlier?</td>
+<td>Areas of expertise they could guide in</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>Tell me about the last time a student approached you for career advice. How did it happen?</td>
+<td>How did they reach you? What did they need? What did you need to know before replying?</td>
+<td>Contact channels, context in the first message, effort</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>What makes it hard to find time to help students?</td>
+<td>How do you balance it with work or study? Have you had to postpone or decline? What happened then?</td>
+<td>Capacity limits, scheduling friction, reasons for declining</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>When a student asks for guidance, how do you work out their background, goals and expectations?</td>
+<td>What is usually missing? Can you recall when expectations were unclear? How did you clarify them?</td>
+<td>Information gaps, wasted back-and-forth</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>Describe a mentoring interaction that went on over several conversations. What kept it going, or what stopped it?</td>
+<td>How were follow-ups arranged? How did you track commitments? Why did it pause or end?</td>
+<td>Relationship lifecycle, drop-off points</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>Have you ever declined a request or felt unable to help a student well? What led to that?</td>
+<td>Was it time, expertise, expectations, or something else? What did you tell the student? What happened next?</td>
+<td>Rejection reasons, redirection, escalation needs</td>
+</tr>
+</tbody></table>
+<p><strong>Closing:</strong> &quot;Is there anything about helping students that we have not covered?&quot;</p>
+<h3>A.4 Guide C — IIC programme administrators (primary operational users)</h3>
+<p><em>Goal: understand how mentoring and career support are coordinated today, where it breaks down, and what the programme needs to measure.</em></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Main question</th>
+<th>Probes</th>
+<th>Listen for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A1</td>
+<td>Can you walk us through how students currently get career guidance or mentoring through the programme?</td>
+<td>Who is involved? What is formal and what is informal? What tools or channels are used?</td>
+<td>Current process, actors, tools</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>What career-related concerns do students bring to the programme most often?</td>
+<td>Are some career paths harder to support? Are some student groups harder to serve? How do you respond now?</td>
+<td>Demand categories, unmet needs</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>How does the programme find, contact and coordinate with alumni who are willing to guide students?</td>
+<td>How is alumni information kept up to date? How do you know whether someone is still available? What makes engagement hard?</td>
+<td>Data upkeep, availability, outreach barriers</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>Can you describe a recent case where arranging guidance for a student was difficult?</td>
+<td>Where were the delays or communication gaps? How was it resolved? How often does this happen?</td>
+<td>Specific failures, frequency, effort</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>How do you currently tell whether students are getting useful guidance and whether interactions are actually happening?</td>
+<td>What information do you collect? How are pending or unresolved cases tracked? What is hard to measure?</td>
+<td>Current metrics, reporting gaps</td>
+</tr>
+<tr>
+<td>A6</td>
+<td>What rules or concerns do you consider when connecting students with alumni?</td>
+<td>What privacy or consent rules apply? Are there eligibility or safeguarding policies? How are complaints handled?</td>
+<td>Policy constraints, escalation paths</td>
+</tr>
+</tbody></table>
+<p><strong>Closing:</strong> &quot;If this programme were working really well a year from now, what would you see that you do not see today?&quot; <em>(This asks about outcomes, not features.)</em></p>
+<h3>A.5 Interviewer note template (one per interview)</h3>
+<pre><code>Participant ID:        S0_ / M0_ / A0_
+User group:            Student / Mentor / Administrator
+Date, mode, duration:
+Interviewer / note-taker:
+Consent recorded:      Yes / No   (timestamp in recording: __:__)
+
+Context (anonymised):  e.g. Degree level, working professional, planning MS
+
+Pain points observed
+ 1. What happened:
+    How often:            Impact:
+    Current workaround:
+    Quote (exact, with timestamp):
+ 2. ...
+
+Things that already work well:
+Surprises / contradicts our assumptions:
+Follow-up questions:
+Best excerpt for video evidence (start–end timestamps):
+</code></pre>
+
+<div class="page-break"></div>
+
+<h2>Appendix B — Evidence log</h2>
+<p>One row per research session. Participant IDs match the anonymised transcripts in the team repository (<code>docs/milestone-1/transcripts/</code>).</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>User group</th>
+<th>Date</th>
+<th>Duration</th>
+<th>Source record</th>
+<th>Consent</th>
+<th>Key pain points</th>
+<th>Strongest supporting quote (anonymised)</th>
+<th>Follow-up needed</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S01</td>
+<td>Student</td>
+<td><code>[date]</code></td>
+<td><code>[min]</code></td>
+<td>Automatic transcript (team drive)</td>
+<td>Agreed to interview; <strong>recording and excerpt consent to be confirmed in writing</strong></td>
+<td><span class="id">P-01</span>, <span class="id">P-02</span>, <span class="id">P-03</span>, <span class="id">P-04</span>, <span class="id">P-05</span></td>
+<td>&quot;every single time it ended after a single conversation&quot;</td>
+<td>What would have kept those conversations going?</td>
+</tr>
+<tr>
+<td>M01</td>
+<td>Alumnus / mentor</td>
+<td>13 Oct 2026</td>
+<td>~16 min</td>
+<td>Fathom recording and transcript (team drive)</td>
+<td>Agreed to interview (&quot;Sure, you can ask me the questions&quot;); <strong>recording and excerpt consent to be confirmed in writing</strong></td>
+<td><span class="id">P-01</span>, <span class="id">P-03</span>, <span class="id">P-06</span>, <span class="id">P-07</span></td>
+<td>&quot;It felt like total blindness … I had to bit by bit text a whole lot of people to ask them doubts&quot;</td>
+<td>How many juniors contact them per month? How do they decide whom to help?</td>
+</tr>
+<tr>
+<td>A01</td>
+<td>IIC (client)</td>
+<td>15 Oct 2026</td>
+<td><code>[min]</code></td>
+<td>Team notes of client session</td>
+<td>Client requirements session</td>
+<td><span class="id">P-08</span> to <span class="id">P-12</span></td>
+<td>&quot;There is no current monitoring system for students.&quot; (notes)</td>
+<td>Questions in Section 4.4</td>
+</tr>
+<tr>
+<td>S02</td>
+<td>Student</td>
+<td>12 Oct 2026</td>
+<td>~11 min</td>
+<td>Fathom recording and transcript (team drive)</td>
+<td>Answered questions; <strong>recording and excerpt consent to be confirmed in writing</strong></td>
+<td><span class="id">P-01</span>, <span class="id">P-03</span>, <span class="id">P-04</span>, <span class="id">P-13</span></td>
+<td>&quot;my condition is different, they are thinking with their perspectives&quot;</td>
+<td>Has a bad mentoring interaction actually happened to them? What made their friends&#39; advice trustworthy?</td>
+</tr>
+</tbody></table>
+<h2>Appendix C — Recording evidence index</h2>
+<p>The submitted MP4 is an excerpt from a real interview. It will be submitted only after the participant has confirmed in writing that they consent to its use.</p>
+<table>
+<thead>
+<tr>
+<th>Submitted file</th>
+<th>Participant</th>
+<th>Source recording</th>
+<th>Excerpt</th>
+<th>What it shows</th>
+<th>Pain points</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>team-050-m1-evidence.mp4</code></td>
+<td>M01</td>
+<td>Fathom recording, 13 Oct 2026</td>
+<td>≈ 08:09 – 11:45</td>
+<td>The alumnus describes whom they help and how (&quot;the people I know&quot;), and their own student experience of &quot;total blindness&quot;, texting many people one by one for help</td>
+<td><span class="id">P-01</span>, <span class="id">P-03</span>, <span class="id">P-07</span></td>
+</tr>
+</tbody></table>
+<p><em>Alternatives if M01 does not consent:</em></p>
+<ul>
+<li>S02, ≈ 02:33 – 04:40: finding seniors through WhatsApp groups; advice from people &quot;thinking with their perspectives&quot;; checking it with ChatGPT (<span class="id">P-01</span>, <span class="id">P-04</span>).</li>
+<li>S01: &quot;put out a message and hope that someone would answer&quot; and &quot;ended after a single conversation&quot; (<span class="id">P-01</span>, <span class="id">P-05</span>).</li>
+</ul>
+<p>Avoid the closing feature-suggestion questions in any excerpt.</p>
+</body></html>

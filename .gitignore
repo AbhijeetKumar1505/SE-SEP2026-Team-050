@@ -1,0 +1,12 @@
+node_modules/
+/docs/internal-solution-thinking
+
+# Interview data stays out of git for participant privacy.
+# Only anonymised transcripts in docs/*/transcripts/ are committed.
+docs/*/transcripts/raw/
+docs/*/recordings/
+*.mp4
+*.m4a
+*.mp3
+*.wav
+*.webm
