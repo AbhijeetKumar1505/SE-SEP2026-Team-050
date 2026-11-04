@@ -9,7 +9,6 @@
 - **Never ask about features.** Do not ask "Would a matching feature help you?" or "Would you use an app that…?" If a participant suggests a feature, ask *"What problem would that solve for you? When did you last run into it?"*
 - **Use neutral follow-ups:** "Can you tell me more?", "What happened next?", "How did that affect you?", "How often does that happen?", "What do you do about it today?"
 - **Capture for each pain point:** what happened, how often, what it cost (time, a missed opportunity, a decision), and the current workaround.
-- **Two people per interview where possible:** one asks questions, one takes notes and keeps time.
 
 ### A.1 Opening and consent script (read it out after recording starts)
 
@@ -53,7 +52,7 @@
 
 **Closing:** "Is there anything about helping students that we have not covered?"
 
-### A.4 Guide C — IIC programme administrators (primary operational users)
+### A.4 Guide C — IIC programme administrators (tertiary users)
 
 *Goal: understand how mentoring and career support are coordinated today, where it breaks down, and what the programme needs to measure.*
 

@@ -17,35 +17,37 @@ The Milestone 1 content is also packaged into `team-050-milestone-1-2.zip`, whic
 |---|---|---|---|
 | Identify users | 5 | All of primary, secondary and tertiary users identified | Report Section 1 |
 | Interviews / observation studies | 10 | Relevant and comprehensive pain points, and appropriate features to address them | Report Section 2, Appendices A–C, video |
-| User stories | 15 | Stories fully follow the SMART guidelines | Report Sections 3–4 |
+| User stories | 15 | Stories fully follow the SMART guidelines | Report Sections 3–6 |
 
 The course explicitly warns against asking users directly whether a feature would be useful. The interview guides only ask about past experiences.
 
 ## Status
 
-- [x] Users identified and justified (Section 1), and reclassified after the client session
+- [x] Users identified and justified (Section 1): students primary, mentors secondary, IIC and programme leadership tertiary (corrected 22 Oct)
 - [x] Interview guides, consent script and note template (Appendix A)
-- [x] Transcripts anonymised: `S01`, `S02` (students), `M01` (alumnus), `A01` (IIC client notes)
-- [ ] **Written consent from S01, S02 and M01** to recording and excerpt use. None of the recordings captures it.
-- [ ] Dates, modes, durations and interviewers for S01 and A01 (Section 2 participant table, Appendix B)
-- [x] Stories heard, pain points per interview and consolidated inventory (Section 2): 13 pain points
-- [x] 20 user stories linked to evidence, each with its own SMART check, plus story index, pain-point mapping and assumption review (Sections 3–4)
-- [ ] Ask the client the open questions (Section 4.4), especially "diploma passout" eligibility and the missed third point
+- [x] Transcripts anonymised: `S01`–`S05` (students), `M01` (alumnus), `A01` (IIC client notes)
+- [ ] **Written consent from S01–S05 and M01** to recording and excerpt use. None of the transcripts captures it.
+- [x] Modes, durations and interviewers for every session (all on Google Meet; interviews 11–30 min, client session about 1 hour)
+- [x] S05 interview date (22 Oct 2026)
+- [x] Stories heard, pain points per interview and consolidated inventory (Section 2): 16 pain points
+- [x] 21 user stories linked to evidence, each with its own SMART check, plus story index, pain-point mapping and assumption review (Sections 3–6)
+- [x] Client clarifications on eight workflow points built into the stories (Section 4) and assumptions (Section 5)
+- [ ] Ask the client the remaining open questions (Section 5.3), especially "diploma passout" eligibility
 - [x] Team names, roll numbers and roles on the title page
-- [ ] Each member's Milestone 1 contribution on the title page (who interviewed S01, who took the A01 notes, etc.)
+- [x] Each member's Milestone 1 contribution on the title page (interviews and the client session; members may add more)
 - [ ] Video excerpt cut and exported as MP4 (Appendix C suggests M01 ≈ 08:09–11:45)
 - [ ] PDF built and proofread (search it for leftover `[` placeholders)
-- [ ] Every member has signed and submitted their own Honour Code
+- [x] Every member has signed and submitted their own Honour Code
 
 ### Honour Code tracker
 
 | Member | Signed | Submitted on portal |
 |---|---|---|
-| Abhijeet Kumar | [ ] | [ ] |
-| Priyanshu Yadav | [ ] | [ ] |
-| Saloni Puri | [ ] | [ ] |
-| Shreya Pal | [ ] | [ ] |
-| Khushi Dhankhar | [ ] | [ ] |
+| Abhijeet Kumar | [x] | [x] |
+| Priyanshu Yadav | [x] | [x] |
+| Saloni Puri | [x] | [x] |
+| Shreya Pal | [x] | [x] |
+| Khushi Dhankhar | [x] | [x] |
 
 ## Suggested plan to the deadline
 
