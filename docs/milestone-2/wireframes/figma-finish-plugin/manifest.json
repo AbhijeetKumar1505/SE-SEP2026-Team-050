@@ -1,0 +1,9 @@
+{
+  "name": "Team 050 - finish wireframe prototype",
+  "id": "team050-finish-wireframe-prototype",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": { "allowedDomains": ["none"] }
+}

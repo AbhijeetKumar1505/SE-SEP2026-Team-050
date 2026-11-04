@@ -67,3 +67,12 @@ pre code { background: none; padding: 0; }
 
 /* Key-value tables written with an empty header row (| | |) render without it. */
 thead tr:has(> th:empty + th:empty:last-child) { display: none; }
+
+/* Requirements clarification table (report Section 4). */
+.clarify table { font-size: 8.6pt; }
+.clarify td:nth-child(1) { width: 4mm; }
+.clarify td:nth-child(2) { width: 13%; font-weight: 600; }
+.clarify td:nth-child(3) { width: 25%; }
+.clarify td:nth-child(4) { width: 36%; }
+.clarify td:nth-child(5) { width: 15%; }
+.clarify td:nth-child(6) { width: 9%; }

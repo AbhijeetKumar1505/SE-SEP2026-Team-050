@@ -80,7 +80,69 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 .clarify td:nth-child(5) { width: 15%; }
 .clarify td:nth-child(6) { width: 9%; }
 </style></head>
-<body><style>
+<body><div class="title-page">
+
+<h1>Student Mentoring and Career Support Platform</h1>
+<h2>Milestone 2 — Scheduling and Design</h2>
+<p><strong>Course:</strong> IITM BS Software Engineering, September 2026 term<br><strong>Team:</strong> 050<br><strong>Problem statement:</strong> Option 2 — Student Mentoring and Career Support Platform<br><strong>Client:</strong> IIC, IITM BS programme administration<br><strong>Deadline:</strong> 8 November 2026</p>
+<table>
+<thead>
+<tr>
+<th>Team member</th>
+<th>Roll number</th>
+<th>Project roles</th>
+<th>Contribution to Milestone 2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Abhijeet Kumar</td>
+<td>24f2007359</td>
+<td>Backend Developer, Code Reviewer</td>
+<td>Tech stack; design of components (Section 1); Figma wireframes; Milestone 1–2 ZIP</td>
+</tr>
+<tr>
+<td>Priyanshu Yadav</td>
+<td>23f1000018</td>
+<td>Tester, Backend Developer</td>
+<td>Class diagram (Section 2); database design (Section 3)</td>
+</tr>
+<tr>
+<td>Saloni Puri</td>
+<td>23f3003439</td>
+<td>Product Manager, Scrum Master</td>
+<td>Sprint schedule and Gantt chart (Section 4); scrum meetings and minutes (Section 5); Jira screenshots (Section 6); report compilation and submission</td>
+</tr>
+<tr>
+<td>Shreya Pal</td>
+<td>21f1002298</td>
+<td>Tester, Frontend Developer</td>
+<td>UI pages for students and the mentorship workspace; frontend README and ZIP</td>
+</tr>
+<tr>
+<td>Khushi Dhankhar</td>
+<td>23f3003132</td>
+<td>Frontend Developer, Scrum Master</td>
+<td>Frontend set-up and navigation; UI pages for mentors, IIC and programme insights</td>
+</tr>
+</tbody></table>
+</div>
+
+<div class="page-break"></div>
+
+<h2>Contents</h2>
+<ul>
+<li>Section 1: Design of Components</li>
+<li>Section 2: Class Diagram</li>
+<li>Section 3: Database Design</li>
+<li>Section 4: Sprint Schedule (tools, sprint overview, Gantt chart, tasks and owners)</li>
+<li>Section 5: Scrum Meetings Schedule and Minutes</li>
+<li>Section 6: Jira Timeline (Gantt Chart) and Kanban Board</li>
+<li>Section 7: UI Pages</li>
+</ul>
+<p>This report covers every item the project statement lists for the Milestone 2 report, in the same order. The frontend code (ZIP with a README) and team-050-milestone-1-2.zip are submitted separately on the portal.</p>
+<div class="page-break"></div>
+
+<style>
 .cmp-figure { margin: 10pt 0 2pt; break-inside: avoid; }
 .cmp-figure svg { width: 100%; height: auto; display: block; }
 .cmp-caption { font-size: 8.5pt; color: #5b5b66; margin: 4pt 0 12pt; }
@@ -1114,4 +1176,1018 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 </tr>
 </tbody></table>
 <div class="page-break"></div>
+
+<h2>Section 2: Class Diagram</h2>
+<p><code>TO FILL: class diagram of the proposed system with a short description of each class and relationship (Priyanshu Yadav, SCRUM-51, due 3 Nov). Build it from the components in Section 1 and the statuses in Section 1.7.</code></p>
+
+<div class="page-break"></div>
+
+<h2>Section 3: Database Design</h2>
+<p><code>TO FILL: ER diagram with tables, keys and constraints, plus a short description of each table (Priyanshu Yadav, SCRUM-52, due 3 Nov). It must match the class diagram in Section 2.</code></p>
+
+<style>
+.sch-figure { margin: 10pt 0 2pt; break-inside: avoid; }
+.sch-figure svg { width: 100%; height: auto; display: block; }
+.sch-caption { font-size: 8.5pt; color: #5b5b66; margin: 4pt 0 12pt; }
+.sch-owners table { font-size: 9pt; }
+.sch-owners td:nth-child(1), .sch-owners td:nth-child(2) { white-space: nowrap; }
+.sch-tasks td:first-child, .sch-tasks td:last-child { white-space: nowrap; }
+</style>
+
+<div class="page-break"></div>
+
+<h2>Section 4: Sprint Schedule</h2>
+<p>The schedule is built from the 21 user stories in the Milestone 1 report (Section 3). The project has one sprint per milestone. The two development sprints are Milestones 3 and 4, and each user story is built and tested in the sprint its SMART <em>Time-bound</em> field names.</p>
+<h3>4.1 Project scheduling tools</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>What we use it for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jira Software</strong> (Scrum board, project SCRUM)</td>
+<td>Backlog, sprints, Kanban board, timeline (Gantt) and due dates. It is the single source of truth for who does what and by when</td>
+</tr>
+<tr>
+<td><strong>GitHub</strong> (team repository)</td>
+<td>Code and report sources. Commit messages name the Jira issue they complete, for example <em>SCRUM-50</em></td>
+</tr>
+<tr>
+<td><strong>Figma</strong></td>
+<td>Wireframes and click-through prototype for the UI pages (Milestone 2)</td>
+</tr>
+<tr>
+<td><strong>Google Meet</strong></td>
+<td>Scrum meetings, client meetings and user interviews</td>
+</tr>
+</tbody></table>
+<p>How the Jira project is organised:</p>
+<ul>
+<li><strong>Epics.</strong> There are five milestone epics (M1, M2, M5, and one for the M3 and M4 sprint submissions) and six feature epics: platform foundation, onboarding and profiles, mentor matching, mentorship tracking and feedback, changes, termination and safety, and programme insights.</li>
+<li><strong>Stories.</strong> Each user story <span class="id">US-01</span> to <span class="id">US-21</span> is a Jira story with three sub-tasks: <em>Backend</em>, <em>Frontend</em> and <em>Tests</em>.</li>
+<li><strong>Tasks.</strong> Design, documentation and submission work. Each task has an owner and a due date.</li>
+<li><strong>Sprints.</strong> There are five sprints, one per milestone. Each has a sprint goal and ends on or just before the course deadline.</li>
+<li><strong>Workflow.</strong> To Do → In Progress → In Review → Done. A task moves to <em>In Review</em> when its owner shares it with the team for review, and to <em>Done</em> once the review is finished.</li>
+</ul>
+<h3>4.2 Sprint overview</h3>
+<table>
+<thead>
+<tr>
+<th>Jira sprint</th>
+<th>Dates (2026)</th>
+<th>Sprint goal</th>
+<th>Deadline</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>M1 – User Requirements</td>
+<td>11 Oct – 25 Oct</td>
+<td>Users, user research and SMART user stories; interview video excerpt; every member&#39;s Honour Code</td>
+<td>25 Oct (submitted)</td>
+</tr>
+<tr>
+<td>M2 – Scheduling &amp; Design</td>
+<td>28 Oct – 7 Nov</td>
+<td>Schedule in Jira; design of components, classes and database; most UI pages (frontend only); M2 report and the Milestone 1–2 ZIP</td>
+<td>8 Nov (team target 7 Nov)</td>
+</tr>
+<tr>
+<td>M3 – Sprint 1: Matching</td>
+<td>8 Nov – 22 Nov</td>
+<td>IIC-verified sign-up, student profiles, problem submission, mentor pool, mentor recommendations and IIC assignment as tested APIs (Swagger YAML and pytest); UI integrated; user feedback</td>
+<td>22 Nov</td>
+</tr>
+<tr>
+<td>M4 – Sprint 2: Tracking</td>
+<td>23 Nov – 6 Dec</td>
+<td>Goals and next steps, session logs, progress feedback, IIC monitoring, change and termination cases, and programme insights as tested APIs; UI integrated; user feedback</td>
+<td>6 Dec</td>
+</tr>
+<tr>
+<td>M5 – Final Submission</td>
+<td>7 Dec – 20 Dec</td>
+<td>Integrate, test end to end and deploy the prototype; final report, demo video, slides, code ZIP, README and the Milestone 3–5 ZIP</td>
+<td>20 Dec</td>
+</tr>
+</tbody></table>
+<p>Every sprint follows the same pattern: a planning meeting on its first day, then design or build work, then review, then submission one day before the deadline. The two development sprints also reserve their last five days for the Swagger YAML, the API test-case document, the pytest report and a user feedback session.</p>
+<h3>4.3 Gantt chart</h3>
+<div class="sch-figure">
+<svg viewBox="0 0 680 533" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif" role="img" aria-label="Gantt chart of the project schedule, 11 October to 20 December 2026">
+<rect x="238.0" y="30" width="91.7" height="473" fill="#7a8794" fill-opacity="0.06"/>
+<text x="283.8" y="40" font-size="9" font-weight="700" fill="#7a8794" text-anchor="middle">M1</text>
+<rect x="341.9" y="30" width="67.2" height="473" fill="#1f4e8c" fill-opacity="0.06"/>
+<text x="375.5" y="40" font-size="9" font-weight="700" fill="#1f4e8c" text-anchor="middle">M2</text>
+<rect x="409.2" y="30" width="91.7" height="473" fill="#0f7a6c" fill-opacity="0.06"/>
+<text x="455.0" y="40" font-size="9" font-weight="700" fill="#0f7a6c" text-anchor="middle">M3</text>
+<rect x="500.8" y="30" width="85.6" height="473" fill="#b25e09" fill-opacity="0.06"/>
+<text x="543.6" y="40" font-size="9" font-weight="700" fill="#b25e09" text-anchor="middle">M4</text>
+<rect x="586.4" y="30" width="85.6" height="473" fill="#6a3d9a" fill-opacity="0.06"/>
+<text x="629.2" y="40" font-size="9" font-weight="700" fill="#6a3d9a" text-anchor="middle">M5</text>
+<line x1="244.1" y1="44" x2="244.1" y2="503" stroke="#c9ccd3" stroke-width="0.6"/>
+<text x="244.1" y="24" font-size="8" fill="#5b5b66" text-anchor="middle">12 Oct</text>
+<line x1="286.9" y1="44" x2="286.9" y2="503" stroke="#c9ccd3" stroke-width="0.6"/>
+<text x="286.9" y="24" font-size="8" fill="#5b5b66" text-anchor="middle">19 Oct</text>
+<line x1="329.7" y1="44" x2="329.7" y2="503" stroke="#c9ccd3" stroke-width="0.6"/>
+<text x="329.7" y="24" font-size="8" fill="#5b5b66" text-anchor="middle">26 Oct</text>
+<line x1="372.5" y1="44" x2="372.5" y2="503" stroke="#c9ccd3" stroke-width="0.6"/>
+<text x="372.5" y="24" font-size="8" fill="#5b5b66" text-anchor="middle">2 Nov</text>
+<line x1="415.3" y1="44" x2="415.3" y2="503" stroke="#c9ccd3" stroke-width="0.6"/>
+<text x="415.3" y="24" font-size="8" fill="#5b5b66" text-anchor="middle">9 Nov</text>
+<line x1="458.1" y1="44" x2="458.1" y2="503" stroke="#c9ccd3" stroke-width="0.6"/>
+<text x="458.1" y="24" font-size="8" fill="#5b5b66" text-anchor="middle">16 Nov</text>
+<line x1="500.8" y1="44" x2="500.8" y2="503" stroke="#c9ccd3" stroke-width="0.6"/>
+<text x="500.8" y="24" font-size="8" fill="#5b5b66" text-anchor="middle">23 Nov</text>
+<line x1="543.6" y1="44" x2="543.6" y2="503" stroke="#c9ccd3" stroke-width="0.6"/>
+<text x="543.6" y="24" font-size="8" fill="#5b5b66" text-anchor="middle">30 Nov</text>
+<line x1="586.4" y1="44" x2="586.4" y2="503" stroke="#c9ccd3" stroke-width="0.6"/>
+<text x="586.4" y="24" font-size="8" fill="#5b5b66" text-anchor="middle">7 Dec</text>
+<line x1="629.2" y1="44" x2="629.2" y2="503" stroke="#c9ccd3" stroke-width="0.6"/>
+<text x="629.2" y="24" font-size="8" fill="#5b5b66" text-anchor="middle">14 Dec</text>
+<text x="4" y="24" font-size="8" fill="#5b5b66">Weeks start on Monday</text>
+<rect x="0" y="44" width="680" height="17" fill="#7a8794" fill-opacity="0.10"/>
+<text x="4" y="56" font-size="9.5" font-weight="700" fill="#7a8794">M1 · User requirements</text>
+<path d="M326.6,47.0 l5.5,5.5 l-5.5,5.5 l-5.5,-5.5 z" fill="#7a8794"/>
+<text x="318.6" y="56" font-size="8" fill="#7a8794" text-anchor="end">due 25 Oct</text>
+<text x="12" y="73" font-size="9" fill="#1d1d1f">Kick-off and client meetings</text>
+<rect x="238.0" y="65" width="30.6" height="9" rx="2" fill="#7a8794" fill-opacity="0.45"/>
+<text x="12" y="90" font-size="9" fill="#1d1d1f">User interviews S01–S05, M01</text>
+<rect x="244.1" y="82" width="67.2" height="9" rx="2" fill="#7a8794" fill-opacity="0.45"/>
+<text x="12" y="107" font-size="9" fill="#1d1d1f">Report, review and submission</text>
+<rect x="286.9" y="99" width="42.8" height="9" rx="2" fill="#7a8794" fill-opacity="0.45"/>
+<rect x="0" y="112" width="680" height="17" fill="#1f4e8c" fill-opacity="0.10"/>
+<text x="4" y="124" font-size="9.5" font-weight="700" fill="#1f4e8c">M2 · Scheduling and design</text>
+<path d="M412.2,115.0 l5.5,5.5 l-5.5,5.5 l-5.5,-5.5 z" fill="#1f4e8c"/>
+<text x="404.2" y="124" font-size="8" fill="#1f4e8c" text-anchor="end">due 8 Nov</text>
+<text x="12" y="141" font-size="9" fill="#1d1d1f">Tech stack (SCRUM-49)</text>
+<rect x="341.9" y="133" width="30.6" height="9" rx="2" fill="#1f4e8c"/>
+<text x="12" y="158" font-size="9" fill="#1d1d1f">Design of components (SCRUM-50)</text>
+<rect x="341.9" y="150" width="42.8" height="9" rx="2" fill="#1f4e8c"/>
+<text x="12" y="175" font-size="9" fill="#1d1d1f">Class and ER diagrams (SCRUM-51, 52)</text>
+<rect x="341.9" y="167" width="42.8" height="9" rx="2" fill="#1f4e8c"/>
+<text x="12" y="192" font-size="9" fill="#1d1d1f">Schedule, Gantt, minutes (SCRUM-53–55)</text>
+<rect x="341.9" y="184" width="61.1" height="9" rx="2" fill="#1f4e8c"/>
+<text x="12" y="209" font-size="9" fill="#1d1d1f">Frontend set-up (SCRUM-56)</text>
+<rect x="341.9" y="201" width="36.7" height="9" rx="2" fill="#1f4e8c"/>
+<text x="12" y="226" font-size="9" fill="#1d1d1f">UI pages (SCRUM-57–64)</text>
+<rect x="372.5" y="218" width="30.6" height="9" rx="2" fill="#1f4e8c"/>
+<text x="12" y="243" font-size="9" fill="#1d1d1f">Report, ZIPs, submission (SCRUM-65–68)</text>
+<rect x="390.8" y="235" width="18.3" height="9" rx="2" fill="#1f4e8c"/>
+<rect x="0" y="248" width="680" height="17" fill="#0f7a6c" fill-opacity="0.10"/>
+<text x="4" y="260" font-size="9.5" font-weight="700" fill="#0f7a6c">M3 · Sprint 1: matching</text>
+<path d="M497.8,251.0 l5.5,5.5 l-5.5,5.5 l-5.5,-5.5 z" fill="#0f7a6c"/>
+<text x="489.8" y="260" font-size="8" fill="#0f7a6c" text-anchor="end">due 22 Nov</text>
+<text x="12" y="277" font-size="9" fill="#1d1d1f">Backend foundation (SCRUM-69–75)</text>
+<rect x="409.2" y="269" width="42.8" height="9" rx="2" fill="#0f7a6c"/>
+<text x="12" y="294" font-size="9" fill="#1d1d1f">10 stories: APIs, UI, tests</text>
+<rect x="421.4" y="286" width="67.2" height="9" rx="2" fill="#0f7a6c"/>
+<text x="12" y="311" font-size="9" fill="#1d1d1f">Swagger, test cases, pytest (SCRUM-76–78)</text>
+<rect x="464.2" y="303" width="30.6" height="9" rx="2" fill="#0f7a6c"/>
+<text x="12" y="328" font-size="9" fill="#1d1d1f">User feedback, submission (SCRUM-79, 80)</text>
+<rect x="482.5" y="320" width="18.3" height="9" rx="2" fill="#0f7a6c"/>
+<rect x="0" y="333" width="680" height="17" fill="#b25e09" fill-opacity="0.10"/>
+<text x="4" y="345" font-size="9.5" font-weight="700" fill="#b25e09">M4 · Sprint 2: tracking</text>
+<path d="M583.4,336.0 l5.5,5.5 l-5.5,5.5 l-5.5,-5.5 z" fill="#b25e09"/>
+<text x="575.4" y="345" font-size="8" fill="#b25e09" text-anchor="end">due 6 Dec</text>
+<text x="12" y="362" font-size="9" fill="#1d1d1f">Scheduled jobs (SCRUM-170)</text>
+<rect x="500.8" y="354" width="30.6" height="9" rx="2" fill="#b25e09"/>
+<text x="12" y="379" font-size="9" fill="#1d1d1f">11 stories: APIs, UI, tests</text>
+<rect x="500.8" y="371" width="73.4" height="9" rx="2" fill="#b25e09"/>
+<text x="12" y="396" font-size="9" fill="#1d1d1f">Swagger, test cases, pytest (SCRUM-81–83)</text>
+<rect x="549.7" y="388" width="24.5" height="9" rx="2" fill="#b25e09"/>
+<text x="12" y="413" font-size="9" fill="#1d1d1f">User feedback, submission (SCRUM-84, 85)</text>
+<rect x="568.1" y="405" width="18.3" height="9" rx="2" fill="#b25e09"/>
+<rect x="0" y="418" width="680" height="17" fill="#6a3d9a" fill-opacity="0.10"/>
+<text x="4" y="430" font-size="9.5" font-weight="700" fill="#6a3d9a">M5 · Final submission</text>
+<path d="M668.9,421.0 l5.5,5.5 l-5.5,5.5 l-5.5,-5.5 z" fill="#6a3d9a"/>
+<text x="660.9" y="430" font-size="8" fill="#6a3d9a" text-anchor="end">due 20 Dec</text>
+<text x="12" y="447" font-size="9" fill="#1d1d1f">End-to-end testing, fixes (SCRUM-86)</text>
+<rect x="586.4" y="439" width="36.7" height="9" rx="2" fill="#6a3d9a"/>
+<text x="12" y="464" font-size="9" fill="#1d1d1f">Hosting and deployment (SCRUM-171, 87)</text>
+<rect x="549.7" y="456" width="85.6" height="9" rx="2" fill="#6a3d9a"/>
+<text x="12" y="481" font-size="9" fill="#1d1d1f">README, final report, slides (SCRUM-88–90)</text>
+<rect x="604.8" y="473" width="48.9" height="9" rx="2" fill="#6a3d9a"/>
+<text x="12" y="498" font-size="9" fill="#1d1d1f">Demo video, ZIP, submission (SCRUM-91–93)</text>
+<rect x="635.3" y="490" width="36.7" height="9" rx="2" fill="#6a3d9a"/>
+<line x1="0" y1="503" x2="680" y2="503" stroke="#c9ccd3" stroke-width="0.6"/>
+<rect x="4" y="513" width="18" height="8" rx="2" fill="#1f4e8c"/><text x="26" y="521" font-size="8.5" fill="#5b5b66">Planned work (start to Jira due date)</text>
+<rect x="200" y="513" width="18" height="8" rx="2" fill="#7a8794" fill-opacity="0.45"/><text x="222" y="521" font-size="8.5" fill="#5b5b66">Completed</text>
+<path d="M290,512 l4.5,4.5 l-4.5,4.5 l-4.5,-4.5 z" fill="#5b5b66"/><text x="298" y="521" font-size="8.5" fill="#5b5b66">Milestone deadline (project statement)</text>
+<rect x="470" y="512" width="18" height="10" fill="#1f4e8c" fill-opacity="0.08"/><text x="492" y="521" font-size="8.5" fill="#5b5b66">Jira sprint</text>
+</svg>
+</div>
+<p class="sch-caption">Figure 4.1. Project schedule, 11 October to 20 December 2026. Bars run from the planned start to the due date held in Jira; shaded columns are the Jira sprints. The same plan appears on the Jira timeline (Section 6).</p>
+
+<p><strong>How to read the schedule.</strong></p>
+<ul>
+<li><strong>Milestone 1 (done).</strong> It started with the kick-off and the first client meeting on 11 Oct. The client requirements session followed on 15 Oct, and the six user interviews ran from 12 to 22 Oct. The report was reviewed by the team and submitted before the 25 Oct deadline.</li>
+<li><strong>Milestone 2.</strong> All design work starts together on 28 Oct, so that the component design, class diagram and ER diagram are ready by 3 Nov. The UI pages (2–6 Nov) follow the frontend set-up (due 2 Nov) and the Figma wireframes. The report, both ZIPs and the submission close the sprint on 7 Nov, one day before the deadline.</li>
+<li><strong>Milestone 3 (Sprint 1).</strong> This sprint is two weeks long because Milestone 2 was extended. The backend foundation (project skeleton, data models from the ER diagram, authentication and roles, OpenAPI skeleton, pytest set-up, API client) is due in its first week so that story work can start by 10 Nov. Its ten stories (<span class="id">US-01</span> to <span class="id">US-05</span>, <span class="id">US-09</span>, <span class="id">US-10</span> and <span class="id">US-14</span> to <span class="id">US-16</span>) cover everything a student needs to reach an assigned mentor.</li>
+<li><strong>Milestone 4 (Sprint 2).</strong> Its eleven stories depend on mentorships created in Sprint 1. They are goals and next steps, sessions, feedback, ending a mentorship, monitoring, cases, insights and escalations. The scheduled job runner (SCRUM-170) comes first because reminders and escalations (<span class="id">US-11</span>, <span class="id">US-21</span>) use it.</li>
+<li><strong>Milestone 5.</strong> End-to-end testing and fixes run in the first week. Hosting is decided by 6 Dec (SCRUM-171) so that the prototype is deployed by 14 Dec, before the demo video is recorded.</li>
+</ul>
+<p><strong>Critical path.</strong> ER diagram (3 Nov) → data models (11 Nov) → Sprint 1 stories → Sprint 2 stories → deployment → demo video. A slip in the ER diagram or the data models delays both development sprints, so these are reviewed first at each scrum meeting.</p>
+<h3>4.4 Tasks and owners for each sprint</h3>
+<p>Roles: <strong>Abhijeet</strong> Kumar (backend, code review), <strong>Priyanshu</strong> Yadav (backend, testing), <strong>Saloni</strong> Puri (product manager, scrum master), <strong>Shreya</strong> Pal (frontend, testing), <strong>Khushi</strong> Dhankhar (frontend, scrum master).</p>
+<p>Owners for Milestone 2 are as assigned in Jira. Owners for Milestones 3 to 5 are proposed from each member&#39;s role. They are confirmed at the planning meeting that opens each sprint and then assigned in Jira. The proposal follows three rules:</p>
+<ul>
+<li>The member who builds a UI page in Milestone 2 integrates that page with the API in Milestone 3 or 4.</li>
+<li>A story&#39;s tests are written by someone other than its backend developer.</li>
+<li>Abhijeet reviews every pull request, and Priyanshu reviews Abhijeet&#39;s.</li>
+</ul>
+<h4>Milestone 1: User requirements (done)</h4>
+<p>All five members attended the client requirements session on 15 Oct. The interviews were S01 (Khushi), S02 and M01 (Abhijeet), S03 (Shreya), S04 (Saloni) and S05 (Priyanshu). Abhijeet led the synthesis and the report, which the team reviewed (SCRUM-40) and submitted before the deadline.</p>
+<h4>Milestone 2: Scheduling and design (28 Oct – 7 Nov)</h4>
+<div class="sch-tasks">
+
+<table>
+<thead>
+<tr>
+<th>Jira</th>
+<th>Task</th>
+<th>Owner</th>
+<th>Due</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SCRUM-49</td>
+<td>Decide and document the tech stack</td>
+<td>Abhijeet</td>
+<td>1 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-50</td>
+<td>Design of system components with descriptions</td>
+<td>Abhijeet</td>
+<td>3 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-51</td>
+<td>Class diagram of the proposed system</td>
+<td>Priyanshu</td>
+<td>3 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-52</td>
+<td>Database design (ER diagram)</td>
+<td>Priyanshu</td>
+<td>3 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-53</td>
+<td>Sprint schedule and Gantt chart</td>
+<td>Saloni</td>
+<td>5 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-54</td>
+<td>Scrum meeting schedule and minutes</td>
+<td>Saloni</td>
+<td>6 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-55</td>
+<td>Screenshots of the Jira board and timeline</td>
+<td>Saloni</td>
+<td>6 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-56</td>
+<td>Frontend project, routing, layout and role-based navigation</td>
+<td>Khushi</td>
+<td>2 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-57</td>
+<td>UI: sign-up, login and student profile (<span class="id">US-01</span>, <span class="id">US-02</span>)</td>
+<td>Shreya</td>
+<td>4 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-58</td>
+<td>UI: problem submission form (<span class="id">US-03</span>, <span class="id">US-20</span>)</td>
+<td>Shreya</td>
+<td>4 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-59</td>
+<td>UI: student dashboard (<span class="id">US-05</span>)</td>
+<td>Shreya</td>
+<td>4 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-60</td>
+<td>UI: mentor dashboard and availability (<span class="id">US-09</span>, <span class="id">US-10</span>, <span class="id">US-13</span>)</td>
+<td>Khushi</td>
+<td>5 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-61</td>
+<td>UI: mentorship workspace (<span class="id">US-06</span>, <span class="id">US-07</span>, <span class="id">US-08</span>, <span class="id">US-11</span>, <span class="id">US-12</span>)</td>
+<td>Shreya</td>
+<td>5 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-62</td>
+<td>UI: IIC students, mentor pool, problem queue and assignment (<span class="id">US-04</span>, <span class="id">US-14</span>, <span class="id">US-15</span>, <span class="id">US-16</span>)</td>
+<td>Khushi</td>
+<td>5 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-63</td>
+<td>UI: IIC monitoring, escalation alerts and cases (<span class="id">US-17</span>, <span class="id">US-18</span>, <span class="id">US-21</span>)</td>
+<td>Khushi</td>
+<td>5 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-64</td>
+<td>UI: programme insights dashboard (<span class="id">US-19</span>)</td>
+<td>Khushi</td>
+<td>6 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-65</td>
+<td>Frontend README and code ZIP</td>
+<td>Shreya</td>
+<td>6 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-66</td>
+<td>Compile the Milestone 2 PDF report</td>
+<td>Saloni</td>
+<td>6 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-67</td>
+<td>Build team-050-milestone-1-2.zip and pass the validity check</td>
+<td>Abhijeet</td>
+<td>7 Nov</td>
+</tr>
+<tr>
+<td>SCRUM-68</td>
+<td>Submit the Milestone 2 deliverables on the portal</td>
+<td>Saloni</td>
+<td>7 Nov</td>
+</tr>
+</tbody></table>
+</div>
+
+<h4>Milestone 3: Sprint 1, matching (8 – 22 Nov)</h4>
+<div class="sch-owners">
+
+<table>
+<thead>
+<tr>
+<th>Story</th>
+<th>Jira</th>
+<th>Title</th>
+<th>Backend</th>
+<th>Frontend</th>
+<th>Tests</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id">US-01</span></td>
+<td>SCRUM-15</td>
+<td>Sign up with my institute email, checked against IIC&#39;s roster</td>
+<td>Abhijeet</td>
+<td>Shreya</td>
+<td>Priyanshu</td>
+</tr>
+<tr>
+<td><span class="id">US-02</span></td>
+<td>SCRUM-16</td>
+<td>Complete my basic profile</td>
+<td>Priyanshu</td>
+<td>Shreya</td>
+<td>Shreya</td>
+</tr>
+<tr>
+<td><span class="id">US-03</span></td>
+<td>SCRUM-17</td>
+<td>Submit the problem I need help with</td>
+<td>Priyanshu</td>
+<td>Shreya</td>
+<td>Shreya</td>
+</tr>
+<tr>
+<td><span class="id">US-04</span></td>
+<td>SCRUM-24</td>
+<td>See 3–4 recommended mentors for each problem</td>
+<td>Abhijeet</td>
+<td>Khushi</td>
+<td>Priyanshu</td>
+</tr>
+<tr>
+<td><span class="id">US-05</span></td>
+<td>SCRUM-18</td>
+<td>Track my request and reach out to my assigned mentor</td>
+<td>Priyanshu</td>
+<td>Shreya</td>
+<td>Shreya</td>
+</tr>
+<tr>
+<td><span class="id">US-09</span></td>
+<td>SCRUM-19</td>
+<td>Accept or decline students assigned to me, with context</td>
+<td>Priyanshu</td>
+<td>Khushi</td>
+<td>Shreya</td>
+</tr>
+<tr>
+<td><span class="id">US-10</span></td>
+<td>SCRUM-20</td>
+<td>Set my availability, contact preference and capacity</td>
+<td>Priyanshu</td>
+<td>Khushi</td>
+<td>Shreya</td>
+</tr>
+<tr>
+<td><span class="id">US-14</span></td>
+<td>SCRUM-21</td>
+<td>Add and verify mentors before they can be assigned</td>
+<td>Abhijeet</td>
+<td>Khushi</td>
+<td>Priyanshu</td>
+</tr>
+<tr>
+<td><span class="id">US-15</span></td>
+<td>SCRUM-22</td>
+<td>Keep the list of IIC-registered students up to date</td>
+<td>Abhijeet</td>
+<td>Khushi</td>
+<td>Priyanshu</td>
+</tr>
+<tr>
+<td><span class="id">US-16</span></td>
+<td>SCRUM-23</td>
+<td>Assign a mentor to each student&#39;s problem</td>
+<td>Abhijeet</td>
+<td>Khushi</td>
+<td>Priyanshu</td>
+</tr>
+</tbody></table>
+</div>
+
+<p>Other Sprint 1 tasks: backend skeleton (SCRUM-69), authentication and roles (SCRUM-71), audit log and notifications (SCRUM-72), OpenAPI skeleton (SCRUM-73) and the complete Swagger YAML (SCRUM-76), all Abhijeet; data models, migrations and seed data (SCRUM-70), pytest set-up and CI (SCRUM-74) and the pytest output report (SCRUM-78), all Priyanshu; frontend API client (SCRUM-75), Khushi; API test-case document (SCRUM-77), Saloni with Priyanshu and Shreya; user feedback session and Sprint 2 plan (SCRUM-79) and the Milestone 3 submission (SCRUM-80), Saloni.</p>
+<h4>Milestone 4: Sprint 2, tracking (23 Nov – 6 Dec)</h4>
+<div class="sch-owners">
+
+<table>
+<thead>
+<tr>
+<th>Story</th>
+<th>Jira</th>
+<th>Title</th>
+<th>Backend</th>
+<th>Frontend</th>
+<th>Tests</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id">US-06</span></td>
+<td>SCRUM-25</td>
+<td>Keep track of our goal and next steps</td>
+<td>Priyanshu</td>
+<td>Shreya</td>
+<td>Shreya</td>
+</tr>
+<tr>
+<td><span class="id">US-07</span></td>
+<td>SCRUM-26</td>
+<td>Ask to change or end my mentorship</td>
+<td>Abhijeet</td>
+<td>Shreya</td>
+<td>Priyanshu</td>
+</tr>
+<tr>
+<td><span class="id">US-08</span></td>
+<td>SCRUM-27</td>
+<td>Give feedback on my mentorship</td>
+<td>Priyanshu</td>
+<td>Shreya</td>
+<td>Shreya</td>
+</tr>
+<tr>
+<td><span class="id">US-11</span></td>
+<td>SCRUM-28</td>
+<td>Schedule and log sessions without recording what was said</td>
+<td>Priyanshu</td>
+<td>Shreya</td>
+<td>Shreya</td>
+</tr>
+<tr>
+<td><span class="id">US-12</span></td>
+<td>SCRUM-29</td>
+<td>Send progress feedback on my mentee</td>
+<td>Priyanshu</td>
+<td>Shreya</td>
+<td>Shreya</td>
+</tr>
+<tr>
+<td><span class="id">US-13</span></td>
+<td>SCRUM-30</td>
+<td>End a mentorship from my side</td>
+<td>Priyanshu</td>
+<td>Khushi</td>
+<td>Shreya</td>
+</tr>
+<tr>
+<td><span class="id">US-17</span></td>
+<td>SCRUM-31</td>
+<td>Monitor active mentorships</td>
+<td>Abhijeet</td>
+<td>Khushi</td>
+<td>Priyanshu</td>
+</tr>
+<tr>
+<td><span class="id">US-18</span></td>
+<td>SCRUM-32</td>
+<td>Resolve change, termination and misconduct cases fairly</td>
+<td>Abhijeet</td>
+<td>Khushi</td>
+<td>Priyanshu</td>
+</tr>
+<tr>
+<td><span class="id">US-19</span></td>
+<td>SCRUM-33</td>
+<td>See demand, supply and outcomes across the programme</td>
+<td>Abhijeet</td>
+<td>Khushi</td>
+<td>Priyanshu</td>
+</tr>
+<tr>
+<td><span class="id">US-20</span></td>
+<td>SCRUM-34</td>
+<td>Say how I like to be guided</td>
+<td>Priyanshu</td>
+<td>Shreya</td>
+<td>Shreya</td>
+</tr>
+<tr>
+<td><span class="id">US-21</span></td>
+<td>SCRUM-159</td>
+<td>Stop assignments and mentorships from stalling</td>
+<td>Abhijeet</td>
+<td>Khushi</td>
+<td>Priyanshu</td>
+</tr>
+</tbody></table>
+</div>
+
+<p>Other Sprint 2 tasks: scheduled job runner for reminders and escalations (SCRUM-170) and the complete Swagger YAML (SCRUM-81), Abhijeet; pytest output report (SCRUM-83), Priyanshu; API test-case document (SCRUM-82), Saloni with Priyanshu and Shreya; user feedback session and final-sprint plan (SCRUM-84) and the Milestone 4 submission (SCRUM-85), Saloni.</p>
+<h4>Milestone 5: Final submission (7 – 20 Dec)</h4>
+<div class="sch-tasks">
+
+<table>
+<thead>
+<tr>
+<th>Jira</th>
+<th>Task</th>
+<th>Owner</th>
+<th>Due</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SCRUM-171</td>
+<td>Decide hosting and the email provider for the demo</td>
+<td>Abhijeet</td>
+<td>6 Dec</td>
+</tr>
+<tr>
+<td>SCRUM-86</td>
+<td>End-to-end testing and bug fixing across all roles</td>
+<td>Shreya, Priyanshu (fixes by each story&#39;s owners)</td>
+<td>12 Dec</td>
+</tr>
+<tr>
+<td>SCRUM-87</td>
+<td>Deploy the working prototype</td>
+<td>Abhijeet</td>
+<td>14 Dec</td>
+</tr>
+<tr>
+<td>SCRUM-88</td>
+<td>README with full set-up and run instructions</td>
+<td>Khushi</td>
+<td>15 Dec</td>
+</tr>
+<tr>
+<td>SCRUM-89</td>
+<td>Final PDF report covering all milestones</td>
+<td>Saloni</td>
+<td>17 Dec</td>
+</tr>
+<tr>
+<td>SCRUM-90</td>
+<td>Presentation slides</td>
+<td>Khushi</td>
+<td>17 Dec</td>
+</tr>
+<tr>
+<td>SCRUM-91</td>
+<td>Record the demo video</td>
+<td>Shreya</td>
+<td>18 Dec</td>
+</tr>
+<tr>
+<td>SCRUM-92</td>
+<td>Code ZIP and team-050-milestone-3-5.zip (validity check)</td>
+<td>Abhijeet</td>
+<td>19 Dec</td>
+</tr>
+<tr>
+<td>SCRUM-93</td>
+<td>Submit the Milestone 5 deliverables on the portal</td>
+<td>Saloni</td>
+<td>20 Dec</td>
+</tr>
+</tbody></table>
+</div>
+
+<div class="page-break"></div>
+
+<h2>Section 5: Scrum Meetings Schedule and Minutes</h2>
+<h3>5.1 Meeting schedule</h3>
+<table>
+<thead>
+<tr>
+<th>Meeting</th>
+<th>When</th>
+<th>Length</th>
+<th>Who</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Scrum meeting</td>
+<td><code>TO FILL: fixed weekdays and time (IST)</code>, on Google Meet</td>
+<td>15–20 min</td>
+<td>All five members</td>
+<td>Each member says what they finished, what they are doing next and what is blocking them. The board is updated during the call</td>
+</tr>
+<tr>
+<td>Sprint planning</td>
+<td>First day of each sprint: 8 Nov (Sprint 1), 23 Nov (Sprint 2), 7 Dec (final)</td>
+<td>45 min</td>
+<td>All five members</td>
+<td>Agree the sprint goal, split stories into tasks, and confirm owners and due dates in Jira</td>
+</tr>
+<tr>
+<td>Sprint review and retrospective</td>
+<td>Two days before each deadline: 6 Nov, 20 Nov, 4 Dec, 18 Dec</td>
+<td>30–45 min</td>
+<td>All five members</td>
+<td>Check each deliverable against the project statement, then agree what to keep and what to change in the next sprint</td>
+</tr>
+<tr>
+<td>TA and client meetings</td>
+<td>As arranged with the TA or IIC</td>
+<td>30–60 min</td>
+<td>All five members</td>
+<td>Progress review with the TA; requirement questions for the client</td>
+</tr>
+</tbody></table>
+<p>A scrum master (Saloni Puri or Khushi Dhankhar) runs each meeting and writes the minutes. Each set of minutes records the date, the attendees, each member&#39;s done, doing and blockers, the decisions taken, and action items with an owner, a due date and a Jira issue.</p>
+<h3>5.2 Meetings held</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Date</th>
+<th>Meeting</th>
+<th>Attendees</th>
+<th>Minutes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>11 Oct 2026</td>
+<td>Kick-off and client meeting 1: problem statement discussion with IIC</td>
+<td><code>TO FILL</code></td>
+<td>Summarised in the Milestone 1 report, Section 2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>15 Oct 2026</td>
+<td>Client meeting 2: requirements session with IIC (A01)</td>
+<td>All five members</td>
+<td>Notes in the Milestone 1 report, Section 4 and Appendix B</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>TO FILL</code></td>
+<td>Review meeting with the TA</td>
+<td>All five members and the TA</td>
+<td>Section 5.3</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>TO FILL</code></td>
+<td>Milestone 2 sprint planning</td>
+<td><code>TO FILL</code></td>
+<td>Section 5.4</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>TO FILL</code></td>
+<td>Tech stack and design</td>
+<td><code>TO FILL</code></td>
+<td>Section 5.5</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>TO FILL</code></td>
+<td>Milestone 2 sprint review</td>
+<td><code>TO FILL</code></td>
+<td>Section 5.6</td>
+</tr>
+</tbody></table>
+<h3>5.3 Minutes: review meeting with the TA</h3>
+<p><strong>Date:</strong> <code>TO FILL</code> · <strong>Mode:</strong> <code>TO FILL</code> · <strong>Attendees:</strong> Abhijeet Kumar, Priyanshu Yadav, Saloni Puri, Shreya Pal, Khushi Dhankhar, and the team&#39;s TA (<code>TO FILL: name</code>)</p>
+<p><strong>Objective.</strong> Discuss the problem statement, user stories, assumptions and documentation, and the steps needed to finish Milestone 1 before the deadline.</p>
+<p><strong>Discussion.</strong></p>
+<ul>
+<li><strong>Introductions and roles.</strong> Each member introduced themselves and explained their role in the team.</li>
+<li><strong>Problem statement.</strong> The team presented the problem statement, so that the team and the TA shared one understanding of the objectives and the proposed solution.</li>
+<li><strong>User stories.</strong> Shreya explained the student user stories and Priyanshu the mentor user stories. Abhijeet and Saloni, who prepared the documentation, answered questions about it.</li>
+<li><strong>Assumptions.</strong> Khushi explained two assumptions the team had made about the requirements.</li>
+<li><strong>Client clarifications.</strong> The TA asked the team to list the questions that need the client&#39;s answer and to send them to the TA, who would obtain the answers from the client.</li>
+<li><strong>Pending interviews.</strong> A few user interviews were still pending and needed to be completed quickly, so that their findings could go into the report.</li>
+<li><strong>Report review.</strong> The team would share the user research report with the TA before the deadline, so that the TA&#39;s feedback could be applied in time.</li>
+<li><strong>AI integration.</strong> The TA asked whether the platform would include AI features. The team said this was still being discussed and that no AI feature had been decided.</li>
+</ul>
+<p><strong>Decisions.</strong> Client questions go through the TA. The report is shared with the TA before submission. No AI feature is committed for now.</p>
+<table>
+<thead>
+<tr>
+<th>Action item</th>
+<th>Owner</th>
+<th>Follow-up</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Complete the remaining user interviews</td>
+<td>Interviewers of S03, S04, S05</td>
+<td>Done: S03 on 21 Oct, S04 and S05 on 22 Oct (Milestone 1 report, Appendix B)</td>
+</tr>
+<tr>
+<td>Compile the questions for the client and send them to the TA</td>
+<td><code>TO FILL</code></td>
+<td>Done: eight questions compiled; the client&#39;s answers are in Milestone 1 report Section 4 (SCRUM-37)</td>
+</tr>
+<tr>
+<td>Share the user research report with the TA and apply the feedback</td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL: date shared and changes made</code></td>
+</tr>
+<tr>
+<td>Review the assumptions and user stories and update the documentation</td>
+<td><code>TO FILL</code></td>
+<td>Done: affected stories updated with the client&#39;s answers (SCRUM-37)</td>
+</tr>
+<tr>
+<td>Decide whether to include an AI feature</td>
+<td>Whole team</td>
+<td>Open: the agreed design matches mentors deterministically (<span class="id">US-04</span>), and no AI feature is scheduled</td>
+</tr>
+</tbody></table>
+<h3>5.4 Minutes: Milestone 2 sprint planning</h3>
+<p><strong>Date:</strong> <code>TO FILL</code> · <strong>Mode:</strong> <code>TO FILL</code> · <strong>Attendees:</strong> <code>TO FILL</code></p>
+<p><strong>Agenda.</strong> Milestone 2 deliverables, sprint goal, tasks, owners and due dates.</p>
+<p><strong>Decisions.</strong></p>
+<ul>
+<li><strong>Sprint goal</strong> (as set in Jira): plan the schedule in Jira; design components, classes and database; build most UI pages (frontend only); submit the M2 report and the Milestone 1–2 ZIP by 7 Nov.</li>
+<li>Twenty tasks with owners and due dates (Section 4.4).</li>
+<li>Milestone 2 is submitted on 7 Nov, one day before the deadline. Sprint 1 therefore runs from 8 to 22 Nov, and its foundation tasks (SCRUM-69 to SCRUM-75) are due 9–14 Nov.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Done</th>
+<th>Doing</th>
+<th>Blockers</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Abhijeet Kumar</td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Priyanshu Yadav</td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Saloni Puri</td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Shreya Pal</td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Khushi Dhankhar</td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+</tr>
+</tbody></table>
+<h3>5.5 Minutes: tech stack and design</h3>
+<p><strong>Date:</strong> <code>TO FILL</code> · <strong>Mode:</strong> <code>TO FILL</code> · <strong>Attendees:</strong> <code>TO FILL</code></p>
+<p><strong>Decisions</strong> (recorded on 30 Oct in the tech-stack document, SCRUM-49).</p>
+<ul>
+<li><strong>Stack.</strong> The team agreed on a React frontend built with Vite, and a Flask REST API with SQLAlchemy (SQLite for development and tests, PostgreSQL for the hosted demo). Tests use pytest, and the Swagger YAML is generated from the code.</li>
+<li><strong>Next.js and Supabase not adopted.</strong> The team considered a suggested Next.js and Supabase stack and did not adopt it, because Milestones 3 and 4 grade hand-written API code, a Swagger YAML and pytest tests.</li>
+<li><strong>Hosting deferred.</strong> Hosting and the email provider will be decided by 6 Dec (SCRUM-171).</li>
+<li><strong>Component design.</strong> It is ready for review (SCRUM-50), and its status model feeds the class and ER diagrams (SCRUM-51, SCRUM-52).</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Done</th>
+<th>Doing</th>
+<th>Blockers</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Abhijeet Kumar</td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Priyanshu Yadav</td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Saloni Puri</td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Shreya Pal</td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Khushi Dhankhar</td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+<td><code>TO FILL</code></td>
+</tr>
+</tbody></table>
+<h3>5.6 Minutes: Milestone 2 sprint review</h3>
+<p><strong>Date:</strong> <code>TO FILL</code> · <strong>Mode:</strong> <code>TO FILL</code> · <strong>Attendees:</strong> <code>TO FILL</code></p>
+<table>
+<thead>
+<tr>
+<th>Deliverable (project statement)</th>
+<th>Report section</th>
+<th>Owner</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Design of components</td>
+<td>1</td>
+<td>Abhijeet</td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Class diagram</td>
+<td>2</td>
+<td>Priyanshu</td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Database design diagram</td>
+<td>3</td>
+<td>Priyanshu</td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Sprint schedule</td>
+<td>4</td>
+<td>Saloni</td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Scrum meetings schedule and minutes</td>
+<td>5</td>
+<td>Saloni</td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Screenshots of the Gantt chart and Kanban board</td>
+<td>6</td>
+<td>Saloni</td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Screenshots of the frontend pages</td>
+<td>7</td>
+<td>Shreya, Khushi</td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>Frontend code ZIP with README</td>
+<td>—</td>
+<td>Shreya</td>
+<td><code>TO FILL</code></td>
+</tr>
+<tr>
+<td>team-050-milestone-1-2.zip, validity check passed</td>
+<td>—</td>
+<td>Abhijeet</td>
+<td><code>TO FILL</code></td>
+</tr>
+</tbody></table>
+<p><strong>What went well.</strong> <code>TO FILL</code></p>
+<p><strong>What to change in Sprint 1.</strong> <code>TO FILL</code></p>
+<p><strong>Action items.</strong> <code>TO FILL</code></p>
+
+<style>
+.shot { margin: 8pt 0 2pt; break-inside: avoid; }
+.shot img { width: 100%; display: block; border: 1px solid #c9ccd3; }
+</style>
+
+<div class="page-break"></div>
+
+<h2>Section 6: Jira Timeline (Gantt Chart) and Kanban Board</h2>
+<p>Both screenshots come from the team&#39;s Jira project (SCRUM) and were captured on 1 November 2026.</p>
+<h3>6.1 Jira timeline</h3>
+<div class="shot"><img src="../images/jira-timeline.jpg" alt="Jira timeline showing the project epics against the five sprints"></div>
+<p class="sch-caption">Figure 6.1. Jira timeline: the ten epics against the five sprints (top row). The blue line marks the day of capture.</p>
+
+<p>The top row shows the five sprints, M1 to M5. Below it, each epic is drawn across the weeks it covers:</p>
+<ul>
+<li><strong>Milestone 1</strong> is done.</li>
+<li><strong>Milestone 2</strong> runs until 7 Nov.</li>
+<li><strong>Platform foundation</strong> and <strong>onboarding and profiles</strong> sit in Sprint 1.</li>
+<li><strong>Mentorship tracking and feedback</strong>, <strong>changes, termination and safety</strong> and <strong>programme insights</strong> sit in Sprint 2.</li>
+<li><strong>Mentor matching</strong> and the <strong>sprint submissions</strong> span both sprints.</li>
+<li><strong>Milestone 5</strong> fills December.</li>
+</ul>
+<p>Figure 4.1 in Section 4 breaks the same plan down to task level.</p>
+<h3>6.2 Kanban board</h3>
+<div class="shot"><img src="../images/jira-board.jpg" alt="Jira Scrum board with To Do, In Progress, In Review and Done columns"></div>
+<p class="sch-caption">Figure 6.2. Jira board for the active sprint, with the columns To Do, In Progress, In Review and Done.</p>
+
+<p>The columns follow the workflow in Section 4.1. Each card shows the task&#39;s label, due date, epic, Jira key, priority and owner. The team updates the board at every scrum meeting.</p>
+
+<div class="page-break"></div>
+
+<h2>Section 7: UI Pages</h2>
+<p><code>TO FILL: a screenshot and a one-line description of each page built in React (Shreya Pal: SCRUM-57, 58, 59, 61; Khushi Dhankhar: SCRUM-56, 60, 62, 63, 64). Save the screenshots in docs/milestone-2/images/ui/.</code></p>
+<p>The pages follow the Figma wireframes (25 screens):</p>
+<table>
+<thead>
+<tr>
+<th>Screens</th>
+<th>Pages</th>
+<th>User stories</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A1–A4</td>
+<td>Log in, student sign-up, verify email, mentor activation</td>
+<td><span class="id">US-01</span>, <span class="id">US-14</span></td>
+</tr>
+<tr>
+<td>S1–S7</td>
+<td>Profile, submit problem, dashboard, mentorship workspace, feedback, change or end request</td>
+<td><span class="id">US-02</span>, <span class="id">US-03</span>, <span class="id">US-05</span>–<span class="id">US-08</span>, <span class="id">US-11</span>, <span class="id">US-20</span>, <span class="id">US-21</span></td>
+</tr>
+<tr>
+<td>M1–M6</td>
+<td>Mentor dashboard, decline, availability and contact, mentorship workspace, log session, end mentorship</td>
+<td><span class="id">US-06</span>, <span class="id">US-09</span>–<span class="id">US-13</span></td>
+</tr>
+<tr>
+<td>I1–I7</td>
+<td>Problem queue, review and assign, mentor pool, registered students, monitoring, case page, settings and topic tags</td>
+<td><span class="id">US-04</span>, <span class="id">US-07</span>, <span class="id">US-14</span>–<span class="id">US-18</span>, <span class="id">US-20</span>, <span class="id">US-21</span></td>
+</tr>
+<tr>
+<td>L1</td>
+<td>Programme insights</td>
+<td><span class="id">US-19</span></td>
+</tr>
+</tbody></table>
 </body></html>
