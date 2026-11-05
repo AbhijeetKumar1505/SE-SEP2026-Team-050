@@ -1,0 +1,29 @@
+/* Bootstrap overrides: brand colour and font live here, nowhere else. */
+:root {
+  --bs-primary: #245a9a;
+  --bs-primary-rgb: 36, 90, 154;
+  --bs-link-color-rgb: 36, 90, 154;
+  --bs-link-hover-color-rgb: 29, 74, 128;
+  --bs-body-font-family: Inter, Arial, sans-serif;
+  --bs-body-bg: #f4f5f7;
+}
+.btn-primary {
+  --bs-btn-bg: #245a9a;
+  --bs-btn-border-color: #245a9a;
+  --bs-btn-hover-bg: #1d4a80;
+  --bs-btn-hover-border-color: #1d4a80;
+  --bs-btn-active-bg: #1d4a80;
+  --bs-btn-active-border-color: #1d4a80;
+  --bs-btn-disabled-bg: #245a9a;
+  --bs-btn-disabled-border-color: #245a9a;
+}
+.btn-outline-primary {
+  --bs-btn-color: #245a9a;
+  --bs-btn-border-color: #245a9a;
+  --bs-btn-hover-bg: #245a9a;
+  --bs-btn-hover-border-color: #245a9a;
+  --bs-btn-active-bg: #245a9a;
+  --bs-btn-active-border-color: #245a9a;
+}
+.nav-underline { --bs-nav-underline-link-active-color: #245a9a; }
+.form-check-input:checked { background-color: #245a9a; border-color: #245a9a; }
