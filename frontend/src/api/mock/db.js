@@ -104,9 +104,8 @@ export const db = {
       'Industry and role requirements',
     ]),
     problem('p4', 'Rohit Verma', '23f1004420', 2, 'Submitted', ['Job search strategy', 'Resume and portfolio']),
-    problem('p5', 'Fatima Khan', '22f1000932', 2, 'Under review', ['Technical interview preparation', 'Finding internships']),
-    problem('p6', 'Vikram Das', '23f3002201', 1, 'Submitted', ['Machine learning', 'Choosing a master’s programme']),
-    problem('p7', 'Neha Joshi', '21f1005567', 1, 'Awaiting mentor', ['Choosing a career path', 'Job search strategy'], {
+    problem('p5', 'Vikram Das', '23f3002201', 1, 'Submitted', ['Machine learning', 'Choosing a master’s programme']),
+    problem('p6', 'Neha Joshi', '21f1005567', 1, 'Awaiting mentor', ['Choosing a career path', 'Job search strategy'], {
       mentor: 'Rahul Menon',
       assignedBy: ACTOR,
       assignedAt: ago(30),
