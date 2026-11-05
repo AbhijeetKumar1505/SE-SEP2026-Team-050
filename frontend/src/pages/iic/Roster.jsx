@@ -27,15 +27,21 @@ export default function Roster() {
     { header: 'Institute email', cell: (s) => s.email },
     { header: 'Account', cell: (s) => <StatusBadge status={account(s)} /> },
     { header: 'Profile', cell: (s) => (s.signedUp ? (s.profileComplete ? 'Complete' : 'Incomplete') : '—') },
-    { header: '', cell: (s) => <Button size="sm" variant="outline-danger" onClick={() => setRemoving(s.id)}>Remove</Button> },
+    {
+      header: '',
+      cell: (s) => (
+        <Button size="sm" variant="outline-danger" onClick={() => setRemoving(s.id)}>
+          Remove
+        </Button>
+      ),
+    },
   ]
 
   return (
     <>
       <div className="d-flex justify-content-between align-items-start">
         <div>
-          <h1 className="h3">Registered students</h1>
-          <p className="text-muted">Only students on this roster can sign up.</p>
+          <h1 className="h3 mb-4">Registered students</h1>
         </div>
         <Button onClick={() => setImporting(true)}>Import CSV</Button>
       </div>
@@ -62,7 +68,7 @@ export default function Roster() {
         onClose={() => setRemoving(null)}
         onConfirm={(reason) => removeStudent(removing, reason).then(reload)}
       >
-        They won’t be able to sign up or submit new problems (“You are not registered with IIC”). The removal is recorded in the audit log.
+        They won’t be able to sign up or submit new problems.
       </ReasonModal>
     </>
   )

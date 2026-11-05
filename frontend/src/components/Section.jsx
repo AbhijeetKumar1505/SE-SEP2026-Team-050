@@ -6,7 +6,9 @@ export default function Section({ title, action, children }) {
     <Card className="mb-3">
       <Card.Body>
         <div className="d-flex justify-content-between align-items-center mb-2">
-          <Card.Title as="h2" className="h6 mb-0">{title}</Card.Title>
+          <Card.Title as="h2" className="h6 mb-0">
+            {title}
+          </Card.Title>
           {action}
         </div>
         {children}

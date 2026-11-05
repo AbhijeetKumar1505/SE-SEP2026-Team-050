@@ -6,12 +6,19 @@ import Field from '../../../components/Field'
 import Loading from '../../../components/Loading'
 import Section from '../../../components/Section'
 import useFetch from '../../../hooks/useFetch'
+import { required } from '../../../utils/rules'
 
 // Tags are retired, never deleted, so past problems and insights keep their topics.
 export default function TagManager() {
   const [tags, reload] = useFetch(getTags)
   const [query, setQuery] = useState('')
-  const { register, handleSubmit, reset, setError, formState: { errors } } = useForm()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors },
+  } = useForm()
   if (!tags) return <Loading />
 
   const groups = [...new Set(tags.map((t) => t.group))]
@@ -27,8 +34,21 @@ export default function TagManager() {
 
   return (
     <>
-      <Section title="Topic tags" action={<small className="text-muted">{tags.length} tags in {groups.length} groups</small>}>
-        <Form.Control type="search" placeholder="Search tags" aria-label="Search tags" value={query} onChange={(e) => setQuery(e.target.value)} />
+      <Section
+        title="Topic tags"
+        action={
+          <small className="text-muted">
+            {tags.length} tags in {groups.length} groups
+          </small>
+        }
+      >
+        <Form.Control
+          type="search"
+          placeholder="Search tags"
+          aria-label="Search tags"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
         {groups.map((group) => {
           const list = shown.filter((t) => t.group === group)
           return (
@@ -56,10 +76,16 @@ export default function TagManager() {
       <Section title="Add a tag">
         <Form onSubmit={handleSubmit(add)} noValidate>
           <Row>
-            <Col md={7}><Field label="Tag name" error={errors.name} {...register('name', { required: 'Enter a tag name.' })} /></Col>
-            <Col md={5}><Field label="Group" options={groups} {...register('group')} /></Col>
+            <Col md={7}>
+              <Field label="Tag name" error={errors.name} {...register('name', required('Enter a tag name.', 60))} />
+            </Col>
+            <Col md={5}>
+              <Field label="Group" options={groups} {...register('group')} />
+            </Col>
           </Row>
-          <Button type="submit" variant="outline-primary">Add tag</Button>
+          <Button type="submit" variant="outline-primary">
+            Add tag
+          </Button>
         </Form>
       </Section>
     </>

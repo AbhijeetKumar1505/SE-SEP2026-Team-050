@@ -8,7 +8,13 @@ import ImportResult from './ImportResult'
 // onImport(rows, fileName) must return the import result (see ImportResult).
 export default function CsvImportModal({ show, title, columns, hint, onImport, onClose }) {
   const [result, setResult] = useState(null)
-  const { register, handleSubmit, reset, setError, formState: { errors, isSubmitting } } = useForm()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm()
   const submit = async ({ file }) => {
     const rows = parseCsv(await file[0].text())
     const missing = columns.filter((c) => !(c in (rows[0] ?? {})))
@@ -29,8 +35,22 @@ export default function CsvImportModal({ show, title, columns, hint, onImport, o
       }}
       onSubmit={handleSubmit(submit)}
     >
-      <p className="small text-muted">Columns: {columns.join(', ')}. {hint}</p>
-      <Field label="CSV file" type="file" accept=".csv" error={errors.file} {...register('file', { validate: (f) => f.length > 0 || 'Choose a .csv file.' })} />
+      <p className="small text-muted">
+        Columns: {columns.join(', ')}. {hint}
+      </p>
+      <Field
+        label="CSV file"
+        type="file"
+        accept=".csv"
+        error={errors.file}
+        {...register('file', {
+          validate: {
+            chosen: (f) => f.length > 0 || 'Choose a .csv file.',
+            csv: (f) => !f[0] || f[0].name.toLowerCase().endsWith('.csv') || 'The file must be a .csv.',
+            size: (f) => !f[0] || f[0].size <= 2e6 || 'The file must be under 2 MB.',
+          },
+        })}
+      />
       <ImportResult result={result} />
     </FormModal>
   )

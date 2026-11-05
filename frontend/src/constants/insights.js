@@ -11,7 +11,7 @@ export const SERIES = {
 }
 
 export const OUTCOMES = [
-  { key: 'goalMet', label: 'Goal met', variant: 'success' },
-  { key: 'someProgress', label: 'Some progress', variant: 'primary' },
-  { key: 'noProgress', label: 'No progress', variant: 'secondary' },
+  { key: 'goalMet', label: 'Goal met', tone: 'success' },
+  { key: 'someProgress', label: 'Some progress', tone: 'primary' },
+  { key: 'noProgress', label: 'No progress', tone: 'secondary' },
 ]

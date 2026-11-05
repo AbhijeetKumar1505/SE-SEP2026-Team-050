@@ -5,7 +5,11 @@ import { useCallback, useEffect, useState } from 'react'
 export default function useFetch(fn, arg) {
   const [state, setState] = useState({ data: null, error: null })
   const load = useCallback(
-    () => fn(arg).then((data) => setState({ data, error: null }), (error) => setState({ data: null, error })),
+    () =>
+      fn(arg).then(
+        (data) => setState({ data, error: null }),
+        (error) => setState({ data: null, error }),
+      ),
     [fn, arg],
   )
   useEffect(() => {

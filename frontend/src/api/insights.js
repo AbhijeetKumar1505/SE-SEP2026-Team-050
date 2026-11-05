@@ -5,7 +5,11 @@ import { day, delay } from './mock/mockUtils'
 export function getInsights(range) {
   const k = SCALE[range]
   const topics = BASE_TOPICS.map(([topic, problems, mentors, unassigned]) => ({
-    id: topic, topic, problems: Math.round(problems * k), mentors, unassigned,
+    id: topic,
+    topic,
+    problems: Math.round(problems * k),
+    mentors,
+    unassigned,
   }))
   const ended = Math.round(40 * k)
   const goalMet = Math.round(21 * k)

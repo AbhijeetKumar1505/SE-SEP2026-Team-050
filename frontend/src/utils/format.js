@@ -1,10 +1,8 @@
 const toDate = (d) => new Date(d.length === 10 ? `${d}T00:00` : d)
 
-export const fmtDate = (d) =>
-  toDate(d).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })
+export const fmtDate = (d) => toDate(d).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })
 
-export const fmtTime = (t) =>
-  new Date(`1970-01-01T${t}`).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })
+export const fmtTime = (t) => new Date(`1970-01-01T${t}`).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })
 
 export const hoursLeft = (deadline) => Math.max(0, Math.ceil((new Date(deadline) - Date.now()) / 36e5))
 export const today = () => new Date().toLocaleDateString('en-CA') // YYYY-MM-DD, local time

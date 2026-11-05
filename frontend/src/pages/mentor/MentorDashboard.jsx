@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Button, Card, Col, Row, Table } from 'react-bootstrap'
+import { Alert, Button, Card, Col, Row, Table } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import { acceptAssignment, declineAssignment, getDashboard } from '../../api/mentor'
+import { acceptAssignment, answerCapacityRequest, declineAssignment, getDashboard } from '../../api/mentor'
 import Loading from '../../components/Loading'
 import ReasonModal from '../../components/ReasonModal'
 import Section from '../../components/Section'
-import { useAuth } from '../../context/AuthContext'
+import { DECLINE_REASONS } from '../../constants/mentor'
+import { useAuth } from '../../context/useAuth'
 import useFetch from '../../hooks/useFetch'
 import { firstName, fmtDate, fmtTime } from '../../utils/format'
 import AssignmentCard from './AssignmentCard'
@@ -16,17 +17,17 @@ export default function MentorDashboard() {
   const [declining, setDeclining] = useState(null) // assignment id
   if (!data) return <Loading />
 
-  const { capacity, load, assignments, mentorships, sessionsThisMonth, confirmed, nextCheckpoint } = data
+  const { capacity, load, assignments, mentorships, sessionsThisMonth, confirmed, nextCheckpoint, capacityRequest } = data
   const stats = [
-    ['Active mentees', `${load} of ${capacity}`, load >= capacity ? 'Capacity reached – IIC can’t assign more' : `${capacity - load} open`],
-    ['Sessions this month', sessionsThisMonth, `${confirmed} confirmed by mentees`],
-    ['Next feedback checkpoint', nextCheckpoint ? fmtDate(nextCheckpoint.date) : '—', nextCheckpoint && `For ${nextCheckpoint.student}`],
+    ['Active mentees', `${load} of ${capacity}`, load >= capacity ? 'At capacity' : `${capacity - load} open`],
+    ['Sessions this month', sessionsThisMonth, `${confirmed} confirmed`],
+    ['Next progress feedback', nextCheckpoint ? fmtDate(nextCheckpoint.date) : '—', nextCheckpoint && `For ${nextCheckpoint.student}`],
   ]
+  const answer = (accept) => answerCapacityRequest(capacityRequest.id, accept).then(reload)
 
   return (
     <>
-      <h1 className="h3">Welcome back, {firstName(user.name)}</h1>
-      <p className="text-muted">You only see students IIC has assigned to you.</p>
+      <h1 className="h3 mb-4">Welcome back, {firstName(user.name)}</h1>
 
       <Row className="g-3 mb-4">
         {stats.map(([label, value, note]) => (
@@ -39,6 +40,23 @@ export default function MentorDashboard() {
           </Col>
         ))}
       </Row>
+
+      {capacityRequest && (
+        <Alert variant="info" className="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <span>
+            <strong>{capacityRequest.by} asks: can you take one more student?</strong> Your capacity would go from {capacityRequest.from} to{' '}
+            {capacityRequest.to}.
+          </span>
+          <span className="d-flex gap-2">
+            <Button size="sm" onClick={() => answer(true)}>
+              Increase capacity
+            </Button>
+            <Button size="sm" variant="outline-secondary" onClick={() => answer(false)}>
+              Not now
+            </Button>
+          </span>
+        </Alert>
+      )}
 
       {assignments.length > 0 && (
         <Section title={`Waiting for your response (${assignments.length})`}>
@@ -57,7 +75,13 @@ export default function MentorDashboard() {
         {mentorships.length ? (
           <Table hover responsive className="align-middle mb-0">
             <thead>
-              <tr><th>Mentee</th><th>Started</th><th>Sessions held</th><th>Next session</th><th /></tr>
+              <tr>
+                <th>Mentee</th>
+                <th>Started</th>
+                <th>Sessions held</th>
+                <th>Next session</th>
+                <th />
+              </tr>
             </thead>
             <tbody>
               {mentorships.map((m) => (
@@ -67,14 +91,16 @@ export default function MentorDashboard() {
                   <td>{m.held}</td>
                   <td>{m.nextSession ? `${fmtDate(m.nextSession.date)}, ${fmtTime(m.nextSession.time)}` : '—'}</td>
                   <td className="text-end">
-                    <Button as={Link} to={`/mentor/mentorships/${m.id}`} size="sm" variant="outline-primary">Open workspace</Button>
+                    <Button as={Link} to={`/mentor/mentorships/${m.id}`} size="sm" variant="outline-primary">
+                      Open workspace
+                    </Button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </Table>
         ) : (
-          <p className="text-muted mb-0">No active mentorships yet. Accept an assignment to get started.</p>
+          <p className="text-muted mb-0">No active mentorships yet.</p>
         )}
       </Section>
 
@@ -82,10 +108,11 @@ export default function MentorDashboard() {
         show={declining !== null}
         title="Decline this assignment?"
         submitLabel="Decline assignment"
+        reasons={DECLINE_REASONS}
         onClose={() => setDeclining(null)}
-        onConfirm={(reason) => declineAssignment(declining, reason).then(reload)}
+        onConfirm={(reason, note) => declineAssignment(declining, reason, note).then(reload)}
       >
-        The problem goes back to IIC’s queue so they can assign another mentor. A reason is required.
+        The problem goes back to IIC’s queue so another mentor can be assigned.
       </ReasonModal>
     </>
   )

@@ -11,10 +11,15 @@ export default class ErrorBoundary extends Component {
 
   render() {
     if (!this.state.error) return this.props.children
+    if (this.props.fallback !== undefined) return this.props.fallback
     return (
       <Alert variant="danger" className="d-flex justify-content-between align-items-center">
-        <span><strong>Something went wrong.</strong> {this.state.error.message}</span>
-        <Button size="sm" variant="outline-danger" onClick={() => window.location.reload()}>Reload page</Button>
+        <span>
+          <strong>Something went wrong.</strong> {this.state.error.message}
+        </span>
+        <Button size="sm" variant="outline-danger" onClick={() => window.location.reload()}>
+          Reload page
+        </Button>
       </Alert>
     )
   }

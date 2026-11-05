@@ -15,8 +15,7 @@ export default function Settings() {
   const then = (request) => request.then(reload)
   return (
     <>
-      <h1 className="h3">Settings &amp; topic tags</h1>
-      <p className="text-muted">Only IIC can change these. Every change is logged and applies from the next daily check.</p>
+      <h1 className="h3 mb-4">Settings &amp; topic tags</h1>
       <Tabs defaultActiveKey="timing" className="mb-3">
         <Tab eventKey="timing" title="Timing & capacity">
           <TimingForm values={data.values} onSave={(v) => then(updateSettings(v))} />

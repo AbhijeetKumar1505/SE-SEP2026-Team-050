@@ -1,5 +1,6 @@
-import { STATUS_COLOR } from '../constants/iic'
+import { STATUS_TONE } from '../constants/status'
+import Pill from './Pill'
 
 export default function StatusBadge({ status }) {
-  return <span className={`badge text-bg-${STATUS_COLOR[status] ?? 'secondary'}`}>{status}</span>
+  return <Pill tone={STATUS_TONE[status]}>{status}</Pill>
 }

@@ -4,6 +4,7 @@ import { Bar, BarChart, CartesianGrid, Legend, LabelList, ResponsiveContainer, T
 import { getInsights } from '../../api/insights'
 import DataTable from '../../components/DataTable'
 import Loading from '../../components/Loading'
+import Pill from '../../components/Pill'
 import Section from '../../components/Section'
 import { OUTCOMES, RANGES, SERIES } from '../../constants/insights'
 import useFetch from '../../hooks/useFetch'
@@ -37,7 +38,10 @@ export default function Insights() {
     .filter((t) => t.ratio >= ratioThreshold)
     .sort((a, b) => b.ratio - a.ratio)
   const exportCsv = () =>
-    downloadCsv('programme-insights.csv', [topicColumns.map((c) => c.header), ...topics.map((t) => [t.topic, t.problems, t.mentors, t.unassigned])])
+    downloadCsv('programme-insights.csv', [
+      topicColumns.map((c) => c.header),
+      ...topics.map((t) => [t.topic, t.problems, t.mentors, t.unassigned]),
+    ])
 
   return (
     <>
@@ -48,10 +52,15 @@ export default function Insights() {
         </div>
         <div className="d-flex gap-2">
           <Form.Select aria-label="Date range" value={range} onChange={(e) => setRange(e.target.value)}>
-            {RANGES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+            {RANGES.map((r) => (
+              <option key={r.value} value={r.value}>
+                {r.label}
+              </option>
+            ))}
           </Form.Select>
           <Button variant="outline-primary" className="text-nowrap" onClick={exportCsv}>
-            <i className="bi bi-download me-1" />Export CSV
+            <i className="bi bi-download me-1" />
+            Export CSV
           </Button>
         </div>
       </div>
@@ -73,12 +82,14 @@ export default function Insights() {
         action={
           <ButtonGroup size="sm" aria-label="View">
             {['chart', 'table'].map((v) => (
-              <Button key={v} variant={view === v ? 'primary' : 'outline-secondary'} className="text-capitalize" onClick={() => setView(v)}>{v}</Button>
+              <Button key={v} variant={view === v ? 'primary' : 'outline-secondary'} className="text-capitalize" onClick={() => setView(v)}>
+                {v}
+              </Button>
             ))}
           </ButtonGroup>
         }
       >
-        <p className="small text-muted">Problems submitted vs mentors available. Hover a bar for exact counts, or switch to the table.</p>
+        <p className="small text-muted">Problems submitted vs mentors available</p>
         {view === 'chart' ? (
           <div role="img" aria-label="Bar chart of problems submitted and mentors available by topic">
             <ResponsiveContainer width="100%" height={topics.length * 64 + 70}>
@@ -104,17 +115,25 @@ export default function Insights() {
       <Row className="g-3">
         <Col lg={7}>
           <Section title="Outcomes of ended mentorships">
-            <p className="small text-muted">{outcomes.ended} mentorships ended in this period. Shown by final progress status.</p>
-            <ProgressBar className="mb-3" style={{ height: 28 }}>
-              {OUTCOMES.map(({ key, label, variant }) => (
-                <ProgressBar key={key} variant={variant} now={pct(outcomes[key])} label={`${label} ${outcomes[key]}`} />
+            <p className="small text-muted">{outcomes.ended} mentorships ended in this period, by final progress status</p>
+            <ProgressBar className="mb-3">
+              {OUTCOMES.map(({ key, label, tone }) => (
+                <ProgressBar
+                  key={key}
+                  className={`bg-${tone}-subtle text-${tone}-emphasis`}
+                  now={pct(outcomes[key])}
+                  label={`${outcomes[key]}`}
+                  aria-label={label}
+                />
               ))}
             </ProgressBar>
             <ListGroup variant="flush">
-              {OUTCOMES.map(({ key, label, variant }) => (
+              {OUTCOMES.map(({ key, label, tone }) => (
                 <ListGroup.Item key={key} className="px-0 d-flex justify-content-between">
-                  <span><span className={`badge text-bg-${variant} me-2`}>&nbsp;</span>{label}</span>
-                  <span>{outcomes[key]} · {pct(outcomes[key])}%</span>
+                  <Pill tone={tone}>{label}</Pill>
+                  <span>
+                    {outcomes[key]} · {pct(outcomes[key])}%
+                  </span>
                 </ListGroup.Item>
               ))}
             </ListGroup>
@@ -129,9 +148,11 @@ export default function Insights() {
                 <ListGroup.Item key={t.id} className="px-0 d-flex justify-content-between align-items-center">
                   <div>
                     <strong>{t.topic}</strong>
-                    <div className="small text-muted">{t.problems} problems · {t.mentors} {t.mentors === 1 ? 'mentor' : 'mentors'}</div>
+                    <div className="small text-muted">
+                      {t.problems} problems · {t.mentors} {t.mentors === 1 ? 'mentor' : 'mentors'}
+                    </div>
                   </div>
-                  <span className="badge text-bg-danger">{t.ratio.toFixed(1)}×</span>
+                  <Pill tone="danger">{t.ratio.toFixed(1)}×</Pill>
                 </ListGroup.Item>
               ))}
             </ListGroup>

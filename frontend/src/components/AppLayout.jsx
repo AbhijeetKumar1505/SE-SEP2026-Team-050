@@ -2,14 +2,17 @@ import { Container, Form, Nav } from 'react-bootstrap'
 import { Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { BRAND } from '../constants/brand'
 import { NAV_LINKS } from '../constants/nav'
-import { DEMO_USERS, useAuth } from '../context/AuthContext'
+import { DEMO_USERS, useAuth } from '../context/useAuth'
 import ErrorBoundary from './ErrorBoundary'
+import NotificationBell from './NotificationBell'
+import UserMenu from './UserMenu'
 
 // Shell for one role: sends other roles back to their own home, shows this role's links.
 export default function AppLayout({ role }) {
   const { user, setUser } = useAuth()
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  if (!user) return <Navigate to="/logged-out" replace />
   if (user.role !== role) return <Navigate to={`/${user.role}`} replace />
 
   // Prototype only: remove once login (A1) decides the role.
@@ -33,12 +36,14 @@ export default function AppLayout({ role }) {
             ))}
           </Nav>
           <Form.Select size="sm" className="w-auto text-uppercase" aria-label="Switch role (prototype)" value={role} onChange={switchRole}>
-            {Object.keys(DEMO_USERS).map((r) => <option key={r}>{r}</option>)}
+            {Object.keys(DEMO_USERS).map((r) => (
+              <option key={r}>{r}</option>
+            ))}
           </Form.Select>
-          <span className="small text-muted">
-            <i className="bi bi-person-circle me-1" />
-            {user.name}
-          </span>
+          <ErrorBoundary fallback={null}>
+            <NotificationBell role={role} />
+          </ErrorBoundary>
+          <UserMenu />
         </Container>
       </header>
       <Container as="main" className="py-4">

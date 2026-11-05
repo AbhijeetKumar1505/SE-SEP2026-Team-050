@@ -7,29 +7,50 @@ import { TIMING_FIELDS } from '../../../constants/iic'
 
 export default function TimingForm({ values, onSave }) {
   const [saved, setSaved] = useState(false)
-  const { register, handleSubmit, formState: { errors, isDirty, isSubmitting } } = useForm({ values })
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors, isDirty, isSubmitting },
+  } = useForm({ values })
   const save = async (v) => {
     await onSave(v)
     setSaved(true)
   }
   return (
     <Section title="Timing windows and mentor capacity">
-      <p className="small text-muted">Used by the daily check for reminders and escalations.</p>
       <Form onSubmit={handleSubmit(save)} noValidate>
         <Row>
-          {TIMING_FIELDS.map(({ name, label, unit }) => (
+          {TIMING_FIELDS.map(({ name, label, unit, max }) => (
             <Col md={6} key={name}>
               <Field
                 label={`${label} (${unit})`}
                 type="number"
                 error={errors[name]}
-                {...register(name, { valueAsNumber: true, required: 'Enter a number.', min: { value: 1, message: 'Must be at least 1.' } })}
+                {...register(name, {
+                  valueAsNumber: true,
+                  required: 'Enter a number.',
+                  min: { value: 1, message: 'Must be at least 1.' },
+                  max: { value: max, message: `Must be at most ${max}.` },
+                  validate: {
+                    whole: (v) => Number.isInteger(v) || 'Enter a whole number.',
+                    reminder: (v) =>
+                      name !== 'reminderHours' || v < getValues('acceptHours') || 'Must be shorter than the response window.',
+                  },
+                })}
               />
             </Col>
           ))}
         </Row>
-        <Button type="submit" disabled={!isDirty || isSubmitting}>Save changes</Button>
-        {saved && !isDirty && <span className="text-success ms-3"><i className="bi bi-check-circle me-1" />Saved</span>}
+        <Button type="submit" disabled={!isDirty || isSubmitting}>
+          Save changes
+        </Button>
+        {saved && !isDirty && (
+          <span className="text-success ms-3">
+            <i className="bi bi-check-circle me-1" />
+            Saved
+          </span>
+        )}
       </Form>
     </Section>
   )

@@ -25,5 +25,10 @@
   --bs-btn-active-bg: #245a9a;
   --bs-btn-active-border-color: #245a9a;
 }
-.nav-underline { --bs-nav-underline-link-active-color: #245a9a; }
-.form-check-input:checked { background-color: #245a9a; border-color: #245a9a; }
+.nav-underline {
+  --bs-nav-underline-link-active-color: #245a9a;
+}
+.form-check-input:checked {
+  background-color: #245a9a;
+  border-color: #245a9a;
+}

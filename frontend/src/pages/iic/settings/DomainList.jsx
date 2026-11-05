@@ -2,16 +2,22 @@ import { Button, Form, ListGroup } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import Field from '../../../components/Field'
 import Section from '../../../components/Section'
+import { required } from '../../../utils/rules'
 
 export default function DomainList({ domains, onAdd, onRemove }) {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm()
   const add = async ({ domain }) => {
     await onAdd(domain.trim().toLowerCase())
     reset()
   }
   return (
     <Section title="Approved email domains">
-      <p className="small text-muted">Students can only sign up with an email on one of these domains.</p>
+      <p className="small text-muted">Students can sign up only with an email on these domains.</p>
       <ListGroup className="mb-3">
         {domains.map((d) => (
           <ListGroup.Item key={d} className="d-flex justify-content-between align-items-center">
@@ -27,9 +33,14 @@ export default function DomainList({ domains, onAdd, onRemove }) {
           label="Add a domain"
           placeholder="e.g. ds.study.iitm.ac.in"
           error={errors.domain}
-          {...register('domain', { required: 'Enter a domain.', pattern: { value: /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i, message: 'Enter a valid domain, like ds.study.iitm.ac.in.' } })}
+          {...register('domain', {
+            ...required('Enter a domain.', 100),
+            pattern: { value: /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i, message: 'Enter a valid domain, like ds.study.iitm.ac.in.' },
+          })}
         />
-        <Button type="submit" variant="outline-primary">Add domain</Button>
+        <Button type="submit" variant="outline-primary">
+          Add domain
+        </Button>
       </Form>
     </Section>
   )

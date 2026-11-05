@@ -9,7 +9,11 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const ROLL = /^\d{2}f\d{7}$/i
 const OPEN = ['Reassignment needed', 'Submitted', 'Under review', 'Awaiting mentor']
 const byId = (list, id) => list.find((x) => x.id === id)
-const split = (s = '') => s.split(';').map((x) => x.trim()).filter(Boolean)
+const split = (s = '') =>
+  s
+    .split(';')
+    .map((x) => x.trim())
+    .filter(Boolean)
 const log = (list, text) => list.unshift({ at: new Date().toISOString(), text })
 
 // ---- I1 / I2: problem queue and assignment ----
@@ -17,13 +21,16 @@ export const getQueue = () =>
   delay({
     problems: db.problems
       .filter((p) => OPEN.includes(p.status))
-      .toSorted((a, b) => (b.status === 'Reassignment needed') - (a.status === 'Reassignment needed') || a.submittedAt.localeCompare(b.submittedAt)),
+      .toSorted(
+        (a, b) => (b.status === 'Reassignment needed') - (a.status === 'Reassignment needed') || a.submittedAt.localeCompare(b.submittedAt),
+      ),
   })
 
 export function getProblem(id) {
   const p = byId(db.problems, id)
   if (p?.status === 'Submitted') p.status = 'Under review' // opening a problem starts the review
-  return found(p, 'Problem')
+  const respondBy = p?.assignedAt && new Date(new Date(p.assignedAt).getTime() + db.settings.acceptHours * 36e5).toISOString()
+  return found(p && { ...p, respondBy }, 'Problem')
 }
 
 // Deterministic ranking: shared tags (more first), active mentees (fewer first), mentor id.
@@ -34,13 +41,23 @@ const rank = (id) => {
     .filter((m) => m.status === 'Active' && m.available && m.load < m.capacity)
     .sort((a, b) => b.shared - a.shared || a.load - b.load || a.id.localeCompare(b.id))
 }
-export const getRecommendations = (id) => delay(rank(id).filter((m) => m.shared > 0).slice(0, 4))
+export const getRecommendations = (id) =>
+  delay(
+    rank(id)
+      .filter((m) => m.shared > 0)
+      .slice(0, 4),
+  )
 export const getEligibleMentors = (id) => delay(rank(id))
 
 export function assignMentor(id, mentorId) {
   const m = byId(db.mentors, mentorId)
-  if (loadOf(m) >= m.capacity) return Promise.reject(new Error(`${m.name} is at capacity and can’t be assigned another student.`))
   const p = byId(db.problems, id)
+  // A student has one mentor at a time.
+  if (['Awaiting mentor', 'Mentor assigned'].includes(p.status)) return Promise.reject(new Error('This problem already has a mentor.'))
+  if (db.mentorships.some((x) => x.student.roll === p.student.roll && x.problemId !== id))
+    return Promise.reject(new Error(`${p.student.name} already has a mentor.`))
+  if (loadOf(m) >= m.capacity) return Promise.reject(new Error(`${m.name} is at capacity and can’t be assigned another student.`))
+  db.mentorships = db.mentorships.filter((x) => x.problemId !== id) // reassigning replaces the previous mentor
   Object.assign(p, { status: 'Awaiting mentor', mentor: m.name, assignedBy: ACTOR, assignedAt: new Date().toISOString() })
   delete p.reassignReason
   log(db.audit, `${ACTOR} assigned ${p.student.name}’s problem to ${m.name}`)
@@ -54,7 +71,19 @@ export function closeProblem(id, reason) {
 }
 
 // ---- I3: mentor pool ----
-export const getMentors = () => delay(db.mentors.map((m) => ({ ...m, load: loadOf(m) })))
+const pendingRequest = (mentorId) => db.capacityRequests.some((r) => r.mentorId === mentorId && r.status === 'Pending')
+
+export const getMentors = () => delay(db.mentors.map((m) => ({ ...m, load: loadOf(m), capacityRequested: pendingRequest(m.id) })))
+
+// Asks an available mentor to take one more student; they answer from their dashboard.
+export function requestCapacity(mentorId) {
+  const m = byId(db.mentors, mentorId)
+  if (m.status !== 'Active' || !m.available) return Promise.reject(new Error(`${m.name} isn’t available.`))
+  if (pendingRequest(mentorId)) return Promise.reject(new Error(`${m.name} already has a pending request.`))
+  db.capacityRequests.push({ id: uid(), mentorId, by: ACTOR, at: new Date().toISOString(), status: 'Pending' })
+  log(db.audit, `${ACTOR} asked ${m.name} to increase their capacity`)
+  return delay()
+}
 
 // "Sends" the 7-day activation email; the link is returned so the prototype can open it.
 const sendActivation = (m) => {
@@ -77,7 +106,17 @@ export function resendActivation(id) {
 
 export function addMentor({ name, email, headline }) {
   if (db.mentors.some((m) => m.email === email)) return Promise.reject(new Error('A mentor with this email already exists.'))
-  db.mentors.push({ id: uid(), name, email, headline, status: 'Pending verification', available: false, capacity: db.settings.defaultCapacity, expertise: [], experience: [] })
+  db.mentors.push({
+    id: uid(),
+    name,
+    email,
+    headline,
+    status: 'Pending verification',
+    available: false,
+    capacity: db.settings.defaultCapacity,
+    expertise: [],
+    experience: [],
+  })
   return delay()
 }
 
@@ -86,7 +125,8 @@ function importRows(rows, file, validate, save) {
   const result = { file, by: ACTOR, at: new Date().toISOString(), added: 0, updated: 0, errors: [] }
   rows.forEach((r, i) => {
     const reason = validate(r)
-    if (reason) result.errors.push({ row: i + 2, reason }) // row 1 is the header
+    if (reason)
+      result.errors.push({ row: i + 2, reason }) // row 1 is the header
     else result[save(r) ? 'updated' : 'added'] += 1 // save() returns true when it updated an existing record
   })
   log(db.audit, `${ACTOR} imported ${file}`)
@@ -108,7 +148,15 @@ export function importMentors(rows, file) {
       const data = { name: r.name, email: r.email, expertise: split(r['expertise tags']), experience: split(r.experience) }
       const existing = db.mentors.find((m) => m.email === r.email)
       if (existing) Object.assign(existing, data)
-      else db.mentors.push({ id: uid(), status: 'Pending verification', headline: '', available: false, capacity: db.settings.defaultCapacity, ...data })
+      else
+        db.mentors.push({
+          id: uid(),
+          status: 'Pending verification',
+          headline: '',
+          available: false,
+          capacity: db.settings.defaultCapacity,
+          ...data,
+        })
       return !!existing
     },
   )
@@ -130,7 +178,15 @@ export function importRoster(rows, file) {
     (r) => {
       const existing = byId(db.students, r['roll number'])
       if (existing) Object.assign(existing, { name: r.name, email: r['institute email'] })
-      else db.students.push({ id: r['roll number'], name: r.name, roll: r['roll number'], email: r['institute email'], signedUp: false, profileComplete: false })
+      else
+        db.students.push({
+          id: r['roll number'],
+          name: r.name,
+          roll: r['roll number'],
+          email: r['institute email'],
+          signedUp: false,
+          profileComplete: false,
+        })
       return !!existing
     },
   )
@@ -149,7 +205,11 @@ export function removeStudent(id, reason) {
 function summary(m) {
   const { settings } = db
   const heldSessions = m.sessions.filter((s) => s.status === 'Held')
-  const last = heldSessions.map((s) => s.date).sort().at(-1) ?? null
+  const last =
+    heldSessions
+      .map((s) => s.date)
+      .sort()
+      .at(-1) ?? null
   const flags = [
     db.problems.find((p) => p.id === m.problemId)?.status === 'Reassignment needed' && 'reassign',
     !heldSessions.length && daysSince(m.startedAt) >= settings.firstSessionDays && 'firstSession',
@@ -157,9 +217,17 @@ function summary(m) {
     daysSince(m.checkpointDue) >= settings.feedbackOverdueDays && 'feedback',
   ].filter(Boolean)
   return {
-    id: m.id, student: m.student.name, mentor: m.mentor, startedAt: m.startedAt,
-    logged: heldSessions.length, confirmed: heldSessions.filter((s) => s.confirmed).length,
-    lastSession: last, progress: m.progress, flags, caseId: m.caseId,
+    id: m.id,
+    student: m.student.name,
+    mentor: m.mentor,
+    startedAt: m.startedAt,
+    logged: heldSessions.length,
+    confirmed: heldSessions.filter((s) => s.confirmed).length,
+    lastSession: last,
+    progress: m.progress,
+    comment: m.progressComment,
+    flags,
+    caseId: m.caseId,
   }
 }
 

@@ -15,11 +15,26 @@ const CHIPS = chipsBy('All open', PROBLEM_STATUSES, (p) => p.status)
 
 const columns = [
   { header: 'Submitted', cell: (p) => fmtDate(p.submittedAt) },
-  { header: 'Student', cell: (p) => <><strong>{p.student.name}</strong><div className="small text-muted">{p.student.roll}</div></> },
+  {
+    header: 'Student',
+    cell: (p) => (
+      <>
+        <strong>{p.student.name}</strong>
+        <div className="small text-muted">{p.student.roll}</div>
+      </>
+    ),
+  },
   { header: 'Topic tags', cell: (p) => <Tags tags={p.tags} /> },
   { header: 'Status', cell: (p) => <StatusBadge status={p.status} /> },
   { header: 'Waiting', cell: (p) => plural(daysSince(p.submittedAt), 'day') },
-  { header: '', cell: (p) => <Button as={Link} to={`/iic/problems/${p.id}`} size="sm" variant="outline-primary">Open</Button> },
+  {
+    header: '',
+    cell: (p) => (
+      <Button as={Link} to={`/iic/problems/${p.id}`} size="sm" variant="outline-primary">
+        Open
+      </Button>
+    ),
+  },
 ]
 
 export default function ProblemQueue() {
@@ -30,20 +45,25 @@ export default function ProblemQueue() {
   const reassign = data.problems.filter((p) => p.status === 'Reassignment needed')
   return (
     <>
-      <h1 className="h3">Problem queue</h1>
-      <p className="text-muted">Oldest first. Problems that need reassignment are pinned to the top.</p>
+      <h1 className="h3 mb-4">Problem queue</h1>
       {reassign.length > 0 && (
         <Alert variant="danger">
-          <strong>{plural(reassign.length, 'problem')} need{reassign.length === 1 && 's'} reassignment</strong>
+          <strong>
+            {plural(reassign.length, 'problem')} need{reassign.length === 1 && 's'} reassignment
+          </strong>
           <ul className="small mb-0 mt-1">
-            {reassign.map((p) => <li key={p.id}>{p.student.name}: {p.reassignReason}</li>)}
+            {reassign.map((p) => (
+              <li key={p.id}>
+                {p.student.name}: {p.reassignReason}
+              </li>
+            ))}
           </ul>
         </Alert>
       )}
       <FilterBar chips={CHIPS} {...filter} placeholder="Search by name or roll number" />
       <DataTable columns={columns} rows={filter.filtered} empty="No problems match." />
       <p className="small text-muted mt-2">
-        Showing {filter.filtered.length} of {data.problems.length}. Withdrawn and closed problems leave the queue.
+        Showing {filter.filtered.length} of {data.problems.length}
       </p>
     </>
   )
