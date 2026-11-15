@@ -59,10 +59,10 @@ We keep the parts of that recommendation that fit:
 | Language | JavaScript (JSX) | |
 | Routing | React Router | Role-based navigation and protected routes (SCRUM-56) |
 | State | React context | The logged-in user and their role; no extra state library |
-| UI | React-Bootstrap (Bootstrap 5) and Bootstrap Icons | Forms, tables, dialogs and alerts without custom CSS |
+| UI | React-Bootstrap (Bootstrap 5) and Bootstrap Icons | Forms, tables, dialogs and alerts. One stylesheet (`src/theme.css`) gives them the student pages' design |
 | Forms | React Hook Form | Field-level validation messages; the API still checks everything |
 | Charts | Recharts | Programme insights dashboard (US-19) |
-| API access | One `src/api/` file per backend module | Returns mock data in M2; switched to real requests in M3 without changing any page |
+| API access | One `src/api/` file per backend module, from M3 | In M2 each page keeps its own sample data in its state; M3 replaces it with API calls |
 | Code style | ESLint and Prettier | |
 
 ### Team tools
@@ -120,7 +120,7 @@ Each module has `routes.py` (HTTP only), `schemas.py` (marshmallow), `services.p
 
 ## What this means for each sprint
 
-- **M2 (due 7 Nov, extended from 1 Nov):** Khushi scaffolds `frontend/` with Vite, React Router and React-Bootstrap (SCRUM-56) so the other page tasks can start. Mock data uses the field names from Priyanshu's class and ER diagrams (SCRUM-51, SCRUM-52), so moving to the real API in M3 changes only `src/api/`. No backend code is due.
+- **M2 (due 7 Nov, extended from 1 Nov):** Khushi scaffolds `frontend/` with Vite, React Router and React-Bootstrap (SCRUM-56) so the other page tasks can start. Each page keeps its own sample data, using the field names from Priyanshu's class and ER diagrams (SCRUM-51, SCRUM-52); M3 replaces that data with calls to the real API. No backend code is due.
 - **M3, Sprint 1 (8–22 Nov):** set up `backend/` in the layout above, with authentication, the Sprint 1 stories, CI on every pull request and the first YAML export.
 - **M4, Sprint 2 (due 6 Dec):** the Sprint 2 stories, the `run-checks` command and the insights endpoints.
 - **M5 (due 20 Dec):** hosting, seed data for the demo and the final README.

@@ -35,12 +35,12 @@ How the Jira project is organised:
 | Jira sprint | Dates (2026) | Sprint goal | Deadline |
 |---|---|---|---|
 | M1 – User Requirements | 11 Oct – 25 Oct | Users, user research and SMART user stories; interview video excerpt; every member's Honour Code | 25 Oct (submitted) |
-| M2 – Scheduling & Design | 28 Oct – 7 Nov | Schedule in Jira; design of components, classes and database; most UI pages (frontend only); M2 report and the Milestone 1–2 ZIP | 8 Nov (team target 7 Nov) |
+| M2 – Scheduling & Design | 28 Oct – 7 Nov | Schedule in Jira; design of components, classes and database; most UI pages (frontend only); M2 report and the Milestone 1–2 ZIP | 7 Nov |
 | M3 – Sprint 1: Matching | 8 Nov – 22 Nov | IIC-verified sign-up, student profiles, problem submission, mentor pool, mentor recommendations and IIC assignment as tested APIs (Swagger YAML and pytest); UI integrated; user feedback | 22 Nov |
 | M4 – Sprint 2: Tracking | 23 Nov – 6 Dec | Goals and next steps, session logs, progress feedback, IIC monitoring, change and termination cases, and programme insights as tested APIs; UI integrated; user feedback | 6 Dec |
 | M5 – Final Submission | 7 Dec – 20 Dec | Integrate, test end to end and deploy the prototype; final report, demo video, slides, code ZIP, README and the Milestone 3–5 ZIP | 20 Dec |
 
-Every sprint follows the same pattern: a planning meeting on its first day, then design or build work, then review, then submission one day before the deadline. The two development sprints also reserve their last five days for the Swagger YAML, the API test-case document, the pytest report and a user feedback session.
+Every sprint follows the same pattern: a planning meeting on its first day, then design or build work, then review, then submission by the deadline. The two development sprints also reserve their last five days for the Swagger YAML, the API test-case document, the pytest report and a user feedback session.
 
 ### 4.3 Gantt chart
 
@@ -89,8 +89,8 @@ Every sprint follows the same pattern: a planning meeting on its first day, then
 <rect x="286.9" y="99" width="42.8" height="9" rx="2" fill="#7a8794" fill-opacity="0.45"/>
 <rect x="0" y="112" width="680" height="17" fill="#1f4e8c" fill-opacity="0.10"/>
 <text x="4" y="124" font-size="9.5" font-weight="700" fill="#1f4e8c">M2 · Scheduling and design</text>
-<path d="M412.2,115.0 l5.5,5.5 l-5.5,5.5 l-5.5,-5.5 z" fill="#1f4e8c"/>
-<text x="404.2" y="124" font-size="8" fill="#1f4e8c" text-anchor="end">due 8 Nov</text>
+<path d="M406.1,115.0 l5.5,5.5 l-5.5,5.5 l-5.5,-5.5 z" fill="#1f4e8c"/>
+<text x="398.1" y="124" font-size="8" fill="#1f4e8c" text-anchor="end">due 7 Nov</text>
 <text x="12" y="141" font-size="9" fill="#1d1d1f">Tech stack (SCRUM-49)</text>
 <rect x="341.9" y="133" width="30.6" height="9" rx="2" fill="#1f4e8c"/>
 <text x="12" y="158" font-size="9" fill="#1d1d1f">Design of components (SCRUM-50)</text>
@@ -153,7 +153,7 @@ Every sprint follows the same pattern: a planning meeting on its first day, then
 **How to read the schedule.**
 
 - **Milestone 1 (done).** It started with the kick-off and the first client meeting on 11 Oct. The client requirements session followed on 15 Oct, and the six user interviews ran from 12 to 22 Oct. The report was reviewed by the team and submitted before the 25 Oct deadline.
-- **Milestone 2.** All design work starts together on 28 Oct, so that the component design, class diagram and ER diagram are ready by 3 Nov. The UI pages (2–6 Nov) follow the frontend set-up (due 2 Nov) and the Figma wireframes. The report, both ZIPs and the submission close the sprint on 7 Nov, one day before the deadline.
+- **Milestone 2.** All design work starts together on 28 Oct, so that the component design, class diagram and ER diagram are ready by 3 Nov. The UI pages (2–6 Nov) follow the frontend set-up (due 2 Nov) and the Figma wireframes. The report, both ZIPs and the submission close the sprint on 7 Nov, the deadline.
 - **Milestone 3 (Sprint 1).** This sprint is two weeks long because Milestone 2 was extended. The backend foundation (project skeleton, data models from the ER diagram, authentication and roles, OpenAPI skeleton, pytest set-up, API client) is due in its first week so that story work can start by 10 Nov. Its ten stories (US-01 to US-05, US-09, US-10 and US-14 to US-16) cover everything a student needs to reach an assigned mentor.
 - **Milestone 4 (Sprint 2).** Its eleven stories depend on mentorships created in Sprint 1. They are goals and next steps, sessions, feedback, ending a mentorship, monitoring, cases, insights and escalations. The scheduled job runner (SCRUM-170) comes first because reminders and escalations (US-11, US-21) use it.
 - **Milestone 5.** End-to-end testing and fixes run in the first week. Hosting is decided by 6 Dec (SCRUM-171) so that the prototype is deployed by 14 Dec, before the demo video is recorded.

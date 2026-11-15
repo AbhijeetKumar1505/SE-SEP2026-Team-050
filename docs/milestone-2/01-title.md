@@ -8,7 +8,7 @@
 **Team:** 050\
 **Problem statement:** Option 2 — Student Mentoring and Career Support Platform\
 **Client:** IIC, IITM BS programme administration\
-**Deadline:** 8 November 2026
+**Deadline:** 7 November 2026
 
 | Team member | Roll number | Project roles | Contribution to Milestone 2 |
 |---|---|---|---|

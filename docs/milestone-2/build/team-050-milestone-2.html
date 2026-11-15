@@ -29,6 +29,14 @@ strong { color: #000; }
 
 .page-break { break-after: page; }
 
+/* Wide diagrams (Milestone 2, Sections 2 and 3) get a landscape page of their own. */
+@page wide { size: A4 landscape; }
+.landscape { page: wide; }
+.diagram { margin: 6pt 0 2pt; break-inside: avoid; }
+.diagram img { display: block; max-width: 100%; max-height: 118mm; margin: 0 auto; border: 1px solid var(--rule); }
+.shot img { max-height: 150mm; width: auto !important; max-width: 100%; margin: 0 auto; }
+.fig-caption { font-size: 8.5pt; color: var(--muted); margin: 4pt 0 12pt; }
+
 .title-page { padding-top: 70mm; }
 .title-page h1 { font-size: 28pt; }
 .title-page h2 { border: 0; color: var(--muted); font-weight: 500; margin-bottom: 18pt; }
@@ -84,7 +92,7 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 
 <h1>Student Mentoring and Career Support Platform</h1>
 <h2>Milestone 2 — Scheduling and Design</h2>
-<p><strong>Course:</strong> IITM BS Software Engineering, September 2026 term<br><strong>Team:</strong> 050<br><strong>Problem statement:</strong> Option 2 — Student Mentoring and Career Support Platform<br><strong>Client:</strong> IIC, IITM BS programme administration<br><strong>Deadline:</strong> 8 November 2026</p>
+<p><strong>Course:</strong> IITM BS Software Engineering, September 2026 term<br><strong>Team:</strong> 050<br><strong>Problem statement:</strong> Option 2 — Student Mentoring and Career Support Platform<br><strong>Client:</strong> IIC, IITM BS programme administration<br><strong>Deadline:</strong> 7 November 2026</p>
 <table>
 <thead>
 <tr>
@@ -173,7 +181,7 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <rect x="10" y="96" width="660" height="58" rx="6" fill="#e8f0fb" stroke="#1f4e8c" stroke-width="1.5"/>
 <text x="340" y="115" font-size="12" font-weight="700" fill="#1f4e8c" text-anchor="middle">Web client: React single-page app</text>
 <text x="340" y="132" font-size="10.5" fill="#1d1d1f" text-anchor="middle">Student pages · Mentor pages · IIC pages · Insights page</text>
-<text x="340" y="147" font-size="9.5" fill="#5b5b66" text-anchor="middle">App shell, routing and role guards · shared UI components · API client (mock data in Milestone 2)</text>
+<text x="340" y="147" font-size="9.5" fill="#5b5b66" text-anchor="middle">App shell, routing and role guards · shared UI components · API client (from Milestone 3)</text>
 <line x1="340" y1="156" x2="340" y2="186" stroke="#5b5b66" stroke-width="1.2" marker-start="url(#cmp-arrow)" marker-end="url(#cmp-arrow)"/>
 <text x="350" y="175" font-size="9.5" fill="#5b5b66">REST requests in JSON, with a token that carries the role</text>
 <rect x="10" y="188" width="660" height="312" rx="6" fill="#f7f9fc" stroke="#1f4e8c" stroke-width="1.5"/>
@@ -911,7 +919,7 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <tr>
 <td>F6</td>
 <td>API client</td>
-<td>One file per backend component. In Milestone 2 it returns mock data in the same shape as the API, so pages need no changes when it switches to real requests in Milestone 3</td>
+<td>One file per backend component, added in Milestone 3. In Milestone 2 each page keeps its own sample data in its state, so the pages work without a backend; Milestone 3 replaces that data with calls to this client</td>
 <td>All</td>
 <td>SCRUM-56, SCRUM-75</td>
 </tr>
@@ -1175,15 +1183,748 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <td>C4, C5, C7, C13, C14</td>
 </tr>
 </tbody></table>
+<h3>1.9 Who can see what</h3>
+<p>The visibility rules in Section 1.3 apply across several components, so this table collects them by role. The API checks them on every request (Section 1.1, rule 2).</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Student</th>
+<th>Mentor</th>
+<th>IIC</th>
+<th>Programme leadership</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Student profile: level, completed courses, career interest</td>
+<td>Own</td>
+<td>Their mentee&#39;s, from assignment (C7)</td>
+<td>All</td>
+<td>No</td>
+</tr>
+<tr>
+<td>CGPA</td>
+<td>Own</td>
+<td>No</td>
+<td>All</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Problem and its topic tags</td>
+<td>Own</td>
+<td>Only once assigned to them (C5)</td>
+<td>All</td>
+<td>Counts by topic (C12)</td>
+</tr>
+<tr>
+<td>Guidance preferences</td>
+<td>Own</td>
+<td>No</td>
+<td>All</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Mentor recommendations</td>
+<td>No</td>
+<td>No</td>
+<td>All (C6)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Mentor&#39;s contact details</td>
+<td>Their mentor&#39;s, after acceptance (C7)</td>
+<td>Own</td>
+<td>All</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Goal, next steps and sessions</td>
+<td>Own mentorship</td>
+<td>Own mentorships</td>
+<td>All</td>
+<td>Counts only</td>
+</tr>
+<tr>
+<td>Private session notes</td>
+<td>Own notes</td>
+<td>Own notes</td>
+<td>No (C9)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Progress feedback</td>
+<td>Writes it</td>
+<td>Writes it</td>
+<td>All (C10)</td>
+<td>Outcomes as counts</td>
+</tr>
+<tr>
+<td>Cases</td>
+<td>Own, and their outcome</td>
+<td>Own, and their outcome</td>
+<td>All (C8)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Monitoring flags and audit history</td>
+<td>No</td>
+<td>No</td>
+<td>All (C11, C14)</td>
+<td>No</td>
+</tr>
+</tbody></table>
+<p>No role can see what was said in a mentoring conversation, because the platform never stores it (rule 3).</p>
 <div class="page-break"></div>
+
+<style>
+.cls-table table { font-size: 9pt; }
+.cls-table td:nth-child(1) { width: 14%; font-weight: 600; }
+.cls-table td:nth-child(2) { width: 24%; }
+.cls-table td:nth-child(3) { width: 24%; }
+.cls-table td:nth-child(4) { width: 28%; }
+</style>
+
+<div class="landscape">
 
 <h2>Section 2: Class Diagram</h2>
-<p><code>TO FILL: class diagram of the proposed system with a short description of each class and relationship (Priyanshu Yadav, SCRUM-51, due 3 Nov). Build it from the components in Section 1 and the statuses in Section 1.7.</code></p>
+<p>The class diagram shows the main classes of the platform, the data and operations each one holds, and how they relate. It follows the workflow in Section 1.6: a student submits a problem, a mentor accepts it, and the mentorship that follows holds meetings, next steps and feedback. Cases, notifications and the audit log support it throughout.</p>
+<div class="diagram"><img src="../images/class-diagram.png" alt="UML class diagram of the mentoring platform"></div>
+<p class="fig-caption">Figure 2.1. Class diagram. Hollow triangles are inheritance, filled diamonds are composition, solid lines are associations and dotted arrows are dependencies. Yellow notes are rules the diagram cannot show with lines alone.</p>
 
-<div class="page-break"></div>
+</div>
+
+<h3>2.1 Classes</h3>
+<div class="cls-table">
+
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>What it represents</th>
+<th>Main attributes</th>
+<th>Operations</th>
+<th>Component</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>User (abstract)</td>
+<td>The account every person signs in with</td>
+<td>id, name, email, passwordHash (private), emailVerifiedAt</td>
+<td>login(), verifyEmail(token)</td>
+<td>C1</td>
+</tr>
+<tr>
+<td>Student</td>
+<td>A registered IITM BS student</td>
+<td>Inherited from User</td>
+<td>submitProblem(title, description), requestMatch(problem)</td>
+<td>C1, C5</td>
+</tr>
+<tr>
+<td>Mentor</td>
+<td>A volunteer mentor</td>
+<td>verificationStatus</td>
+<td>respondToRequest(request, decision), updateAvailability()</td>
+<td>C3, C7</td>
+</tr>
+<tr>
+<td>IICCoordinator</td>
+<td>An IIC staff member who runs the programme</td>
+<td>Inherited from User</td>
+<td>reviewProblem(problem), verifyMentor(mentor), resolveCase(caseRecord)</td>
+<td>C3, C5, C8</td>
+</tr>
+<tr>
+<td>ProgrammeManager</td>
+<td>Programme leadership</td>
+<td>Inherited from User</td>
+<td>viewInsights(), configureTimingWindows()</td>
+<td>C12</td>
+</tr>
+<tr>
+<td>StudentProfile</td>
+<td>What the platform knows about a student</td>
+<td>studentNumber, programme, cohort</td>
+<td>updateProfile()</td>
+<td>C2</td>
+</tr>
+<tr>
+<td>MentorProfile</td>
+<td>A mentor&#39;s public profile</td>
+<td>biography, organisation, availabilitySummary</td>
+<td>updateProfile()</td>
+<td>C3</td>
+</tr>
+<tr>
+<td>Experience</td>
+<td>One entry in a mentor&#39;s work history</td>
+<td>title, organisation, startDate, endDate</td>
+<td>—</td>
+<td>C3</td>
+</tr>
+<tr>
+<td>TopicTag</td>
+<td>A subject used for problems and for mentor expertise</td>
+<td>id, name</td>
+<td>—</td>
+<td>C4</td>
+</tr>
+<tr>
+<td>Problem</td>
+<td>The help a student asks for</td>
+<td>title, description, status, submittedAt</td>
+<td>submit(), close(reason)</td>
+<td>C5</td>
+</tr>
+<tr>
+<td>MatchRequest</td>
+<td>A request to one mentor to take on a problem</td>
+<td>status, requestedAt, respondedAt</td>
+<td>accept() returns a Mentorship, decline(reason)</td>
+<td>C7</td>
+</tr>
+<tr>
+<td>Mentorship</td>
+<td>The working pairing of a student and a mentor</td>
+<td>status, goal, startedAt, endedAt</td>
+<td>setGoal(goal), end(reason)</td>
+<td>C7</td>
+</tr>
+<tr>
+<td>Meeting</td>
+<td>A mentoring session</td>
+<td>scheduledAt, completedAt, status, notes</td>
+<td>reschedule(dateTime), logSession(notes)</td>
+<td>C9</td>
+</tr>
+<tr>
+<td>NextStep</td>
+<td>An action the pair agreed on</td>
+<td>description, dueDate, status</td>
+<td>markComplete()</td>
+<td>C7</td>
+</tr>
+<tr>
+<td>ProgressFeedback</td>
+<td>Feedback on how a mentorship is going</td>
+<td>rating, comments, submittedAt</td>
+<td>submit()</td>
+<td>C10</td>
+</tr>
+<tr>
+<td>Case</td>
+<td>A change, end or misconduct case about a mentorship</td>
+<td>type, status, details, resolution</td>
+<td>open(), resolve(resolution)</td>
+<td>C8</td>
+</tr>
+<tr>
+<td>Notification</td>
+<td>A message to one user</td>
+<td>subject, body, status, sentAt</td>
+<td>send(), retry()</td>
+<td>C13</td>
+</tr>
+<tr>
+<td>AuditLog</td>
+<td>A permanent record of one action</td>
+<td>action, entityType, entityId, createdAt</td>
+<td>—</td>
+<td>C14</td>
+</tr>
+</tbody></table>
+</div>
+
+<h3>2.2 Relationships</h3>
+<p><strong>Inheritance.</strong> Student, Mentor, IICCoordinator and ProgrammeManager are each a User. They share its account data, login and email verification, and add the operations of their role.</p>
+<p><strong>Composition.</strong> A part cannot exist without its owner and is removed with it.</p>
+<table>
+<thead>
+<tr>
+<th>Owner</th>
+<th>Part</th>
+<th>Multiplicity</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Student</td>
+<td>StudentProfile</td>
+<td>Each student owns exactly one profile</td>
+</tr>
+<tr>
+<td>Mentor</td>
+<td>MentorProfile</td>
+<td>Each mentor owns exactly one profile</td>
+</tr>
+<tr>
+<td>MentorProfile</td>
+<td>Experience</td>
+<td>A profile contains zero or more entries; each entry belongs to one profile</td>
+</tr>
+<tr>
+<td>Mentorship</td>
+<td>Meeting</td>
+<td>A mentorship includes zero or more meetings; each meeting belongs to one mentorship</td>
+</tr>
+<tr>
+<td>Mentorship</td>
+<td>NextStep</td>
+<td>A mentorship contains zero or more next steps; each belongs to one mentorship</td>
+</tr>
+</tbody></table>
+<p><strong>Associations.</strong></p>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>Relationship</th>
+<th>To</th>
+<th>Multiplicity</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Student</td>
+<td>submits</td>
+<td>Problem</td>
+<td>1 student to 0..* problems</td>
+</tr>
+<tr>
+<td>IICCoordinator</td>
+<td>reviews</td>
+<td>Problem</td>
+<td>0..1 coordinator to 0..* problems</td>
+</tr>
+<tr>
+<td>IICCoordinator</td>
+<td>verifies</td>
+<td>Mentor</td>
+<td>0..1 coordinator to 0..* mentors</td>
+</tr>
+<tr>
+<td>Problem</td>
+<td>categorised by</td>
+<td>TopicTag</td>
+<td>0..* to 0..*</td>
+</tr>
+<tr>
+<td>MentorProfile</td>
+<td>expertise</td>
+<td>TopicTag</td>
+<td>0..* to 0..*</td>
+</tr>
+<tr>
+<td>Student</td>
+<td>initiates</td>
+<td>MatchRequest</td>
+<td>1 student to 0..* requests</td>
+</tr>
+<tr>
+<td>MatchRequest</td>
+<td>concerns</td>
+<td>Problem</td>
+<td>0..* requests to 1 problem</td>
+</tr>
+<tr>
+<td>Mentor</td>
+<td>receives</td>
+<td>MatchRequest</td>
+<td>1 mentor to 0..* requests</td>
+</tr>
+<tr>
+<td>MatchRequest</td>
+<td>creates on acceptance</td>
+<td>Mentorship</td>
+<td>1 request to 0..1 mentorship</td>
+</tr>
+<tr>
+<td>Student</td>
+<td>participates in</td>
+<td>Mentorship</td>
+<td>1 student to 0..* mentorships</td>
+</tr>
+<tr>
+<td>Mentor</td>
+<td>guides</td>
+<td>Mentorship</td>
+<td>1 mentor to 0..* mentorships</td>
+</tr>
+<tr>
+<td>Problem</td>
+<td>addressed by</td>
+<td>Mentorship</td>
+<td>1 problem to 0..* mentorships</td>
+</tr>
+<tr>
+<td>User</td>
+<td>responsible for</td>
+<td>NextStep</td>
+<td>1 user to 0..* next steps</td>
+</tr>
+<tr>
+<td>Mentorship</td>
+<td>receives</td>
+<td>ProgressFeedback</td>
+<td>1 mentorship to 0..* entries</td>
+</tr>
+<tr>
+<td>User</td>
+<td>authors</td>
+<td>ProgressFeedback</td>
+<td>1 user to 0..* entries</td>
+</tr>
+<tr>
+<td>Case</td>
+<td>concerns</td>
+<td>Mentorship</td>
+<td>0..* cases to 1 mentorship</td>
+</tr>
+<tr>
+<td>User</td>
+<td>reports</td>
+<td>Case</td>
+<td>1 user to 0..* cases</td>
+</tr>
+<tr>
+<td>IICCoordinator</td>
+<td>handles</td>
+<td>Case</td>
+<td>0..1 coordinator to 0..* cases</td>
+</tr>
+<tr>
+<td>User</td>
+<td>receives</td>
+<td>Notification</td>
+<td>1 user to 0..* notifications</td>
+</tr>
+<tr>
+<td>User</td>
+<td>actor</td>
+<td>AuditLog</td>
+<td>0..1 user to 0..* entries; an entry with no user is an automatic action</td>
+</tr>
+</tbody></table>
+<p><strong>Dependencies.</strong> ProgrammeManager uses Mentorship (monitors outcomes) and ProgressFeedback (analyses it) but owns neither. Programme insights are calculated from these records, as in C12.</p>
+<h3>2.3 Rules shown as notes</h3>
+<ul>
+<li>Each match request goes to one mentor, and accepting it creates at most one mentorship.</li>
+<li>The student in a mentorship must own the linked problem, and the participants must be the ones in the accepted request.</li>
+<li>Only a student or mentor taking part in a mentorship can author its feedback.</li>
+<li>A case is one of three types: change, end or misconduct.</li>
+</ul>
+<p>The API enforces each of these rules (Section 1.1, rule 2).</p>
+
+<div class="landscape">
 
 <h2>Section 3: Database Design</h2>
-<p><code>TO FILL: ER diagram with tables, keys and constraints, plus a short description of each table (Priyanshu Yadav, SCRUM-52, due 3 Nov). It must match the class diagram in Section 2.</code></p>
+<p>The ER diagram shows the 22 tables of the database, their columns and keys, and the relationships between them. Each table belongs to one backend module (Section 1.2), and only that module writes to it.</p>
+<div class="diagram"><img src="../images/er-diagram.png" alt="ER diagram of the mentoring platform database"></div>
+<p class="fig-caption">Figure 3.1. ER diagram in crow's-foot notation. PK is a primary key, FK a foreign key and UK a unique key. On the lines, || is exactly one, |o is zero or one, and o{ is zero or more.</p>
+
+</div>
+
+<h3>3.1 Tables</h3>
+<h4>Accounts and access</h4>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>What it stores</th>
+<th>Keys and constraints</th>
+<th>Module</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>USER</td>
+<td>One row per account: email, password hash, when the email was verified, the email domain and when the account was created</td>
+<td>id PK; email UK; email_domain_id FK to EMAIL_DOMAIN</td>
+<td>auth</td>
+</tr>
+<tr>
+<td>ROLE</td>
+<td>The roles a user can hold, such as student, mentor or IIC coordinator</td>
+<td>id PK; name UK</td>
+<td>auth</td>
+</tr>
+<tr>
+<td>USER_ROLE</td>
+<td>Which user holds which role</td>
+<td>(user_id, role_id) composite PK, each an FK</td>
+<td>auth</td>
+</tr>
+<tr>
+<td>EMAIL_VERIFICATION</td>
+<td>Hashed verification tokens, with when each expires and when it was used</td>
+<td>id PK; user_id FK; token_hash UK</td>
+<td>auth</td>
+</tr>
+<tr>
+<td>EMAIL_DOMAIN</td>
+<td>The email domains allowed to register, and whether each is enabled</td>
+<td>id PK; domain UK</td>
+<td>settings</td>
+</tr>
+</tbody></table>
+<h4>Students and mentors</h4>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>What it stores</th>
+<th>Keys and constraints</th>
+<th>Module</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>STUDENT</td>
+<td>A student&#39;s profile: student number, name, programme and cohort</td>
+<td>id PK; user_id FK and UK (one profile per user); student_number UK</td>
+<td>students</td>
+</tr>
+<tr>
+<td>MENTOR</td>
+<td>A mentor&#39;s profile: name, biography and verification status</td>
+<td>id PK; user_id FK and UK (one profile per user)</td>
+<td>mentors</td>
+</tr>
+<tr>
+<td>AVAILABILITY</td>
+<td>The time slots a mentor offers, with their time zone</td>
+<td>id PK; mentor_id FK</td>
+<td>mentors</td>
+</tr>
+<tr>
+<td>MENTOR_TAG</td>
+<td>A mentor&#39;s areas of expertise</td>
+<td>(mentor_id, topic_tag_id) composite PK, each an FK</td>
+<td>mentors</td>
+</tr>
+</tbody></table>
+<h4>Problems and matching</h4>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>What it stores</th>
+<th>Keys and constraints</th>
+<th>Module</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TOPIC_TAG</td>
+<td>The topic list shared by problems and mentor expertise</td>
+<td>id PK; name UK</td>
+<td>settings</td>
+</tr>
+<tr>
+<td>PROBLEM</td>
+<td>A student&#39;s problem: title, description, status, when it was submitted and closed, and why it was closed</td>
+<td>id PK; student_id FK</td>
+<td>problems</td>
+</tr>
+<tr>
+<td>PROBLEM_TAG</td>
+<td>The topic tags on each problem</td>
+<td>(problem_id, topic_tag_id) composite PK, each an FK</td>
+<td>problems</td>
+</tr>
+<tr>
+<td>RECOMMENDATION</td>
+<td>A mentor suggested for a problem, with a score and when it was generated</td>
+<td>id PK; problem_id FK; mentor_id FK</td>
+<td>matching</td>
+</tr>
+</tbody></table>
+<h4>Mentorships</h4>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>What it stores</th>
+<th>Keys and constraints</th>
+<th>Module</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MENTORSHIP</td>
+<td>A mentor assigned to a problem: status, goal, next steps, and when it was assigned, answered and ended</td>
+<td>id PK; problem_id FK; mentor_id FK</td>
+<td>mentorships</td>
+</tr>
+<tr>
+<td>SESSION</td>
+<td>A session: when it was planned and held, its status and notes</td>
+<td>id PK; mentorship_id FK</td>
+<td>sessions</td>
+</tr>
+<tr>
+<td>FEEDBACK</td>
+<td>Feedback on a mentorship, with its author, rating, comments and time</td>
+<td>id PK; mentorship_id FK; author_user_id FK</td>
+<td>feedback</td>
+</tr>
+<tr>
+<td>CASE_RECORD</td>
+<td>A change, end or misconduct case: type, status, details, resolution, and when it was opened and resolved</td>
+<td>id PK; mentorship_id FK; reporter_user_id FK</td>
+<td>cases</td>
+</tr>
+</tbody></table>
+<h4>Monitoring, notifications and audit</h4>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>What it stores</th>
+<th>Keys and constraints</th>
+<th>Module</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TIMING_WINDOW</td>
+<td>Each timing rule: its name, length in hours, and whether it is enabled</td>
+<td>id PK; rule_name UK</td>
+<td>settings</td>
+</tr>
+<tr>
+<td>MONITORING_FLAG</td>
+<td>A problem detected on a mentorship, such as <em>Inactive</em>: type, status, when it was raised and resolved</td>
+<td>id PK; mentorship_id FK; timing_window_id FK</td>
+<td>monitoring</td>
+</tr>
+<tr>
+<td>EMAIL_TEMPLATE</td>
+<td>One subject and body for each kind of email</td>
+<td>id PK; template_key UK</td>
+<td>notifications</td>
+</tr>
+<tr>
+<td>NOTIFICATION</td>
+<td>Each email sent to a user: template, status, and when it was queued and sent</td>
+<td>id PK; recipient_user_id FK; email_template_id FK</td>
+<td>notifications</td>
+</tr>
+<tr>
+<td>AUDIT_LOG</td>
+<td>Who did what to which record, and when</td>
+<td>id PK; actor_user_id FK (empty for automatic actions)</td>
+<td>audit</td>
+</tr>
+</tbody></table>
+<p>Programme insights (C12) have no tables of their own. Their figures are calculated from PROBLEM, MENTOR, MENTORSHIP and FEEDBACK.</p>
+<h3>3.2 Relationships</h3>
+<table>
+<thead>
+<tr>
+<th>Parent</th>
+<th>Child</th>
+<th>Cardinality</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>EMAIL_DOMAIN</td>
+<td>USER</td>
+<td>Zero or one to many</td>
+<td>An account may be linked to the domain that allowed it to register</td>
+</tr>
+<tr>
+<td>USER</td>
+<td>USER_ROLE</td>
+<td>One to many</td>
+<td>A user can hold several roles</td>
+</tr>
+<tr>
+<td>ROLE</td>
+<td>USER_ROLE</td>
+<td>One to many</td>
+<td>A role is granted to many users</td>
+</tr>
+<tr>
+<td>USER</td>
+<td>EMAIL_VERIFICATION</td>
+<td>One to many</td>
+<td>A user can request several verification links</td>
+</tr>
+<tr>
+<td>USER</td>
+<td>STUDENT, MENTOR</td>
+<td>One to zero or one</td>
+<td>A user has at most one student profile and at most one mentor profile</td>
+</tr>
+<tr>
+<td>STUDENT</td>
+<td>PROBLEM</td>
+<td>One to many</td>
+<td>A student can submit many problems over time</td>
+</tr>
+<tr>
+<td>MENTOR</td>
+<td>AVAILABILITY</td>
+<td>One to many</td>
+<td>A mentor declares many time slots</td>
+</tr>
+<tr>
+<td>PROBLEM, MENTOR</td>
+<td>PROBLEM_TAG, MENTOR_TAG</td>
+<td>Many to many, through the link tables</td>
+<td>Tags categorise problems and describe mentor expertise</td>
+</tr>
+<tr>
+<td>PROBLEM, MENTOR</td>
+<td>RECOMMENDATION</td>
+<td>One to many each</td>
+<td>A recommendation links one problem to one mentor</td>
+</tr>
+<tr>
+<td>PROBLEM, MENTOR</td>
+<td>MENTORSHIP</td>
+<td>One to many each</td>
+<td>A mentorship links one problem to one mentor; a problem can have several over time, for example after a reassignment</td>
+</tr>
+<tr>
+<td>MENTORSHIP</td>
+<td>SESSION, FEEDBACK, CASE_RECORD, MONITORING_FLAG</td>
+<td>One to many each</td>
+<td>Everything that happens in a mentorship points back to it</td>
+</tr>
+<tr>
+<td>USER</td>
+<td>FEEDBACK, CASE_RECORD</td>
+<td>One to many</td>
+<td>The author of feedback and the reporter of a case</td>
+</tr>
+<tr>
+<td>TIMING_WINDOW</td>
+<td>MONITORING_FLAG</td>
+<td>Zero or one to many</td>
+<td>A flag can name the timing rule that raised it</td>
+</tr>
+<tr>
+<td>USER</td>
+<td>NOTIFICATION</td>
+<td>One to many</td>
+<td>Each notification has one recipient</td>
+</tr>
+<tr>
+<td>EMAIL_TEMPLATE</td>
+<td>NOTIFICATION</td>
+<td>One to many</td>
+<td>Each notification uses one template</td>
+</tr>
+<tr>
+<td>USER</td>
+<td>AUDIT_LOG</td>
+<td>Zero or one to many</td>
+<td>An entry with no user is an automatic action</td>
+</tr>
+</tbody></table>
+<h3>3.3 Design notes</h3>
+<ul>
+<li><strong>No duplicate data.</strong> MENTORSHIP has no student_id: the student is found through its problem. Problem tags and mentor expertise share one TOPIC_TAG list, which keeps matching consistent.</li>
+<li><strong>IIC&#39;s queue is a status, not a table.</strong> The queue lists the problems in the statuses that need IIC (Section 1.7).</li>
+<li><strong>The audit log points at any record.</strong> AUDIT_LOG names the record by entity_type and entity_id instead of a foreign key, so one table can record actions on every other table. Rows are only ever added (C14).</li>
+<li><strong>Rules the tables cannot express are enforced by the API.</strong> Examples: at most one active mentorship per student, and only participants may give feedback. The daily timed checks are application code in C11; the tables only store their settings (TIMING_WINDOW) and results (MONITORING_FLAG).</li>
+</ul>
 
 <style>
 .sch-figure { margin: 10pt 0 2pt; break-inside: avoid; }
@@ -1251,7 +1992,7 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <td>M2 – Scheduling &amp; Design</td>
 <td>28 Oct – 7 Nov</td>
 <td>Schedule in Jira; design of components, classes and database; most UI pages (frontend only); M2 report and the Milestone 1–2 ZIP</td>
-<td>8 Nov (team target 7 Nov)</td>
+<td>7 Nov</td>
 </tr>
 <tr>
 <td>M3 – Sprint 1: Matching</td>
@@ -1272,7 +2013,7 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <td>20 Dec</td>
 </tr>
 </tbody></table>
-<p>Every sprint follows the same pattern: a planning meeting on its first day, then design or build work, then review, then submission one day before the deadline. The two development sprints also reserve their last five days for the Swagger YAML, the API test-case document, the pytest report and a user feedback session.</p>
+<p>Every sprint follows the same pattern: a planning meeting on its first day, then design or build work, then review, then submission by the deadline. The two development sprints also reserve their last five days for the Swagger YAML, the API test-case document, the pytest report and a user feedback session.</p>
 <h3>4.3 Gantt chart</h3>
 <div class="sch-figure">
 <svg viewBox="0 0 680 533" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif" role="img" aria-label="Gantt chart of the project schedule, 11 October to 20 December 2026">
@@ -1319,8 +2060,8 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <rect x="286.9" y="99" width="42.8" height="9" rx="2" fill="#7a8794" fill-opacity="0.45"/>
 <rect x="0" y="112" width="680" height="17" fill="#1f4e8c" fill-opacity="0.10"/>
 <text x="4" y="124" font-size="9.5" font-weight="700" fill="#1f4e8c">M2 · Scheduling and design</text>
-<path d="M412.2,115.0 l5.5,5.5 l-5.5,5.5 l-5.5,-5.5 z" fill="#1f4e8c"/>
-<text x="404.2" y="124" font-size="8" fill="#1f4e8c" text-anchor="end">due 8 Nov</text>
+<path d="M406.1,115.0 l5.5,5.5 l-5.5,5.5 l-5.5,-5.5 z" fill="#1f4e8c"/>
+<text x="398.1" y="124" font-size="8" fill="#1f4e8c" text-anchor="end">due 7 Nov</text>
 <text x="12" y="141" font-size="9" fill="#1d1d1f">Tech stack (SCRUM-49)</text>
 <rect x="341.9" y="133" width="30.6" height="9" rx="2" fill="#1f4e8c"/>
 <text x="12" y="158" font-size="9" fill="#1d1d1f">Design of components (SCRUM-50)</text>
@@ -1383,7 +2124,7 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <p><strong>How to read the schedule.</strong></p>
 <ul>
 <li><strong>Milestone 1 (done).</strong> It started with the kick-off and the first client meeting on 11 Oct. The client requirements session followed on 15 Oct, and the six user interviews ran from 12 to 22 Oct. The report was reviewed by the team and submitted before the 25 Oct deadline.</li>
-<li><strong>Milestone 2.</strong> All design work starts together on 28 Oct, so that the component design, class diagram and ER diagram are ready by 3 Nov. The UI pages (2–6 Nov) follow the frontend set-up (due 2 Nov) and the Figma wireframes. The report, both ZIPs and the submission close the sprint on 7 Nov, one day before the deadline.</li>
+<li><strong>Milestone 2.</strong> All design work starts together on 28 Oct, so that the component design, class diagram and ER diagram are ready by 3 Nov. The UI pages (2–6 Nov) follow the frontend set-up (due 2 Nov) and the Figma wireframes. The report, both ZIPs and the submission close the sprint on 7 Nov, the deadline.</li>
 <li><strong>Milestone 3 (Sprint 1).</strong> This sprint is two weeks long because Milestone 2 was extended. The backend foundation (project skeleton, data models from the ER diagram, authentication and roles, OpenAPI skeleton, pytest set-up, API client) is due in its first week so that story work can start by 10 Nov. Its ten stories (<span class="id">US-01</span> to <span class="id">US-05</span>, <span class="id">US-09</span>, <span class="id">US-10</span> and <span class="id">US-14</span> to <span class="id">US-16</span>) cover everything a student needs to reach an assigned mentor.</li>
 <li><strong>Milestone 4 (Sprint 2).</strong> Its eleven stories depend on mentorships created in Sprint 1. They are goals and next steps, sessions, feedback, ending a mentorship, monitoring, cases, insights and escalations. The scheduled job runner (SCRUM-170) comes first because reminders and escalations (<span class="id">US-11</span>, <span class="id">US-21</span>) use it.</li>
 <li><strong>Milestone 5.</strong> End-to-end testing and fixes run in the first week. Hosting is decided by 6 Dec (SCRUM-171) so that the prototype is deployed by 14 Dec, before the demo video is recorded.</li>
@@ -1823,10 +2564,10 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 </thead>
 <tbody><tr>
 <td>Scrum meeting</td>
-<td><code>TO FILL: fixed weekdays and time (IST)</code>, on Google Meet</td>
-<td>15–20 min</td>
-<td>All five members</td>
-<td>Each member says what they finished, what they are doing next and what is blocking them. The board is updated during the call</td>
+<td>8–10 pm IST on scheduled dates, on Google Meet. In Milestone 2: 28 and 29 Oct for the design, 1 and 3 Nov for the frontend (Section 5.2)</td>
+<td>Up to 2 hours</td>
+<td>The members working on that part; all five for the tech stack</td>
+<td>Agree what to build and who builds it, then report progress and blockers. The board is updated during the call</td>
 </tr>
 <tr>
 <td>Sprint planning</td>
@@ -1837,7 +2578,7 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 </tr>
 <tr>
 <td>Sprint review and retrospective</td>
-<td>Two days before each deadline: 6 Nov, 20 Nov, 4 Dec, 18 Dec</td>
+<td>One or two days before each deadline: 6 Nov, 20 Nov, 4 Dec, 18 Dec</td>
 <td>30–45 min</td>
 <td>All five members</td>
 <td>Check each deliverable against the project statement, then agree what to keep and what to change in the next sprint</td>
@@ -1850,7 +2591,7 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <td>Progress review with the TA; requirement questions for the client</td>
 </tr>
 </tbody></table>
-<p>A scrum master (Saloni Puri or Khushi Dhankhar) runs each meeting and writes the minutes. Each set of minutes records the date, the attendees, each member&#39;s done, doing and blockers, the decisions taken, and action items with an owner, a due date and a Jira issue.</p>
+<p>Saloni Puri, who attended every Milestone 2 meeting, acts as scrum master and keeps the minutes. Each set of minutes records the date, the attendees, what was discussed, the decisions and the action items.</p>
 <h3>5.2 Meetings held</h3>
 <table>
 <thead>
@@ -1865,48 +2606,76 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <tbody><tr>
 <td>1</td>
 <td>11 Oct 2026</td>
-<td>Kick-off and client meeting 1: problem statement discussion with IIC</td>
-<td><code>TO FILL</code></td>
-<td>Summarised in the Milestone 1 report, Section 2</td>
+<td>Milestone 1 kick-off and client meeting 1: problem statement discussion with IIC</td>
+<td>All five members</td>
+<td>Milestone 1 report, Section 2</td>
 </tr>
 <tr>
 <td>2</td>
 <td>15 Oct 2026</td>
-<td>Client meeting 2: requirements session with IIC (A01)</td>
+<td>Milestone 1 client meeting 2: requirements session with IIC (A01)</td>
 <td>All five members</td>
-<td>Notes in the Milestone 1 report, Section 4 and Appendix B</td>
+<td>Milestone 1 report, Section 4 and Appendix B</td>
 </tr>
 <tr>
 <td>3</td>
-<td><code>TO FILL</code></td>
-<td>Review meeting with the TA</td>
+<td>20 Oct 2026</td>
+<td>Milestone 1 review with the TA</td>
 <td>All five members and the TA</td>
 <td>Section 5.3</td>
 </tr>
 <tr>
 <td>4</td>
-<td><code>TO FILL</code></td>
-<td>Milestone 2 sprint planning</td>
-<td><code>TO FILL</code></td>
+<td>28 Oct 2026</td>
+<td>Scrum meeting 1: tech stack</td>
+<td>All five members</td>
 <td>Section 5.4</td>
 </tr>
 <tr>
 <td>5</td>
-<td><code>TO FILL</code></td>
-<td>Tech stack and design</td>
-<td><code>TO FILL</code></td>
+<td>28 Oct 2026</td>
+<td>Scrum meeting 2: database schema, class diagram and component design</td>
+<td>Saloni, Abhijeet, Priyanshu</td>
 <td>Section 5.5</td>
 </tr>
 <tr>
 <td>6</td>
-<td><code>TO FILL</code></td>
-<td>Milestone 2 sprint review</td>
-<td><code>TO FILL</code></td>
+<td>29 Oct 2026</td>
+<td>Scrum meeting 3: database schema, class diagram and component design</td>
+<td>Saloni, Abhijeet, Priyanshu</td>
+<td>Section 5.5</td>
+</tr>
+<tr>
+<td>7</td>
+<td>1 Nov 2026</td>
+<td>Scrum meeting 4: frontend</td>
+<td>Saloni, Khushi, Shreya, Abhijeet</td>
 <td>Section 5.6</td>
 </tr>
+<tr>
+<td>8</td>
+<td>2 Nov 2026</td>
+<td>Milestone 2 review with the TA</td>
+<td>All five members and the TA</td>
+<td>Section 5.7</td>
+</tr>
+<tr>
+<td>9</td>
+<td>3 Nov 2026</td>
+<td>Scrum meeting 5: frontend</td>
+<td>Saloni, Khushi, Shreya, Abhijeet</td>
+<td>Section 5.6</td>
+</tr>
+<tr>
+<td>10</td>
+<td>6 Nov 2026</td>
+<td>Milestone 2 sprint review</td>
+<td>All five members</td>
+<td>Section 5.9</td>
+</tr>
 </tbody></table>
-<h3>5.3 Minutes: review meeting with the TA</h3>
-<p><strong>Date:</strong> <code>TO FILL</code> · <strong>Mode:</strong> <code>TO FILL</code> · <strong>Attendees:</strong> Abhijeet Kumar, Priyanshu Yadav, Saloni Puri, Shreya Pal, Khushi Dhankhar, and the team&#39;s TA (<code>TO FILL: name</code>)</p>
+<h3>5.3 Minutes: Milestone 1 review with the TA</h3>
+<p><strong>Date:</strong> 20 Oct 2026 · <strong>Mode:</strong> Online (Google Meet) · <strong>Attendees:</strong> Abhijeet Kumar, Priyanshu Yadav, Saloni Puri, Shreya Pal, Khushi Dhankhar, and the team&#39;s TA, Priyanshu Aggarwal</p>
 <p><strong>Objective.</strong> Discuss the problem statement, user stories, assumptions and documentation, and the steps needed to finish Milestone 1 before the deadline.</p>
 <p><strong>Discussion.</strong></p>
 <ul>
@@ -1935,125 +2704,152 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 </tr>
 <tr>
 <td>Compile the questions for the client and send them to the TA</td>
-<td><code>TO FILL</code></td>
+<td>Abhijeet</td>
 <td>Done: eight questions compiled; the client&#39;s answers are in Milestone 1 report Section 4 (SCRUM-37)</td>
 </tr>
 <tr>
 <td>Share the user research report with the TA and apply the feedback</td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL: date shared and changes made</code></td>
+<td>Abhijeet, Saloni, Khushi</td>
+<td>Done: shared on 25 Oct and revised to match the TA&#39;s remarks (below)</td>
 </tr>
 <tr>
 <td>Review the assumptions and user stories and update the documentation</td>
-<td><code>TO FILL</code></td>
+<td>Shreya, Priyanshu</td>
 <td>Done: affected stories updated with the client&#39;s answers (SCRUM-37)</td>
 </tr>
 <tr>
 <td>Decide whether to include an AI feature</td>
 <td>Whole team</td>
-<td>Open: the agreed design matches mentors deterministically (<span class="id">US-04</span>), and no AI feature is scheduled</td>
+<td>Done: three AI features decided on 6 Nov (Section 5.8)</td>
 </tr>
 </tbody></table>
-<h3>5.4 Minutes: Milestone 2 sprint planning</h3>
-<p><strong>Date:</strong> <code>TO FILL</code> · <strong>Mode:</strong> <code>TO FILL</code> · <strong>Attendees:</strong> <code>TO FILL</code></p>
-<p><strong>Agenda.</strong> Milestone 2 deliverables, sprint goal, tasks, owners and due dates.</p>
-<p><strong>Decisions.</strong></p>
+<p><strong>The TA&#39;s remarks on the revised report.</strong></p>
 <ul>
-<li><strong>Sprint goal</strong> (as set in Jira): plan the schedule in Jira; design components, classes and database; build most UI pages (frontend only); submit the M2 report and the Milestone 1–2 ZIP by 7 Nov.</li>
-<li>Twenty tasks with owners and due dates (Section 4.4).</li>
-<li>Milestone 2 is submitted on 7 Nov, one day before the deadline. Sprint 1 therefore runs from 8 to 22 Nov, and its foundation tasks (SCRUM-69 to SCRUM-75) are due 9–14 Nov.</li>
+<li><strong>Structure.</strong> The five mandatory sections (identification of users, pain points, user stories, requirements clarification, and assumptions and open questions) each have their own section.</li>
+<li><strong>Cover page.</strong> It records each member&#39;s individual contribution.</li>
+<li><strong>Client clarifications.</strong> Section 4 maps the client&#39;s answers, such as off-platform communication, student-initiated contact and the limits of mentor verification, to design decisions.</li>
+<li><strong>Sprint 1 workload.</strong> The report then committed 11 stories to Sprint 1. Each needs working API endpoints, a Swagger YAML and pytest tests in Milestone 3, so the TA asked the team to review the load during Milestone 2 planning. Section 4 plans ten stories for Sprint 1.</li>
+<li><strong>Honour Code.</strong> Each of the five members downloads, signs and submits their own copy on the portal.</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th>Member</th>
-<th>Done</th>
-<th>Doing</th>
-<th>Blockers</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Abhijeet Kumar</td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-</tr>
-<tr>
-<td>Priyanshu Yadav</td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-</tr>
-<tr>
-<td>Saloni Puri</td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-</tr>
-<tr>
-<td>Shreya Pal</td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-</tr>
-<tr>
-<td>Khushi Dhankhar</td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-</tr>
-</tbody></table>
-<h3>5.5 Minutes: tech stack and design</h3>
-<p><strong>Date:</strong> <code>TO FILL</code> · <strong>Mode:</strong> <code>TO FILL</code> · <strong>Attendees:</strong> <code>TO FILL</code></p>
-<p><strong>Decisions</strong> (recorded on 30 Oct in the tech-stack document, SCRUM-49).</p>
+<h3>5.4 Minutes: scrum meeting 1, tech stack</h3>
+<p><strong>Date:</strong> 28 Oct 2026 · <strong>Attendees:</strong> Abhijeet Kumar, Priyanshu Yadav, Saloni Puri, Shreya Pal, Khushi Dhankhar</p>
+<p><strong>Agenda.</strong> The start of Milestone 2, and the tech stack for the frontend, backend, database and tests.</p>
+<p><strong>Decisions</strong> (written up on 30 Oct in the tech-stack document, SCRUM-49).</p>
 <ul>
-<li><strong>Stack.</strong> The team agreed on a React frontend built with Vite, and a Flask REST API with SQLAlchemy (SQLite for development and tests, PostgreSQL for the hosted demo). Tests use pytest, and the Swagger YAML is generated from the code.</li>
+<li><strong>Stack.</strong> A React frontend built with Vite, and a Flask REST API with SQLAlchemy (SQLite for development and tests, PostgreSQL for the hosted demo). Tests use pytest, and the Swagger YAML is generated from the code.</li>
 <li><strong>Next.js and Supabase not adopted.</strong> The team considered a suggested Next.js and Supabase stack and did not adopt it, because Milestones 3 and 4 grade hand-written API code, a Swagger YAML and pytest tests.</li>
 <li><strong>Hosting deferred.</strong> Hosting and the email provider will be decided by 6 Dec (SCRUM-171).</li>
-<li><strong>Component design.</strong> It is ready for review (SCRUM-50), and its status model feeds the class and ER diagrams (SCRUM-51, SCRUM-52).</li>
+</ul>
+<h3>5.5 Minutes: scrum meetings 2 and 3, design</h3>
+<p><strong>Dates:</strong> 28 and 29 Oct 2026 · <strong>Attendees:</strong> Saloni Puri, Abhijeet Kumar, Priyanshu Yadav</p>
+<p><strong>Agenda.</strong> The database schema, the class diagram and the component design.</p>
+<p><strong>Outcome.</strong> The two meetings produced the three design documents in this report:</p>
+<ul>
+<li><strong>Component design</strong> (Abhijeet, SCRUM-50): the system&#39;s components, their responsibilities and the shared status model (Section 1).</li>
+<li><strong>Class diagram</strong> (Priyanshu, SCRUM-51): built on that status model (Section 2).</li>
+<li><strong>ER diagram</strong> (Priyanshu, SCRUM-52): the database schema (Section 3).</li>
+</ul>
+<h3>5.6 Minutes: scrum meetings 4 and 5, frontend</h3>
+<p><strong>Dates:</strong> 1 and 3 Nov 2026 · <strong>Attendees:</strong> Saloni Puri, Khushi Dhankhar, Shreya Pal, Abhijeet Kumar</p>
+<p><strong>Agenda.</strong> The frontend pages: which pages to build, who builds them, and how they follow the Figma designs.</p>
+<p><strong>Outcome.</strong> Khushi built the account and student pages, and Shreya the Figma designs and the mentor, IIC and leadership pages. Both sets now run as one React app (Section 7).</p>
+<h3>5.7 Minutes: Milestone 2 review with the TA</h3>
+<p><strong>Date:</strong> 2 Nov 2026 · <strong>Mode:</strong> Online (Google Meet) · <strong>Attendees:</strong> Abhijeet Kumar, Priyanshu Yadav, Saloni Puri, Shreya Pal, Khushi Dhankhar, and the team&#39;s TA, Priyanshu Aggarwal</p>
+<p><strong>Discussion.</strong></p>
+<ul>
+<li><strong>Project flow.</strong> Saloni explained how the team started the project and the overall project flow.</li>
+<li><strong>Frontend progress.</strong> Khushi presented the frontend coded so far, mainly the student pages. The TA asked whether ending a mentorship is handled by the student and the mentor together. The team confirmed that it is a shared feature. The same was confirmed for goals and next steps, and for session scheduling. Only the presented pages were coded at that point; the other screens existed as Figma designs.</li>
+<li><strong>Figma designs.</strong> Shreya presented the Figma screens. The team committed to finish the remaining designs by 6 Nov.</li>
+<li><strong>ER and class diagrams.</strong> Priyanshu presented the ER diagram and the class diagram.</li>
+<li><strong>Report and algorithms.</strong> Abhijeet presented the report and explained the algorithms the application uses, using the component design document.</li>
+<li><strong>AI integration.</strong> The TA asked whether the team had decided on any AI feature. Abhijeet said the team planned an AI chatbot to help students who could not find a suitable mentor. The TA noted that an AI feature could earn additional marks.</li>
+</ul>
+<p><strong>The TA&#39;s recommendations.</strong></p>
+<ul>
+<li>Make sure every user story is covered in the application.</li>
+<li>Include the class diagram and the ER diagram in the report.</li>
+<li>Include sprint information in the report.</li>
+<li>Add screenshots of the Kanban board.</li>
+<li>Include the Gantt chart for the project timeline.</li>
 </ul>
 <table>
 <thead>
 <tr>
-<th>Member</th>
-<th>Done</th>
-<th>Doing</th>
-<th>Blockers</th>
+<th>Action item</th>
+<th>Owner</th>
+<th>Follow-up</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Abhijeet Kumar</td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
+<td>Finish the remaining Figma designs by 6 Nov</td>
+<td>Shreya</td>
+<td>Done: all 25 screens are in the Figma file, each with a notes card</td>
 </tr>
 <tr>
-<td>Priyanshu Yadav</td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
+<td>Build the features beyond the pages already coded</td>
+<td>Khushi, Shreya</td>
+<td>Done for Milestone 2: the mentor, IIC and leadership pages and the problem submission form are coded (Section 7)</td>
 </tr>
 <tr>
-<td>Saloni Puri</td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
+<td>Plan the AI feature</td>
+<td>Whole team</td>
+<td>Done: decided on 6 Nov (Section 5.8)</td>
 </tr>
 <tr>
-<td>Shreya Pal</td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
+<td>Check that every user story is covered in the application and the report</td>
+<td>Abhijeet</td>
+<td>Section 7 maps each group of screens to its user stories</td>
 </tr>
 <tr>
-<td>Khushi Dhankhar</td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
-<td><code>TO FILL</code></td>
+<td>Add the class and ER diagrams, sprint information, the Kanban board and the Gantt chart to the report</td>
+<td>Saloni, Abhijeet</td>
+<td>Done: Section 2 (class diagram), Section 3 (ER diagram), Section 4 (sprints and the Gantt chart) and Section 6 (Jira timeline and Kanban board)</td>
 </tr>
 </tbody></table>
-<h3>5.6 Minutes: Milestone 2 sprint review</h3>
-<p><strong>Date:</strong> <code>TO FILL</code> · <strong>Mode:</strong> <code>TO FILL</code> · <strong>Attendees:</strong> <code>TO FILL</code></p>
+<h3>5.8 Decision after the review: AI features</h3>
+<p><strong>Date:</strong> 6 Nov 2026 · <strong>Decided by:</strong> the whole team</p>
+<p>The team compared possible AI features with the Milestone 1 findings and the design decisions already made. It chose three features in place of the chatbot mentioned at the review. In all three, IIC still assigns every mentor and the AI only suggests.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Page</th>
+<th>Used by</th>
+<th>What the AI does</th>
+<th>Safeguards</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Problem coach</td>
+<td>Submit your problem (S2)</td>
+<td>Student</td>
+<td>Suggests 1–5 topic tags from IIC&#39;s active list and points out missing detail: the target role, a timeframe, what the student has already tried</td>
+<td>The student chooses what to keep. Only the description is sent, never the name, roll number or CGPA</td>
+</tr>
+<tr>
+<td>Mentor fit notes</td>
+<td>Review and assign (I2)</td>
+<td>IIC</td>
+<td>Writes a short note on each recommended mentor: the tags they cover and miss, and whether their style matches the student&#39;s guidance preference</td>
+<td>The ranking stays deterministic (<span class="id">US-04</span>); the notes only explain it and never reorder or pick a mentor</td>
+</tr>
+<tr>
+<td>Feedback review</td>
+<td>Mentorship feedback (I8), opened from Monitoring</td>
+<td>IIC</td>
+<td>Summarises both sides&#39; progress feedback and the session pattern, and flags comments that may need a wellbeing check</td>
+<td>Reads feedback comments and session dates only, since sessions never record what was discussed. It never contacts anyone or changes the mentorship; IIC records &quot;I&#39;ll follow up&quot; or &quot;Not a concern&quot;</td>
+</tr>
+</tbody></table>
+<p><strong>Why these features.</strong></p>
+<ul>
+<li>They address pain points from the Milestone 1 interviews. Mentors need a specific problem (<span class="id">P-07</span>), and good topic tags help IIC find niche expertise (<span class="id">P-02</span>) without matching by hand (<span class="id">P-09</span>). The feedback review supports IIC&#39;s monitoring (<span class="id">P-10</span>).</li>
+<li>They keep the decisions recorded in Milestone 1: IIC assigns every mentor, and the matching rule uses no machine learning.</li>
+<li>A general career chatbot would give the kind of generic advice students said they had to verify themselves (<span class="id">P-04</span>).</li>
+</ul>
+<p><strong>Next steps.</strong> The screens are built as prototypes with sample data (Section 7). The user stories, Jira tasks and the choice of AI provider follow in Sprint 2; the API key stays on the Flask backend.</p>
+<h3>5.9 Minutes: Milestone 2 sprint review</h3>
+<p><strong>Date:</strong> 6 Nov 2026 · <strong>Mode:</strong> Online (Google Meet) · <strong>Attendees:</strong> Abhijeet Kumar, Priyanshu Yadav, Saloni Puri, Shreya Pal, Khushi Dhankhar</p>
 <table>
 <thead>
 <tr>
@@ -2067,60 +2863,93 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <td>Design of components</td>
 <td>1</td>
 <td>Abhijeet</td>
-<td><code>TO FILL</code></td>
+<td>Done</td>
 </tr>
 <tr>
 <td>Class diagram</td>
 <td>2</td>
 <td>Priyanshu</td>
-<td><code>TO FILL</code></td>
+<td>Done, verified</td>
 </tr>
 <tr>
 <td>Database design diagram</td>
 <td>3</td>
 <td>Priyanshu</td>
-<td><code>TO FILL</code></td>
+<td>Done, verified</td>
 </tr>
 <tr>
 <td>Sprint schedule</td>
 <td>4</td>
 <td>Saloni</td>
-<td><code>TO FILL</code></td>
+<td>Done</td>
 </tr>
 <tr>
 <td>Scrum meetings schedule and minutes</td>
 <td>5</td>
 <td>Saloni</td>
-<td><code>TO FILL</code></td>
+<td>Done</td>
 </tr>
 <tr>
 <td>Screenshots of the Gantt chart and Kanban board</td>
 <td>6</td>
 <td>Saloni</td>
-<td><code>TO FILL</code></td>
+<td>Done</td>
 </tr>
 <tr>
 <td>Screenshots of the frontend pages</td>
 <td>7</td>
 <td>Shreya, Khushi</td>
-<td><code>TO FILL</code></td>
+<td>Done</td>
 </tr>
 <tr>
 <td>Frontend code ZIP with README</td>
 <td>—</td>
 <td>Shreya</td>
-<td><code>TO FILL</code></td>
+<td>Done</td>
 </tr>
 <tr>
 <td>team-050-milestone-1-2.zip, validity check passed</td>
 <td>—</td>
 <td>Abhijeet</td>
-<td><code>TO FILL</code></td>
+<td>Done</td>
 </tr>
 </tbody></table>
-<p><strong>What went well.</strong> <code>TO FILL</code></p>
-<p><strong>What to change in Sprint 1.</strong> <code>TO FILL</code></p>
-<p><strong>Action items.</strong> <code>TO FILL</code></p>
+<p><strong>What went well.</strong></p>
+<ul>
+<li>Every Milestone 2 deliverable was ready at this review, a day before the team&#39;s 7 Nov target.</li>
+<li>The design took two meetings (28 and 29 Oct), and the class and ER diagrams were verified against the component design.</li>
+<li>All the TA&#39;s recommendations from 2 Nov are in the report, and every Figma screen now exists as a page, along with the three AI features.</li>
+</ul>
+<p><strong>What to change in Sprint 1.</strong></p>
+<ul>
+<li>Agree one approach before coding. The student pages and the mentor and IIC pages were built in different ways and had to be merged.</li>
+<li>Check each page against its Figma notes while building it, not at the end.</li>
+</ul>
+<p><strong>Action items.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Action item</th>
+<th>Owner</th>
+<th>Due</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Submit the Milestone 2 deliverables on the portal (SCRUM-68)</td>
+<td>Saloni</td>
+<td>7 Nov</td>
+</tr>
+<tr>
+<td>Start the backend foundation (SCRUM-69 to SCRUM-75)</td>
+<td>Abhijeet, Priyanshu, Khushi</td>
+<td>9–14 Nov</td>
+</tr>
+<tr>
+<td>Write user stories and Jira tasks for the three AI features, and choose the AI provider</td>
+<td>Whole team</td>
+<td>23 Nov (Sprint 2 planning)</td>
+</tr>
+</tbody></table>
 
 <style>
 .shot { margin: 8pt 0 2pt; break-inside: avoid; }
@@ -2154,7 +2983,6 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <div class="page-break"></div>
 
 <h2>Section 7: UI Pages</h2>
-<p><code>TO FILL: a screenshot and a one-line description of each page built in React (Shreya Pal: SCRUM-57, 58, 59, 61; Khushi Dhankhar: SCRUM-56, 60, 62, 63, 64). Save the screenshots in docs/milestone-2/images/ui/.</code></p>
 <p>The pages follow the Figma wireframes (25 screens):</p>
 <table>
 <thead>
@@ -2189,5 +3017,335 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <td>Programme insights</td>
 <td><span class="id">US-19</span></td>
 </tr>
+<tr>
+<td>AI</td>
+<td>Problem coach (on S2), mentor fit notes (on I2) and the mentorship feedback review (I8, new)</td>
+<td><span class="id">US-03</span>, <span class="id">US-04</span>, <span class="id">US-08</span>, <span class="id">US-17</span></td>
+</tr>
 </tbody></table>
+<h3>7.1 Pages built so far</h3>
+<p>The React app (Section 1.4, F1 to F5) holds every page in the wireframes, for all four roles, plus the three AI features. Each page keeps its own sample data: the student Ananya Rao, the mentor Rahul Menon, the IIC coordinator Deepa Krishnan and, for leadership, Prof. Anand Rajan. Buttons that need the API, such as <strong>Log in</strong>, show a notice until the backend is connected in Milestone 3. Every page shares the student pages&#39; design: their colours, type, cards, buttons and navigation bar, applied to the mentor, IIC and leadership pages through one shared stylesheet. All screenshots are 1440 px wide, the width of the wireframes. The account and student pages were taken on 4 November 2026, the problem coach on 6 November, and the mentor, IIC and insights pages on 7 November.</p>
+<table>
+<thead>
+<tr>
+<th>Figure</th>
+<th>Page</th>
+<th>What it shows</th>
+<th>Wireframe</th>
+<th>Stories</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>7.1</td>
+<td>Welcome</td>
+<td>Landing page with <strong>Get started</strong> and <strong>I already have an account</strong></td>
+<td>—</td>
+<td><span class="id">US-01</span></td>
+</tr>
+<tr>
+<td>7.2</td>
+<td>Log in</td>
+<td>Institute email and password, with a link to reset a forgotten password</td>
+<td>A1</td>
+<td><span class="id">US-01</span></td>
+</tr>
+<tr>
+<td>7.3</td>
+<td>Forgot password</td>
+<td>Asks for the institute email to send a reset link to</td>
+<td>—</td>
+<td><span class="id">US-01</span></td>
+</tr>
+<tr>
+<td>7.4</td>
+<td>Reset password</td>
+<td>New password, entered twice</td>
+<td>—</td>
+<td><span class="id">US-01</span></td>
+</tr>
+<tr>
+<td>7.5</td>
+<td>Student sign-up</td>
+<td>Roll number and institute email; open only to students registered with the mentoring programme</td>
+<td>A2</td>
+<td><span class="id">US-01</span></td>
+</tr>
+<tr>
+<td>7.6</td>
+<td>Verify your email</td>
+<td>Where the link was sent, what to do next, and a resend button</td>
+<td>A3</td>
+<td><span class="id">US-01</span></td>
+</tr>
+<tr>
+<td>7.7</td>
+<td>Complete your profile</td>
+<td>Name and roll number from registration (read-only), programme level, CGPA (shown only to IIC), completed courses and career interest</td>
+<td>S1</td>
+<td><span class="id">US-02</span></td>
+</tr>
+<tr>
+<td>7.8</td>
+<td>My mentoring problem</td>
+<td>The request with its status tracker, description, tags and desired outcome, which the student can edit or withdraw; notifications and other states of the request</td>
+<td>S3</td>
+<td><span class="id">US-03</span>, <span class="id">US-05</span></td>
+</tr>
+<tr>
+<td>7.9</td>
+<td>Dashboard: mentor assigned</td>
+<td>The mentor&#39;s expertise, experience, preferred channel, availability and contact details, an editable first message, and <strong>I have reached out</strong></td>
+<td>S4</td>
+<td><span class="id">US-05</span></td>
+</tr>
+<tr>
+<td>7.10</td>
+<td>Profile</td>
+<td>The same profile fields, editable after onboarding</td>
+<td>S1</td>
+<td><span class="id">US-02</span></td>
+</tr>
+<tr>
+<td>7.11</td>
+<td>Mentorship workspace</td>
+<td>Goal, next steps, sessions, the feedback checkpoint banner and the mentor&#39;s contact card</td>
+<td>S5</td>
+<td><span class="id">US-06</span>, <span class="id">US-11</span></td>
+</tr>
+<tr>
+<td>7.12</td>
+<td>Feedback dialog</td>
+<td>Progress status (no progress, some progress, goal met) and a comment, visible only to IIC</td>
+<td>S6</td>
+<td><span class="id">US-08</span></td>
+</tr>
+<tr>
+<td>7.13</td>
+<td>Change or end request</td>
+<td>Change mentor or end the mentorship, with a reason; the mentorship stays active until IIC decides</td>
+<td>S7</td>
+<td><span class="id">US-07</span></td>
+</tr>
+<tr>
+<td>7.14</td>
+<td>Schedule a session</td>
+<td>Date, time and channel for a new session in the workspace</td>
+<td>S5</td>
+<td><span class="id">US-11</span></td>
+</tr>
+<tr>
+<td>7.15</td>
+<td>Mentor account activation</td>
+<td>A welcome naming the IIC coordinator who verified the mentor, and a password to activate the account</td>
+<td>A4</td>
+<td><span class="id">US-14</span></td>
+</tr>
+<tr>
+<td>7.16</td>
+<td>Mentor dashboard</td>
+<td>Load against capacity, sessions this month and the next feedback date; IIC&#39;s capacity request; assignments to accept or decline; active mentorships</td>
+<td>M1</td>
+<td><span class="id">US-09</span>, <span class="id">US-10</span></td>
+</tr>
+<tr>
+<td>7.17</td>
+<td>Decline an assignment</td>
+<td>A required reason and an optional note for IIC; the problem goes back to IIC&#39;s queue</td>
+<td>M2</td>
+<td><span class="id">US-09</span></td>
+</tr>
+<tr>
+<td>7.18</td>
+<td>Availability and contact</td>
+<td>The availability switch, preferred channel, contact details, free times and time zone; capacity and expertise, which IIC sets</td>
+<td>M3</td>
+<td><span class="id">US-10</span></td>
+</tr>
+<tr>
+<td>7.19</td>
+<td>Mentorship workspace (mentor)</td>
+<td>The feedback due date, goal, next steps, sessions to confirm or manage, and the student&#39;s details</td>
+<td>M4</td>
+<td><span class="id">US-06</span>, <span class="id">US-11</span>, <span class="id">US-12</span></td>
+</tr>
+<tr>
+<td>7.20</td>
+<td>Log a session</td>
+<td>Date, duration, channel and topic of a held session; nothing about what was said</td>
+<td>M5</td>
+<td><span class="id">US-11</span></td>
+</tr>
+<tr>
+<td>7.21</td>
+<td>End the mentorship</td>
+<td>A required reason and optional details for IIC</td>
+<td>M6</td>
+<td><span class="id">US-13</span></td>
+</tr>
+<tr>
+<td>7.22</td>
+<td>Problem queue</td>
+<td>Reassignment alerts pinned at the top, status filters, search, and how long each problem has waited</td>
+<td>I1</td>
+<td><span class="id">US-16</span>, <span class="id">US-21</span></td>
+</tr>
+<tr>
+<td>7.23</td>
+<td>Review and assign</td>
+<td>The student&#39;s profile (CGPA for IIC only), problem, tags and guidance preferences, beside up to four ranked mentors</td>
+<td>I2</td>
+<td><span class="id">US-04</span>, <span class="id">US-16</span>, <span class="id">US-20</span></td>
+</tr>
+<tr>
+<td>7.24</td>
+<td>Mentor pool</td>
+<td>Mentors by status with expertise, availability and load; verify, resend link and capacity requests</td>
+<td>I3</td>
+<td><span class="id">US-14</span></td>
+</tr>
+<tr>
+<td>7.25</td>
+<td>Verify a mentor</td>
+<td>The mentor&#39;s background and experience, and the expertise tags IIC sets before the activation link is sent</td>
+<td>I3</td>
+<td><span class="id">US-14</span></td>
+</tr>
+<tr>
+<td>7.26</td>
+<td>Import mentors from CSV</td>
+<td>The required columns; invalid rows are reported with their row number and reason</td>
+<td>I3</td>
+<td><span class="id">US-14</span></td>
+</tr>
+<tr>
+<td>7.27</td>
+<td>Registered students</td>
+<td>The roster with sign-up and profile status, the last import&#39;s result, CSV import and removal</td>
+<td>I4</td>
+<td><span class="id">US-15</span></td>
+</tr>
+<tr>
+<td>7.28</td>
+<td>Monitoring</td>
+<td>Active mentorships with session counts, latest progress and flags, filter chips by flag, and open cases</td>
+<td>I5</td>
+<td><span class="id">US-17</span>, <span class="id">US-21</span></td>
+</tr>
+<tr>
+<td>7.29</td>
+<td>Case</td>
+<td>The student&#39;s request, the mentor&#39;s side recorded by IIC, the decision with a reason, and the case history</td>
+<td>I6</td>
+<td><span class="id">US-18</span></td>
+</tr>
+<tr>
+<td>7.30</td>
+<td>Settings and topic tags</td>
+<td>Timing windows and default capacity, approved email domains and topic tags (tabs), and the audit log</td>
+<td>I7</td>
+<td><span class="id">US-01</span>, <span class="id">US-03</span>, <span class="id">US-21</span></td>
+</tr>
+<tr>
+<td>7.31</td>
+<td>Programme insights</td>
+<td>Headline figures, demand against supply by topic, outcomes of ended mentorships, topics short of mentors, and CSV export</td>
+<td>L1</td>
+<td><span class="id">US-19</span></td>
+</tr>
+<tr>
+<td>7.32</td>
+<td>Problem coach (AI)</td>
+<td>The problem form with the coach&#39;s suggested tags and what would make the problem more specific</td>
+<td>S2</td>
+<td><span class="id">US-03</span>, <span class="id">US-20</span></td>
+</tr>
+<tr>
+<td>7.33</td>
+<td>Mentor fit notes (AI)</td>
+<td>Recommended mentors, each with a note on the tags they cover and miss and how their style fits</td>
+<td>I2</td>
+<td><span class="id">US-04</span></td>
+</tr>
+<tr>
+<td>7.34</td>
+<td>Mentorship feedback review (AI)</td>
+<td>A wellbeing flag for IIC to act on, the AI summary, both sides&#39; feedback and the session dates</td>
+<td>New</td>
+<td><span class="id">US-08</span>, <span class="id">US-17</span></td>
+</tr>
+</tbody></table>
+<h3>7.2 Account pages</h3>
+<div class="shot"><img src="../images/ui/welcome.png" alt="Welcome page"><p class="fig-caption">Figure 7.1. Welcome.</p></div>
+
+<div class="shot"><img src="../images/ui/login.png" alt="Log in page"><p class="fig-caption">Figure 7.2. Log in (A1).</p></div>
+
+<div class="shot"><img src="../images/ui/forgot-password.png" alt="Forgot password page"><p class="fig-caption">Figure 7.3. Forgot password.</p></div>
+
+<div class="shot"><img src="../images/ui/reset-password.png" alt="Reset password page"><p class="fig-caption">Figure 7.4. Reset password.</p></div>
+
+<div class="shot"><img src="../images/ui/signup.png" alt="Student sign-up page"><p class="fig-caption">Figure 7.5. Student sign-up (A2).</p></div>
+
+<div class="shot"><img src="../images/ui/email-verification.png" alt="Verify your email page"><p class="fig-caption">Figure 7.6. Verify your email (A3).</p></div>
+
+<h3>7.3 Student pages</h3>
+<div class="shot"><img src="../images/ui/profile-onboarding.png" alt="Complete your profile page"><p class="fig-caption">Figure 7.7. Complete your profile, shown once after the email is verified (S1).</p></div>
+
+<div class="shot"><img src="../images/ui/my-problem.png" alt="My mentoring problem page"><p class="fig-caption">Figure 7.8. My mentoring problem, before a mentor has accepted (S2, S3).</p></div>
+
+<div class="shot"><img src="../images/ui/dashboard-mentor-assigned.png" alt="Student dashboard after a mentor is assigned"><p class="fig-caption">Figure 7.9. Dashboard after the mentor accepts (S4).</p></div>
+
+<div class="shot"><img src="../images/ui/profile.png" alt="Student profile page"><p class="fig-caption">Figure 7.10. Profile (S1).</p></div>
+
+<div class="shot"><img src="../images/ui/workspace.png" alt="Mentorship workspace"><p class="fig-caption">Figure 7.11. Mentorship workspace (S5).</p></div>
+
+<div class="shot"><img src="../images/ui/workspace-feedback.png" alt="Feedback dialog over the mentorship workspace"><p class="fig-caption">Figure 7.12. Feedback dialog (S6).</p></div>
+
+<div class="shot"><img src="../images/ui/workspace-change-or-end.png" alt="Change or end request dialog over the mentorship workspace"><p class="fig-caption">Figure 7.13. Change or end request (S7).</p></div>
+
+<div class="shot"><img src="../images/ui/workspace-schedule.png" alt="Schedule a session form in the mentorship workspace"><p class="fig-caption">Figure 7.14. Scheduling a session in the workspace (S5).</p></div>
+
+<h3>7.4 Mentor pages</h3>
+<div class="shot"><img src="../images/ui/mentor-activation.png" alt="Mentor account activation page"><p class="fig-caption">Figure 7.15. Mentor account activation, opened from the link IIC sends after verifying the mentor (A4).</p></div>
+
+<div class="shot"><img src="../images/ui/mentor-dashboard.png" alt="Mentor dashboard"><p class="fig-caption">Figure 7.16. Mentor dashboard with a capacity request from IIC and an assignment waiting for a response (M1).</p></div>
+
+<div class="shot"><img src="../images/ui/mentor-decline.png" alt="Decline dialog over the mentor dashboard"><p class="fig-caption">Figure 7.17. Declining an assignment needs a reason (M2).</p></div>
+
+<div class="shot"><img src="../images/ui/mentor-availability.png" alt="Availability and contact page"><p class="fig-caption">Figure 7.18. Availability and contact; capacity and expertise are read-only (M3).</p></div>
+
+<div class="shot"><img src="../images/ui/mentor-workspace.png" alt="Mentor's view of the mentorship workspace"><p class="fig-caption">Figure 7.19. Mentorship workspace, mentor's view (M4).</p></div>
+
+<div class="shot"><img src="../images/ui/mentor-log-session.png" alt="Log a session dialog"><p class="fig-caption">Figure 7.20. Logging a held session: when, how long, which channel and the topic, never what was said (M5).</p></div>
+
+<div class="shot"><img src="../images/ui/mentor-end.png" alt="End mentorship dialog"><p class="fig-caption">Figure 7.21. Ending a mentorship needs a reason; IIC is notified (M6).</p></div>
+
+<h3>7.5 IIC pages</h3>
+<div class="shot"><img src="../images/ui/iic-problem-queue.png" alt="IIC problem queue"><p class="fig-caption">Figure 7.22. Problem queue, with problems that need reassignment pinned at the top (I1).</p></div>
+
+<div class="shot"><img src="../images/ui/iic-review-assign.png" alt="Review and assign page"><p class="fig-caption">Figure 7.23. Reviewing a problem next to the recommended mentors (I2).</p></div>
+
+<div class="shot"><img src="../images/ui/iic-mentor-pool.png" alt="Mentor pool"><p class="fig-caption">Figure 7.24. Mentor pool (I3).</p></div>
+
+<div class="shot"><img src="../images/ui/iic-verify-mentor.png" alt="Verify mentor side panel"><p class="fig-caption">Figure 7.25. Verifying a mentor and setting their expertise tags (I3).</p></div>
+
+<div class="shot"><img src="../images/ui/iic-import-mentors.png" alt="Import mentors from CSV dialog"><p class="fig-caption">Figure 7.26. Importing mentors from a CSV file (I3).</p></div>
+
+<div class="shot"><img src="../images/ui/iic-roster.png" alt="Registered students page"><p class="fig-caption">Figure 7.27. Registered students, with the result of the last roster import (I4).</p></div>
+
+<div class="shot"><img src="../images/ui/iic-monitoring.png" alt="Monitoring page"><p class="fig-caption">Figure 7.28. Monitoring active mentorships, flagged rows first (I5).</p></div>
+
+<div class="shot"><img src="../images/ui/iic-case.png" alt="Case page"><p class="fig-caption">Figure 7.29. A change request case: the student's side, the mentor's side and IIC's decision (I6).</p></div>
+
+<div class="shot"><img src="../images/ui/iic-settings.png" alt="Settings and topic tags page"><p class="fig-caption">Figure 7.30. Settings: timing windows and capacity, with the audit log below (I7).</p></div>
+
+<h3>7.6 Programme insights</h3>
+<div class="shot"><img src="../images/ui/insights.png" alt="Programme insights dashboard"><p class="fig-caption">Figure 7.31. Programme insights for leadership: aggregates only, no names or contact details (L1).</p></div>
+
+<h3>7.7 AI features</h3>
+<p>The three AI features decided on 6 Nov (Section 5.8) are built as prototype screens. Until the Flask API is connected, simple rules and sample text stand in for the AI&#39;s answers.</p>
+<div class="shot"><img src="../images/ui/ai-problem-coach.png" alt="Submit your problem page with the Problem coach's suggestions"><p class="fig-caption">Figure 7.32. Problem coach on the problem form (S2): suggested tags the student can add, and what would make the problem more specific.</p></div>
+
+<div class="shot"><img src="../images/ui/ai-mentor-fit-notes.png" alt="Review and assign page with AI notes under each recommended mentor"><p class="fig-caption">Figure 7.33. Mentor fit notes on the review and assign page (I2). The ranking is unchanged; the notes explain it.</p></div>
+
+<div class="shot"><img src="../images/ui/ai-feedback-review.png" alt="Mentorship feedback review page with a wellbeing flag and an AI summary"><p class="fig-caption">Figure 7.34. Mentorship feedback review (I8), opened from Monitoring: a wellbeing flag for IIC to act on, the AI summary and both sides' feedback.</p></div>
 </body></html>
