@@ -19,7 +19,8 @@ export default function FilterBar({ chips, chip, setChip, counts, query, setQuer
       <Form.Control
         type="search"
         size="sm"
-        className="w-auto ms-auto"
+        className="ms-auto"
+        style={{ width: '18rem' }} // wide enough for the whole placeholder
         placeholder={placeholder}
         aria-label={placeholder}
         value={query}

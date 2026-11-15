@@ -1,16 +1,14 @@
 import { useState } from 'react'
 import { Button, Col, Form, ListGroup, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { addTag, getTags, setTagActive } from '../../../api/tags'
 import Field from '../../../components/Field'
-import Loading from '../../../components/Loading'
 import Section from '../../../components/Section'
-import useFetch from '../../../hooks/useFetch'
+import { TAGS } from '../../../constants/tags'
 import { required } from '../../../utils/rules'
 
 // Tags are retired, never deleted, so past problems and insights keep their topics.
 export default function TagManager() {
-  const [tags, reload] = useFetch(getTags)
+  const [tags, setTags] = useState(TAGS)
   const [query, setQuery] = useState('')
   const {
     register,
@@ -19,18 +17,18 @@ export default function TagManager() {
     setError,
     formState: { errors },
   } = useForm()
-  if (!tags) return <Loading />
 
   const groups = [...new Set(tags.map((t) => t.group))]
   const shown = tags.filter((t) => t.name.toLowerCase().includes(query.trim().toLowerCase()))
-  const add = (values) =>
-    addTag({ name: values.name.trim(), group: values.group }).then(
-      () => {
-        reset()
-        reload()
-      },
-      (e) => setError('name', { message: e.message }),
-    )
+
+  function add(values) {
+    const name = values.name.trim()
+    if (tags.some((t) => t.name.toLowerCase() === name.toLowerCase())) return setError('name', { message: 'That tag already exists.' })
+    setTags([...tags, { id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'), name, group: values.group, problems: 0, active: true }])
+    reset()
+  }
+
+  const toggle = (id) => setTags(tags.map((t) => (t.id === id ? { ...t, active: !t.active } : t)))
 
   return (
     <>
@@ -61,7 +59,7 @@ export default function TagManager() {
                       <span className={t.active ? '' : 'text-muted text-decoration-line-through'}>{t.name}</span>
                       <span className="d-flex align-items-center gap-3">
                         <small className="text-muted">{t.problems} problems</small>
-                        <Button size="sm" variant="outline-secondary" onClick={() => setTagActive(t.id, !t.active).then(reload)}>
+                        <Button size="sm" variant="outline-secondary" onClick={() => toggle(t.id)}>
                           {t.active ? 'Retire' : 'Restore'}
                         </Button>
                       </span>

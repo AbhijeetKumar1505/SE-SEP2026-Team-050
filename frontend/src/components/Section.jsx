@@ -3,9 +3,9 @@ import { Card } from 'react-bootstrap'
 // Titled card with an optional action button on the right.
 export default function Section({ title, action, children }) {
   return (
-    <Card className="mb-3">
+    <Card className="mb-4">
       <Card.Body>
-        <div className="d-flex justify-content-between align-items-center mb-2">
+        <div className="d-flex justify-content-between align-items-center gap-2 mb-3">
           <Card.Title as="h2" className="h6 mb-0">
             {title}
           </Card.Title>

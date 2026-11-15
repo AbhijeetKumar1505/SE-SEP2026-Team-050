@@ -1,7 +1,5 @@
-import { uid } from './mockUtils'
-
-// Seed list: 30 tags in 7 groups, [name, problems so far]. IIC reviews it in Settings (I7).
-// Shared with the student "Submit your problem" page (S2).
+// Draft list: 30 tags in 7 groups, [name, problems so far]. IIC reviews it in Settings (I7);
+// the mentor pool uses it for expertise. Pages copy it into their own state before changing it.
 const SEED = {
   'Career direction': [
     ['Choosing a career path', 14],
@@ -49,6 +47,6 @@ const SEED = {
   ],
 }
 
-export const tags = Object.entries(SEED).flatMap(([group, list]) =>
-  list.map(([name, problems]) => ({ id: uid(), name, group, problems, active: true })),
+export const TAGS = Object.entries(SEED).flatMap(([group, list]) =>
+  list.map(([name, problems]) => ({ id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'), name, group, problems, active: true })),
 )

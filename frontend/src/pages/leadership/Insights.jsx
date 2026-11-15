@@ -1,15 +1,51 @@
 import { useState } from 'react'
 import { Button, ButtonGroup, Card, Col, Form, ListGroup, ProgressBar, Row } from 'react-bootstrap'
 import { Bar, BarChart, CartesianGrid, Legend, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { getInsights } from '../../api/insights'
 import DataTable from '../../components/DataTable'
-import Loading from '../../components/Loading'
 import Pill from '../../components/Pill'
 import Section from '../../components/Section'
 import { OUTCOMES, RANGES, SERIES } from '../../constants/insights'
-import useFetch from '../../hooks/useFetch'
 import { downloadCsv } from '../../utils/download'
-import { fmtDate } from '../../utils/format'
+import { fmtDate, today } from '../../utils/format'
+
+// Sample data for this page. Each page keeps its own data until the Flask API is connected.
+// Aggregates for the last 3 months, [topic, problems, mentors, unassigned]; other ranges are scaled from these.
+const BASE_TOPICS = [
+  ['Industry and role requirements', 22, 6, 2],
+  ['Data engineering', 18, 4, 3],
+  ['Choosing a career path', 16, 9, 0],
+  ['Data structures and algorithms (DSA)', 15, 7, 1],
+  ['Finding internships', 14, 5, 1],
+  ['SQL and database design', 12, 6, 0],
+  ['Applying abroad', 9, 2, 2],
+  ['Research opportunities', 4, 1, 1],
+]
+const SCALE = { '3m': 1, '6m': 1.9, '12m': 3.6 }
+
+// Aggregates only: no names or contact details ever reach this page.
+function insightsFor(range) {
+  const k = SCALE[range]
+  const ended = Math.round(40 * k)
+  const goalMet = Math.round(21 * k)
+  const someProgress = Math.round(14 * k)
+  return {
+    problemsSubmitted: Math.round(142 * k),
+    changePct: -18, // vs the previous period of the same length
+    medianDaysToAssignment: 2.4,
+    activeMentorships: 38,
+    asOf: today(),
+    stillUnassigned: 9,
+    topics: BASE_TOPICS.map(([topic, problems, mentors, unassigned]) => ({
+      id: topic,
+      topic,
+      problems: Math.round(problems * k),
+      mentors,
+      unassigned,
+    })),
+    outcomes: { ended, goalMet, someProgress, noProgress: ended - goalMet - someProgress },
+    ratioThreshold: 3, // "demand outstrips supply" at this many problems per available mentor
+  }
+}
 
 const topicColumns = [
   { header: 'Topic', cell: (t) => t.topic },
@@ -21,8 +57,7 @@ const topicColumns = [
 export default function Insights() {
   const [range, setRange] = useState(RANGES[0].value)
   const [view, setView] = useState('chart')
-  const [data] = useFetch(getInsights, range)
-  if (!data) return <Loading />
+  const data = insightsFor(range)
 
   const { topics, outcomes, ratioThreshold } = data
   const pct = (n) => Math.round((n / outcomes.ended) * 100)

@@ -1,30 +1,38 @@
 import { useState } from 'react'
 import { Button, Col, Form, Row } from 'react-bootstrap'
 import { useForm, useWatch } from 'react-hook-form'
-import { getProfile, updateProfile } from '../../api/mentor'
 import Field from '../../components/Field'
-import Loading from '../../components/Loading'
 import Section from '../../components/Section'
 import Tags from '../../components/Tags'
 import { CHANNELS, CONTACT } from '../../constants/mentor'
-import useFetch from '../../hooks/useFetch'
 import { required } from '../../utils/rules'
 
+// Sample data for this page. Each page keeps its own data until the Flask API is connected.
+const PROFILE = {
+  available: true,
+  channel: 'Google Meet',
+  contact: 'rahul.menon@example.com',
+  availability: 'Weekday evenings',
+  timezone: 'IST (UTC+05:30)',
+  capacity: 3, // read-only: IIC sets it
+  expertise: ['Data engineering', 'SQL and database design', 'Python programming', 'Job search strategy'], // read-only: IIC sets it
+  experience: ['Data Engineer · 2 years', 'Analytics intern · 6 months', 'Real-time pipeline with Kafka · 3 months'],
+}
+
 export default function MentorAvailability() {
-  const [profile, reload] = useFetch(getProfile)
+  const [profile, setProfile] = useState(PROFILE)
   const [saved, setSaved] = useState(false)
   const {
     register,
     handleSubmit,
     control,
     formState: { errors, isDirty, isSubmitting },
-  } = useForm({ values: profile ?? undefined })
+  } = useForm({ values: profile })
   const channel = useWatch({ control, name: 'channel' })
-  if (!profile) return <Loading />
 
-  const save = async (values) => {
-    await updateProfile(values)
-    await reload()
+  function save(values) {
+    const { capacity, expertise, experience } = profile // IIC sets these; the mentor can't change them
+    setProfile({ ...values, capacity, expertise, experience })
     setSaved(true)
   }
 

@@ -1,0 +1,205 @@
+
+.welcome-page {
+  min-height: 100vh;
+  background: #f4f6fa;
+  font-family: Inter, Arial, sans-serif;
+  color: #202b3c;
+}
+
+.welcome-navbar {
+  height: 72px;
+  padding: 0 6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-bottom: 1px solid #e3e7ed;
+}
+
+.welcome-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 17px;
+}
+
+.welcome-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #245a9a;
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.welcome-login-btn {
+  background: white;
+  border: 1px solid #245a9a;
+  color: #245a9a;
+  padding: 10px 24px;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.welcome-content {
+  max-width: 1250px;
+  margin: auto;
+  min-height: calc(100vh - 72px);
+  padding: 70px 6%;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  align-items: center;
+  gap: 70px;
+}
+
+.welcome-label {
+  color: #245a9a;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.welcome-text h1 {
+  font-size: clamp(38px, 5vw, 58px);
+  line-height: 1.13;
+  margin: 22px 0;
+  letter-spacing: -1.5px;
+}
+
+.welcome-text h1 span {
+  color: #245a9a;
+}
+
+.welcome-text > p {
+  max-width: 560px;
+  color: #647084;
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.welcome-primary-btn,
+.welcome-secondary-btn {
+  padding: 14px 22px;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.welcome-primary-btn {
+  background: #245a9a;
+  color: white;
+  border: 1px solid #245a9a;
+}
+
+.welcome-secondary-btn {
+  background: white;
+  color: #245a9a;
+  border: 1px solid #cbd5e1;
+}
+
+.welcome-note {
+  margin-top: 28px;
+  font-size: 12px;
+  color: #8792a2;
+}
+
+.welcome-visual {
+  display: flex;
+  justify-content: center;
+}
+
+.welcome-visual-card {
+  width: 100%;
+  max-width: 390px;
+  min-height: 340px;
+  padding: 38px;
+  border-radius: 18px;
+  background: #245a9a;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 18px 45px rgba(36, 90, 154, 0.18);
+}
+
+.welcome-visual-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 28px;
+}
+
+.welcome-visual-card h3 {
+  font-size: 27px;
+  line-height: 1.4;
+  margin: 0 0 14px;
+}
+
+.welcome-visual-card p {
+  color: #dce8f7;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.welcome-visual-footer {
+  display: flex;
+  gap: 22px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .welcome-content {
+    grid-template-columns: 1fr;
+    gap: 45px;
+    padding-top: 55px;
+  }
+
+  .welcome-text h1 {
+    font-size: 40px;
+  }
+
+  .welcome-visual-card {
+    min-height: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-navbar {
+    padding: 0 5%;
+  }
+
+  .welcome-brand {
+    font-size: 14px;
+  }
+
+  .welcome-actions {
+    flex-direction: column;
+  }
+
+  .welcome-actions button {
+    width: 100%;
+  }
+}

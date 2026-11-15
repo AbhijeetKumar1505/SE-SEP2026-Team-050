@@ -1,10 +1,11 @@
-import Pill from './Pill'
-
+// Topic tags, drawn like the expertise tags on the student pages (.mt-tag in theme.css).
 export default function Tags({ tags }) {
   return (
-    <div className="d-flex flex-wrap gap-1">
+    <div className="d-flex flex-wrap gap-2">
       {tags.map((t) => (
-        <Pill key={t}>{t}</Pill>
+        <span key={t} className="mt-tag">
+          {t}
+        </span>
       ))}
     </div>
   )

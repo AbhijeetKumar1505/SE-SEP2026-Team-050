@@ -25,7 +25,7 @@ function SessionFields({ planned, session, form: { register, errors, control } }
             required: 'Enter how long it lasted.',
             valueAsNumber: true,
             min: { value: 5, message: 'At least 5 minutes.' },
-            max: { value: 480, message: 'At most 480 minutes.' },
+            max: { value: 240, message: 'At most 240 minutes.' },
             validate: (v) => Number.isInteger(v) || 'Enter a whole number.',
           })}
         />

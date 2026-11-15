@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import { Alert, Button } from 'react-bootstrap'
 
-// Catches failed requests and render errors in a page. AppLayout re-keys it on navigation.
+// Catches render errors in a page. AppLayout re-keys it on navigation.
 export default class ErrorBoundary extends Component {
   state = { error: null }
 
