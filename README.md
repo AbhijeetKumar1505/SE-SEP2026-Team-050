@@ -23,7 +23,15 @@ Backlog, sprints and tasks are tracked in Jira: [SCRUM board](https://youmat.atl
 | Milestone | Focus | Deadline | Docs |
 |---|---|---|---|
 | 1 | Identify user requirements | 25 Oct 2026 | [docs/milestone-1](docs/milestone-1/README.md) |
-| 2 | Scheduling and design (submitted with `team-050-milestone-1-2.zip`) | 01 Nov 2026 | |
+| 2 | Scheduling and design (submitted with `team-050-milestone-1-2.zip`) | 07 Nov 2026 | [docs/milestone-2](docs/milestone-2/README.md) |
 | 3 | Sprint 1: API endpoints, test cases, user testing | 22 Nov 2026 | |
 | 4 | Sprint 2: API endpoints, test cases, user testing | 06 Dec 2026 | |
 | 5 | Final report and working prototype (submitted with `team-050-milestone-3-5.zip`) | 20 Dec 2026 | |
+
+## Repository layout
+
+| Folder | What it holds |
+|---|---|
+| [backend](backend/README.md) | Flask REST API, one module per component. Its README explains how to set it up, run it and test it |
+| [frontend](frontend/README.md) | React web client. Its README explains how to install and run it |
+| [docs](docs) | Report sources (Markdown) and the built PDFs for each milestone, plus the topic-tag list |
