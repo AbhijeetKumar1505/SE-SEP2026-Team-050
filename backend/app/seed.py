@@ -16,14 +16,13 @@ from flask.cli import with_appcontext
 
 from .audit.models import AuditLog
 from .auth import services as auth_services
-from .auth.models import ROLES, Role, User
+from .auth.models import User
 from .extensions import db
 from .feedback.models import Feedback
 from .matching.models import Recommendation
 from .mentors.models import Availability, Mentor
 from .mentorships.models import Mentorship
-from .monitoring.models import MonitoringFlag
-from .notifications.models import EmailTemplate, Notification
+from .notifications.models import EmailTemplate
 from .problems.models import Problem
 from .sessions.models import Session
 from .settings.models import EmailDomain, TimingWindow, TopicTag
@@ -135,14 +134,17 @@ def seed_database() -> dict[str, int]:
 
     # 3. Staff accounts
     iic_user = get_or_create_user("deepa.iic@ds.study.iitm.ac.in", (auth_services.IIC,))
-    leadership_user = get_or_create_user("leadership@ds.study.iitm.ac.in", (auth_services.LEADERSHIP,))
+    get_or_create_user("leadership@ds.study.iitm.ac.in", (auth_services.LEADERSHIP,))
 
     # 4. Mentors
     mentors_spec = [
         {
             "email": "arun.mentor@ds.study.iitm.ac.in",
             "name": "Arun Kumar",
-            "bio": "Senior Computer Vision Engineer at Robotics India with 6+ years in deep learning, object detection and edge deployment.",
+            "bio": (
+                "Senior Computer Vision Engineer at Robotics India with 6+ years in deep learning, "
+                "object detection and edge deployment."
+            ),
             "org": "Robotics India",
             "style": "Code reviews, architecture diagrams and hands-on debugging.",
             "channel": "Google Meet",
@@ -152,7 +154,10 @@ def seed_database() -> dict[str, int]:
         {
             "email": "priya.mentor@ds.study.iitm.ac.in",
             "name": "Dr. Priya Sharma",
-            "bio": "Research Scientist specializing in Speech recognition and NLP. Alumna of IIT Madras with publications at INTERSPEECH and ICASSP.",
+            "bio": (
+                "Research Scientist specializing in Speech recognition and NLP. Alumna of IIT Madras with "
+                "publications at INTERSPEECH and ICASSP."
+            ),
             "org": "SpeechAI Research Labs",
             "style": "Research methodology, literature reading strategies and paper critique.",
             "channel": "Google Meet",
@@ -162,7 +167,10 @@ def seed_database() -> dict[str, int]:
         {
             "email": "rohit.mentor@ds.study.iitm.ac.in",
             "name": "Rohit Verma",
-            "bio": "Staff Backend Engineer with expertise in relational database architecture, distributed systems, and Python/Flask microservices.",
+            "bio": (
+                "Staff Backend Engineer with expertise in relational database architecture, distributed systems, "
+                "and Python/Flask microservices."
+            ),
             "org": "FinTech Core Corp",
             "style": "System design reviews, database indexing strategies and industry best practices.",
             "channel": "Google Meet",
@@ -172,7 +180,10 @@ def seed_database() -> dict[str, int]:
         {
             "email": "sneha.mentor@ds.study.iitm.ac.in",
             "name": "Sneha Patel",
-            "bio": "Lead Data Analyst experienced in business analytics, KPI modelling, and transitioning from college to corporate analytics roles.",
+            "bio": (
+                "Lead Data Analyst experienced in business analytics, KPI modelling, and transitioning from college "
+                "to corporate analytics roles."
+            ),
             "org": "Retail Insights Global",
             "style": "Portfolio assessment, resume restructuring and mock technical interviews.",
             "channel": "Google Meet",
@@ -182,7 +193,10 @@ def seed_database() -> dict[str, int]:
         {
             "email": "vikram.mentor@ds.study.iitm.ac.in",
             "name": "Vikram Iyer",
-            "bio": "Doctoral Researcher in Computational Neuroscience and Machine Learning at European Research Institute.",
+            "bio": (
+                "Doctoral Researcher in Computational Neuroscience and Machine Learning at European Research "
+                "Institute."
+            ),
             "org": "NeuroTech Institute",
             "style": "Academic guidance, foreign university admissions and scholarship navigation.",
             "channel": "Google Meet",
@@ -298,7 +312,10 @@ def seed_database() -> dict[str, int]:
         {
             "student": student_records[0],
             "title": "Choosing electives and practical project advice for Computer Vision",
-            "desc": "I am planning my term electives and want to decide between Deep Learning for Computer Vision and Advanced AI. I also need guidance on structuring a portfolio project.",
+            "desc": (
+                "I am planning my term electives and want to decide between Deep Learning for Computer Vision "
+                "and Advanced AI. I also need guidance on structuring a portfolio project."
+            ),
             "status": "mentor_assigned",
             "tags": ["Choosing electives", "Computer vision", "Deep learning"],
             "desired_outcome": "Clarity on elective difficulty and an outline for an end-to-end vision project.",
@@ -306,7 +323,10 @@ def seed_database() -> dict[str, int]:
         {
             "student": student_records[1],
             "title": "Shortlisting research topics in Speech Technology for Master's applications",
-            "desc": "I want to apply for higher studies abroad in Speech AI and would like advice on reading papers and finding research internships.",
+            "desc": (
+                "I want to apply for higher studies abroad in Speech AI and would like advice on reading papers "
+                "and finding research internships."
+            ),
             "status": "mentor_assigned",
             "tags": ["Speech technology", "Research careers", "Master's or PhD abroad"],
             "desired_outcome": "A reading list of key recent papers and strategy for professor outreach.",
@@ -314,7 +334,10 @@ def seed_database() -> dict[str, int]:
         {
             "student": student_records[2],
             "title": "DSA problem-solving strategy and SQL schema optimization",
-            "desc": "Struggling with medium DSA questions on trees and dynamic programming, plus writing efficient multi-table joins for course projects.",
+            "desc": (
+                "Struggling with medium DSA questions on trees and dynamic programming, plus writing efficient "
+                "multi-table joins for course projects."
+            ),
             "status": "submitted",
             "tags": ["Data structures and algorithms (DSA)", "SQL and database design"],
             "desired_outcome": "Weekly study plan and guidance on schema normalization.",
@@ -369,7 +392,10 @@ def seed_database() -> dict[str, int]:
             mentor_id=mentor_records[0].id,
             status="active",
             goal="Finalize elective selections and build a benchmarked object detection project for resume.",
-            next_steps="1. Review elective syllabus; 2. Implement baseline YOLO detection; 3. Document inference benchmarks.",
+            next_steps=(
+                "1. Review elective syllabus; 2. Implement baseline YOLO detection; "
+                "3. Document inference benchmarks."
+            ),
             assigned_at=now - timedelta(days=10),
             answered_at=now - timedelta(days=9),
             reached_out_at=now - timedelta(days=9),
@@ -488,12 +514,18 @@ def seed_database() -> dict[str, int]:
                 EmailTemplate(
                     template_key="assignment_notice",
                     subject="New student problem assigned to you",
-                    body="Hello {mentor_name}, a student has been assigned to you. Please review and respond within 72 hours.",
+                    body=(
+                        "Hello {mentor_name}, a student has been assigned to you. "
+                        "Please review and respond within 72 hours."
+                    ),
                 ),
                 EmailTemplate(
                     template_key="acceptance_notice",
                     subject="Your mentor has accepted your request",
-                    body="Hello {student_name}, {mentor_name} has accepted your request. Here are their preferred contact details.",
+                    body=(
+                        "Hello {student_name}, {mentor_name} has accepted your request. "
+                        "Here are their preferred contact details."
+                    ),
                 ),
                 EmailTemplate(
                     template_key="session_reminder",

@@ -19,7 +19,8 @@ class Problem(db.Model):
     student_id = db.Column(db.Integer, db.ForeignKey("student.id", ondelete="CASCADE"), nullable=False)
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    status = db.Column(db.String(32), nullable=False, default="submitted")  # submitted, under_review, awaiting_mentor, mentor_assigned, reassignment_needed, closed, withdrawn
+    # submitted, under_review, awaiting_mentor, mentor_assigned, reassignment_needed, closed, withdrawn
+    status = db.Column(db.String(32), nullable=False, default="submitted")
     submitted_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
     closed_at = db.Column(db.DateTime(timezone=True))
     close_reason = db.Column(db.Text)

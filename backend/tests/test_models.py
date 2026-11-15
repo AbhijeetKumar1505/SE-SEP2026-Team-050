@@ -3,18 +3,15 @@
 from datetime import UTC, datetime
 
 from app.audit.models import AuditLog
-from app.auth.models import EmailVerification, Role, User
 from app.cases.models import CaseRecord
 from app.extensions import db
 from app.feedback.models import Feedback
 from app.matching.models import Recommendation
-from app.mentors.models import Availability, Mentor
-from app.mentorships.models import Mentorship
+from app.mentors.models import Mentor
 from app.monitoring.models import MonitoringFlag
-from app.notifications.models import EmailTemplate, Notification
 from app.problems.models import Problem
 from app.sessions.models import Session
-from app.settings.models import EmailDomain, TimingWindow, TopicTag
+from app.settings.models import TimingWindow, TopicTag
 from app.students.models import Student
 
 

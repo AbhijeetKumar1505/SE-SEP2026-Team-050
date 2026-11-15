@@ -2,9 +2,7 @@
 
 from app.mentors.models import Mentor
 from app.mentorships.models import Mentorship
-from app.problems.models import Problem
 from app.seed import seed_database
-from app.settings.models import TimingWindow, TopicTag
 from app.students.models import Student
 
 

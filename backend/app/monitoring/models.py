@@ -12,7 +12,8 @@ class MonitoringFlag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     mentorship_id = db.Column(db.Integer, db.ForeignKey("mentorship.id", ondelete="CASCADE"), nullable=False)
     timing_window_id = db.Column(db.Integer, db.ForeignKey("timing_window.id"))
-    flag_type = db.Column(db.String(64), nullable=False)  # first_session_overdue, inactive, feedback_overdue, reassignment_needed
+    # first_session_overdue, inactive, feedback_overdue, reassignment_needed
+    flag_type = db.Column(db.String(64), nullable=False)
     status = db.Column(db.String(32), nullable=False, default="active")  # active, resolved
     raised_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
     resolved_at = db.Column(db.DateTime(timezone=True))

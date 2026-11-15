@@ -23,7 +23,8 @@ class Mentor(db.Model):
     mentoring_style = db.Column(db.Text)
     preferred_channel = db.Column(db.String(64), default="Google Meet")
     time_zone = db.Column(db.String(64), default="Asia/Kolkata")
-    verification_status = db.Column(db.String(32), nullable=False, default="pending")  # pending, verified, active, removed
+    # pending, verified, active, removed
+    verification_status = db.Column(db.String(32), nullable=False, default="pending")
     verified_at = db.Column(db.DateTime(timezone=True))
     verified_by_user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     capacity = db.Column(db.Integer, nullable=False, default=1)

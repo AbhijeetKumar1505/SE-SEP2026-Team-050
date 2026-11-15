@@ -34,7 +34,9 @@ class Notification(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
     sent_at = db.Column(db.DateTime(timezone=True))
 
-    recipient = db.relationship("User", backref=db.backref("notifications", cascade="all, delete-orphan", lazy="selectin"))
+    recipient = db.relationship(
+        "User", backref=db.backref("notifications", cascade="all, delete-orphan", lazy="selectin")
+    )
     template = db.relationship("EmailTemplate")
 
     def __repr__(self) -> str:
