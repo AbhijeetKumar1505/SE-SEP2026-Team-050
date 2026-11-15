@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { AuthContext, DEMO_USERS } from './useAuth'
+import { AuthContext } from './useAuth'
 
-export function AuthProvider({ children, initialRole = 'mentor' }) {
-  const [user, setUser] = useState(DEMO_USERS[initialRole])
+export function AuthProvider({ children, initialUser = null }) {
+  const [user, setUser] = useState(initialUser)
   const logout = () => setUser(null)
   return <AuthContext value={{ user, setUser, logout }}>{children}</AuthContext>
 }

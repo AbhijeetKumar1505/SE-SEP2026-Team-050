@@ -1,13 +1,12 @@
-import { useNavigate } from 'react-router-dom'
-import PublicPage from '../components/PublicPage'
+import { Container } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 
 export default function NotFound() {
-  const navigate = useNavigate()
   return (
-    <PublicPage title="Page not found" intro="The page you’re looking for doesn’t exist.">
-      <button type="button" className="login-submit-btn" onClick={() => navigate('/')}>
-        Go to your home page
-      </button>
-    </PublicPage>
+    <Container className="py-5 text-center">
+      <h1 className="h3">Page not found</h1>
+      <p className="text-muted">The page you’re looking for doesn’t exist.</p>
+      <Link to="/">Go to your home page</Link>
+    </Container>
   )
 }

@@ -12,6 +12,7 @@ export const STATUS_TONE = {
   Removed: 'secondary',
   'Signed up': 'success',
   'Not signed up': 'secondary',
+  Withdrawn: 'secondary',
   Planned: 'primary',
   Held: 'success',
   Cancelled: 'secondary',

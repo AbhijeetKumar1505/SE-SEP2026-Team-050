@@ -21,7 +21,7 @@ export default function FormModal({
         </Modal.Header>
         <Modal.Body>{children}</Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-secondary" onClick={onClose}>
+          <Button variant="light" onClick={onClose}>
             {cancelLabel}
           </Button>
           <Button type="submit" variant={variant} disabled={busy}>

@@ -1,5 +1,10 @@
-// [path, label] per role. Add student / iic links here.
+// [path, label] per role.
 export const NAV_LINKS = {
+  student: [
+    ['/student', 'My problem'],
+    ['/student/mentorship', 'Mentorship'],
+    ['/student/profile', 'Profile'],
+  ],
   mentor: [
     ['/mentor', 'Dashboard'],
     ['/mentor/availability', 'Availability & contact'],
@@ -13,3 +18,5 @@ export const NAV_LINKS = {
   ],
   leadership: [['/leadership', 'Programme insights']],
 }
+
+export const ROLE_LABELS = { student: 'Student', mentor: 'Mentor', iic: 'IIC', leadership: 'Leadership' }
