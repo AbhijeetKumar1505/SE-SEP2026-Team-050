@@ -1,0 +1,8 @@
+# Virtual environments and Python caches are ignored by the root .gitignore.
+instance/
+*.db
+.env
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
