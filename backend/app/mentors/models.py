@@ -1,0 +1,55 @@
+"""C3 tables: MENTOR, AVAILABILITY, and MENTOR_TAG."""
+
+from ..extensions import db
+from ..models import utcnow
+
+mentor_tag = db.Table(
+    "mentor_tag",
+    db.Column("mentor_id", db.Integer, db.ForeignKey("mentor.id", ondelete="CASCADE"), primary_key=True),
+    db.Column("topic_tag_id", db.Integer, db.ForeignKey("topic_tag.id", ondelete="CASCADE"), primary_key=True),
+)
+
+
+class Mentor(db.Model):
+    """A volunteer mentor profile linked 1:1 to a User account."""
+
+    __tablename__ = "mentor"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, unique=True)
+    name = db.Column(db.String(128), nullable=False)
+    biography = db.Column(db.Text)
+    organisation = db.Column(db.String(128))
+    mentoring_style = db.Column(db.Text)
+    preferred_channel = db.Column(db.String(64), default="Google Meet")
+    time_zone = db.Column(db.String(64), default="Asia/Kolkata")
+    verification_status = db.Column(db.String(32), nullable=False, default="pending")  # pending, verified, active, removed
+    verified_at = db.Column(db.DateTime(timezone=True))
+    verified_by_user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    capacity = db.Column(db.Integer, nullable=False, default=1)
+    available = db.Column(db.Boolean, nullable=False, default=True)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+
+    user = db.relationship("User", foreign_keys=[user_id], backref=db.backref("mentor_profile", uselist=False))
+    verified_by = db.relationship("User", foreign_keys=[verified_by_user_id])
+    tags = db.relationship("TopicTag", secondary=mentor_tag, lazy="selectin")
+    availabilities = db.relationship("Availability", backref="mentor", cascade="all, delete-orphan", lazy="selectin")
+
+    def __repr__(self) -> str:
+        return f"<Mentor {self.id} {self.name}>"
+
+
+class Availability(db.Model):
+    """A mentor's offered time slot."""
+
+    __tablename__ = "availability"
+
+    id = db.Column(db.Integer, primary_key=True)
+    mentor_id = db.Column(db.Integer, db.ForeignKey("mentor.id", ondelete="CASCADE"), nullable=False)
+    day_of_week = db.Column(db.String(16), nullable=False)  # Monday..Sunday
+    start_time = db.Column(db.String(8), nullable=False)  # HH:MM
+    end_time = db.Column(db.String(8), nullable=False)  # HH:MM
+    time_zone = db.Column(db.String(64), default="Asia/Kolkata")
+
+    def __repr__(self) -> str:
+        return f"<Availability mentor_id={self.mentor_id} {self.day_of_week} {self.start_time}-{self.end_time}>"
