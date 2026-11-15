@@ -1,0 +1,58 @@
+MINUTES OF MEETING (MoM) WITH TA
+
+Meeting Objective:
+To discuss the project problem statement, user stories, assumptions, documentation, and the next steps required to complete the project before the submission deadline.
+
+1. Introduction and Team Responsibilities
+- The meeting began with introductions from each team member.
+- Each member explained their respective roles and responsibilities within the team.
+
+2. Problem Statement Discussion
+- The team presented and explained the project problem statement to the TA.
+- The discussion focused on establishing a common understanding of the problem, project objectives, and the proposed solution.
+
+3. User Story Explanation
+- Student User Stories: Shreya explained the user stories related to students.
+- Mentor User Stories: Priyanshu explained the user stories related to mentors.
+- Documentation Support: Abhijeet Kumar and Saloni prepared the project documentation and explained the details whenever clarification was required.
+
+4. Discussion on Assumptions
+- Khushi explained two assumptions made by the team as part of the project requirements.
+- The assumptions were presented to clarify the team's current understanding of the problem and requirements.
+
+5. Client Clarifications
+- The TA advised the team to identify and compile questions that require clarification from the client.
+- The team was instructed to share these queries with the TA, who would facilitate obtaining the necessary answers from the client.
+- The team will incorporate the relevant clarifications into the project documentation and make the necessary changes to align with the client's requirements.
+
+6. Pending User Interviews
+- A few user interviews are still pending and need to be completed as soon as possible.
+- The team discussed the importance of completing the remaining interviews promptly to gather sufficient user insights.
+- The findings from the interviews will be compiled and incorporated into the user research report.
+
+7. Report Submission and TA Review
+- The team needs to prepare and share the user research report with the TA before the final submission deadline.
+- The TA will review the report and provide feedback on areas that require improvement or modification.
+- The team will incorporate the suggested changes before the final submission.
+- Sharing the report in advance will provide sufficient time to address feedback and avoid last-minute changes.
+
+8. Action Items
+- Complete the remaining user interviews as soon as possible.
+- Compile the findings from the user interviews and prepare the report.
+- Share the user research report with the TA well before the submission deadline.
+- Review the TA's feedback and make the necessary changes to the report.
+- Compile questions requiring client clarification and share them with the TA.
+- Incorporate the client's clarifications into the project documentation wherever required.
+- Review the assumptions and user stories and update the documentation if necessary.
+
+9. Meeting Outcome
+The meeting established a shared understanding of the project problem statement, team responsibilities, user stories, and assumptions. The TA also clarified the process for obtaining answers to client-related queries.
+
+The team identified the completion of the remaining user interviews and the timely preparation and review of the user research report as important pending tasks. The report must be shared with the TA before the final submission deadline so that feedback can be incorporated and necessary changes can be made in advance.
+
+10. Next Steps
+The team will prioritize completing the pending user interviews, preparing the user research report, and sharing it with the TA for review before the submission deadline. In parallel, the team will compile client-related queries and incorporate the relevant clarifications and feedback into the project documentation.
+
+11. Discussion on AI Integration- The TA asked whether the team plans to integrate any AI-based features into the project.
+- The team explained that AI integration is currently under discussion and brainstorming.
+- No AI feature has been finalized yet, and the team will explore potential use cases before making a final decision.

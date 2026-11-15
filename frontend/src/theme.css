@@ -1,0 +1,840 @@
+/*
+  One look for the whole app: the student design (Khushi's pages, see App.css and the
+  page stylesheets in pages/) applied to the Bootstrap components used by the mentor,
+  IIC and leadership pages. Colours, type sizes, corners and spacing come from those
+  stylesheets. The student pages do not use Bootstrap components, so these rules
+  leave them unchanged.
+*/
+
+:root {
+  /* Student design palette */
+  --mt-primary: #245a9a;
+  --mt-primary-hover: #1d4a80;
+  --mt-primary-soft: #e9f1fc;
+  --mt-text: #25272b;
+  --mt-text-soft: #30343c;
+  --mt-muted: #646874;
+  --mt-faint: #777b85;
+  --mt-border: #d9dde4;
+  --mt-control-border: #d6dce5;
+  --mt-divider: #e8ebef;
+  --mt-page: #f4f5f7;
+  --mt-success: #138879;
+  --mt-success-soft: #e4f4f1;
+  --mt-warning: #bd6500;
+  --mt-warning-soft: #fff1df;
+  --mt-danger: #c52b22;
+  --mt-danger-line: #d52f26;
+  --mt-danger-soft: #fdebea;
+  --mt-neutral-soft: #e9eaed;
+
+  /* Bootstrap, mapped onto the palette */
+  --bs-primary: #245a9a;
+  --bs-primary-rgb: 36, 90, 154;
+  --bs-success: #138879;
+  --bs-success-rgb: 19, 136, 121;
+  --bs-danger: #c52b22;
+  --bs-danger-rgb: 197, 43, 34;
+  --bs-warning: #bd6500;
+  --bs-warning-rgb: 189, 101, 0;
+  --bs-link-color: #245a9a;
+  --bs-link-color-rgb: 36, 90, 154;
+  --bs-link-hover-color: #1d4a80;
+  --bs-link-hover-color-rgb: 29, 74, 128;
+  --bs-body-font-family: Inter, Arial, sans-serif;
+  --bs-border-color: #d9dde4;
+  --bs-border-radius: 7px;
+  --bs-border-radius-sm: 6px;
+  --bs-border-radius-lg: 11px;
+  --bs-focus-ring-color: rgba(36, 90, 154, 0.15);
+
+  --bs-primary-bg-subtle: #e9f1fc;
+  --bs-primary-text-emphasis: #245a9a;
+  --bs-primary-border-subtle: #c9d8ee;
+  --bs-info-bg-subtle: #e9f1fc;
+  --bs-info-text-emphasis: #245a9a;
+  --bs-info-border-subtle: #c9d8ee;
+  --bs-success-bg-subtle: #e4f4f1;
+  --bs-success-text-emphasis: #13776d;
+  --bs-success-border-subtle: #bfe3dc;
+  --bs-warning-bg-subtle: #fff1df;
+  --bs-warning-text-emphasis: #9a5200;
+  --bs-warning-border-subtle: #f5d6ad;
+  --bs-danger-bg-subtle: #fdebea;
+  --bs-danger-text-emphasis: #c52b22;
+  --bs-danger-border-subtle: #f2c7c3;
+  --bs-secondary-bg-subtle: #f1f3f6;
+  --bs-secondary-text-emphasis: #4a4f59;
+  --bs-secondary-border-subtle: #d6dce5;
+}
+
+body {
+  background-color: var(--mt-page);
+  color: var(--mt-text);
+}
+
+/* ---------- Base type inside the role pages and their dialogs ---------- */
+
+.app-shell,
+.modal,
+.offcanvas,
+.dropdown-menu {
+  --bs-body-font-size: 0.875rem;
+  --bs-body-color: #25272b;
+  --bs-secondary-color: #646874;
+  --bs-emphasis-color: #25272b;
+  --bs-heading-color: #25272b;
+  font-size: 14px;
+  color: var(--mt-text);
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: var(--mt-page);
+}
+
+.app-shell h1,
+.app-shell h2,
+.app-shell h3,
+.app-shell h4,
+.app-shell h5,
+.app-shell h6,
+.app-shell .h1,
+.app-shell .h2,
+.app-shell .h3,
+.app-shell .h4,
+.app-shell .h5,
+.app-shell .h6,
+.modal-title,
+.offcanvas-title {
+  font-weight: 700;
+  color: var(--mt-text);
+}
+
+/* Page title, as on the student pages */
+.app-shell h1 {
+  font-size: 27px;
+}
+
+.app-shell .h4 {
+  font-size: 19px;
+}
+
+.app-shell .h5 {
+  font-size: 17px;
+}
+
+.app-shell .h6 {
+  font-size: 16px;
+}
+
+.app-shell small,
+.app-shell .small {
+  font-size: 13px;
+}
+
+.mt-page a:not(.btn):not(.nav-link):not(.dropdown-item) {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.mt-page a:not(.btn):not(.nav-link):not(.dropdown-item):hover {
+  text-decoration: underline;
+}
+
+/* Page area: same width and padding as the student pages */
+.mt-page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 38px 5.5%;
+}
+
+/* ---------- Header: the student navigation bar ---------- */
+/* Same values as the student pages' .navbar in App.css, under their own names so the
+   student stylesheets keep loading in their original order. */
+
+.mt-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  height: 66px;
+  background: #fff;
+  border-bottom: 1px solid #e2e5ea;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  gap: 30px;
+}
+
+.mt-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  font-size: 16px;
+}
+
+.mt-brand-logo {
+  width: 29px;
+  height: 29px;
+  background: var(--mt-primary);
+  color: #fff;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.mt-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  height: 100%;
+}
+
+.mt-nav-links a {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #626570;
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  padding-top: 3px;
+}
+
+.mt-nav-links a:hover {
+  color: var(--mt-primary);
+}
+
+.mt-nav-links a.active {
+  color: var(--mt-primary);
+  border-bottom-color: var(--mt-primary);
+}
+
+.mt-user-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.role-switch {
+  width: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mt-muted);
+  border-color: var(--mt-control-border);
+  border-radius: 7px;
+  padding: 5px 30px 5px 10px;
+  text-transform: capitalize;
+}
+
+.mt-bell.btn {
+  position: relative;
+  padding: 0;
+  margin-right: 5px;
+  border: 0;
+  font-size: 21px;
+  line-height: 1;
+  color: #555b66;
+}
+
+.mt-bell.btn:hover,
+.mt-bell.btn:focus-visible {
+  color: var(--mt-primary);
+}
+
+.mt-bell b {
+  position: absolute;
+  top: -5px;
+  right: -9px;
+  background: var(--mt-danger);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 9px;
+  padding: 3px 5px;
+}
+
+.mt-avatar {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #e7effb;
+  color: var(--mt-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.user-toggle.btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  text-align: left;
+  color: var(--mt-text);
+}
+
+.user-toggle strong,
+.user-toggle small {
+  display: block;
+}
+
+.user-toggle strong {
+  font-size: 13px;
+}
+
+.user-toggle small {
+  color: var(--mt-faint);
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+/* ---------- Cards (the student "workspace card") ---------- */
+
+.app-shell .card {
+  --bs-card-bg: #fff;
+  --bs-card-border-color: var(--mt-border);
+  --bs-card-border-radius: 11px;
+  --bs-card-inner-border-radius: 10px;
+  --bs-card-spacer-y: 24px;
+  --bs-card-spacer-x: 24px;
+  --bs-card-title-spacer-y: 0;
+  --bs-card-title-color: var(--mt-text);
+}
+
+.app-shell .card .card {
+  --bs-card-border-radius: 9px;
+  --bs-card-inner-border-radius: 8px;
+  --bs-card-spacer-y: 20px;
+  --bs-card-spacer-x: 20px;
+}
+
+.app-shell .card .card-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Figures on the dashboard and insights cards */
+.app-shell .card .h2,
+.app-shell .card .h3 {
+  font-size: 26px;
+  margin-top: 6px;
+}
+
+/* ---------- Buttons ---------- */
+
+.app-shell .btn,
+.modal .btn,
+.offcanvas .btn {
+  --bs-btn-font-size: 14px;
+  --bs-btn-font-weight: 600;
+  --bs-btn-padding-x: 15px;
+  --bs-btn-padding-y: 9px;
+  --bs-btn-border-radius: 7px;
+}
+
+.app-shell .btn-sm,
+.modal .btn-sm,
+.offcanvas .btn-sm {
+  --bs-btn-font-size: 13px;
+  --bs-btn-padding-x: 12px;
+  --bs-btn-padding-y: 6px;
+  --bs-btn-border-radius: 7px;
+}
+
+.btn-primary {
+  --bs-btn-bg: #245a9a;
+  --bs-btn-border-color: #245a9a;
+  --bs-btn-hover-bg: #1d4a80;
+  --bs-btn-hover-border-color: #1d4a80;
+  --bs-btn-active-bg: #1d4a80;
+  --bs-btn-active-border-color: #1d4a80;
+  --bs-btn-disabled-bg: #245a9a;
+  --bs-btn-disabled-border-color: #245a9a;
+  --bs-btn-disabled-opacity: 0.45;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #245a9a;
+  --bs-btn-bg: #fff;
+  --bs-btn-border-color: #245a9a;
+  --bs-btn-hover-color: #245a9a;
+  --bs-btn-hover-bg: #e9f1fc;
+  --bs-btn-hover-border-color: #245a9a;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #245a9a;
+  --bs-btn-active-border-color: #245a9a;
+  --bs-btn-disabled-color: #245a9a;
+  --bs-btn-disabled-bg: #fff;
+}
+
+/* The student pages' neutral button */
+.btn-outline-secondary {
+  --bs-btn-color: #30343c;
+  --bs-btn-bg: #fff;
+  --bs-btn-border-color: #d6dce5;
+  --bs-btn-hover-color: #25272b;
+  --bs-btn-hover-bg: #f5f6f8;
+  --bs-btn-hover-border-color: #c4ccd8;
+  --bs-btn-active-color: #25272b;
+  --bs-btn-active-bg: #eef0f3;
+  --bs-btn-active-border-color: #c4ccd8;
+  --bs-btn-disabled-color: #30343c;
+  --bs-btn-disabled-bg: #fff;
+  --bs-btn-disabled-border-color: #d6dce5;
+}
+
+.btn-secondary {
+  --bs-btn-bg: #4a4f59;
+  --bs-btn-border-color: #4a4f59;
+  --bs-btn-hover-bg: #3c4049;
+  --bs-btn-hover-border-color: #3c4049;
+  --bs-btn-active-bg: #3c4049;
+  --bs-btn-active-border-color: #3c4049;
+}
+
+/* The student pages' danger button: white with a red outline */
+.btn-outline-danger {
+  --bs-btn-color: #d52f26;
+  --bs-btn-bg: #fff;
+  --bs-btn-border-color: #d52f26;
+  --bs-btn-hover-color: #c52b22;
+  --bs-btn-hover-bg: #fdebea;
+  --bs-btn-hover-border-color: #c52b22;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #c52b22;
+  --bs-btn-active-border-color: #c52b22;
+}
+
+.btn-danger {
+  --bs-btn-bg: #c52b22;
+  --bs-btn-border-color: #c52b22;
+  --bs-btn-hover-bg: #a8241c;
+  --bs-btn-hover-border-color: #a8241c;
+  --bs-btn-active-bg: #a8241c;
+  --bs-btn-active-border-color: #a8241c;
+  --bs-btn-disabled-bg: #c52b22;
+  --bs-btn-disabled-border-color: #c52b22;
+}
+
+.btn-success {
+  --bs-btn-bg: #138879;
+  --bs-btn-border-color: #138879;
+  --bs-btn-hover-bg: #0f6e62;
+  --bs-btn-hover-border-color: #0f6e62;
+  --bs-btn-active-bg: #0f6e62;
+  --bs-btn-active-border-color: #0f6e62;
+}
+
+.btn-warning {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #bd6500;
+  --bs-btn-border-color: #bd6500;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #9a5200;
+  --bs-btn-hover-border-color: #9a5200;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #9a5200;
+  --bs-btn-active-border-color: #9a5200;
+}
+
+.btn-link {
+  --bs-btn-color: #245a9a;
+  --bs-btn-hover-color: #1d4a80;
+  text-decoration: none;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Pills and tags ---------- */
+
+/* Status pills, like "Active" and "Held" on the student pages */
+.mt-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 18px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.mt-pill-primary {
+  background: var(--mt-primary-soft);
+  color: var(--mt-primary);
+}
+
+.mt-pill-success {
+  background: var(--mt-success-soft);
+  color: var(--mt-success);
+}
+
+.mt-pill-warning {
+  background: var(--mt-warning-soft);
+  color: var(--mt-warning);
+}
+
+.mt-pill-danger {
+  background: var(--mt-danger-soft);
+  color: var(--mt-danger);
+}
+
+.mt-pill-secondary {
+  background: #f1f3f6;
+  color: #4a4f59;
+}
+
+/* Topic tags, like the expertise tags on the student pages */
+.mt-tag {
+  display: inline-block;
+  border: 1px solid #d6dce5;
+  border-radius: 20px;
+  background: #fff;
+  padding: 5px 11px;
+  font-size: 12px;
+  color: #333842;
+}
+
+/* ---------- Banners (alerts) ---------- */
+
+.app-shell .alert,
+.modal .alert,
+.offcanvas .alert {
+  --bs-alert-padding-x: 17px;
+  --bs-alert-padding-y: 14px;
+  --bs-alert-border-radius: 9px;
+  border: 0;
+  font-size: 14px;
+}
+
+/* "Mentor assigned — you reach out first": dark text, blue title and edge */
+.app-shell .alert-info,
+.modal .alert-info,
+.offcanvas .alert-info {
+  --bs-alert-color: var(--mt-text);
+  border-left: 4px solid var(--mt-primary);
+}
+
+.app-shell .alert-info strong,
+.modal .alert-info strong,
+.offcanvas .alert-info strong {
+  color: var(--mt-primary);
+}
+
+/* "Feedback checkpoint due": dark text, orange title */
+.app-shell .alert-warning,
+.modal .alert-warning,
+.offcanvas .alert-warning {
+  --bs-alert-color: var(--mt-text);
+}
+
+.app-shell .alert-warning strong,
+.modal .alert-warning strong,
+.offcanvas .alert-warning strong {
+  color: var(--mt-warning);
+}
+
+/* "Conversations happen on Google Meet…" */
+.app-shell .alert-secondary,
+.modal .alert-secondary,
+.offcanvas .alert-secondary {
+  --bs-alert-bg: var(--mt-neutral-soft);
+  --bs-alert-color: #555b66;
+}
+
+/* ---------- Forms ---------- */
+
+.app-shell .form-control,
+.app-shell .form-select,
+.modal .form-control,
+.offcanvas .form-control,
+.modal .form-select,
+.offcanvas .form-select {
+  border-color: var(--mt-control-border);
+  border-radius: 7px;
+  font-size: 14px;
+  padding: 9px 12px;
+  color: var(--mt-text);
+}
+
+.app-shell .form-select,
+.modal .form-select,
+.offcanvas .form-select {
+  padding-right: 34px;
+}
+
+.app-shell .form-control-sm,
+.app-shell .form-select-sm {
+  font-size: 13px;
+  padding: 6px 10px;
+}
+
+.app-shell .form-select-sm {
+  padding-right: 30px;
+}
+
+.app-shell .form-control:focus,
+.app-shell .form-select:focus,
+.modal .form-control:focus,
+.offcanvas .form-control:focus,
+.modal .form-select:focus,
+.offcanvas .form-select:focus {
+  border-color: var(--mt-primary);
+  box-shadow: 0 0 0 3px rgba(36, 90, 154, 0.1);
+}
+
+.app-shell .form-label,
+.modal .form-label,
+.offcanvas .form-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+
+.app-shell .form-text,
+.modal .form-text,
+.offcanvas .form-text {
+  color: var(--mt-faint);
+  font-size: 12px;
+}
+
+.form-check-input:checked {
+  background-color: #245a9a;
+  border-color: #245a9a;
+}
+
+.form-check-input:focus {
+  border-color: #245a9a;
+  box-shadow: 0 0 0 3px rgba(36, 90, 154, 0.1);
+}
+
+.app-shell .invalid-feedback,
+.modal .invalid-feedback,
+.offcanvas .invalid-feedback {
+  font-size: 12px;
+}
+
+/* ---------- Tables ---------- */
+
+.app-shell .table {
+  --bs-table-bg: #fff;
+  --bs-table-color: var(--mt-text);
+  --bs-table-hover-bg: #f7f9fc;
+  --bs-table-hover-color: var(--mt-text);
+  --bs-table-border-color: var(--mt-divider);
+  font-size: 14px;
+}
+
+.app-shell .table > :not(caption) > * > * {
+  padding: 12px 12px;
+}
+
+.app-shell .table thead th {
+  color: var(--mt-muted);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.app-shell .table-responsive {
+  background: #fff;
+  border: 1px solid var(--mt-border);
+  border-radius: 11px;
+}
+
+.app-shell .table .btn {
+  white-space: nowrap;
+}
+
+.app-shell .table-responsive > .table {
+  margin-bottom: 0;
+}
+
+.app-shell .table-responsive > .table > tbody > tr:last-child > * {
+  border-bottom: 0;
+}
+
+/* Inside a card the card is the frame */
+.app-shell .card .table-responsive {
+  border: 0;
+  border-radius: 0;
+}
+
+.app-shell .card .table > :not(caption) > * > :first-child {
+  padding-left: 0;
+}
+
+/* ---------- Lists, tabs and detail rows ---------- */
+
+.app-shell .list-group,
+.modal .list-group,
+.offcanvas .list-group {
+  --bs-list-group-bg: transparent;
+  --bs-list-group-border-color: var(--mt-divider);
+  --bs-list-group-item-padding-y: 12px;
+}
+
+.app-shell .nav-underline {
+  --bs-nav-link-color: #626570;
+  --bs-nav-link-hover-color: var(--mt-primary);
+  --bs-nav-underline-link-active-color: var(--mt-primary);
+  --bs-nav-underline-border-width: 3px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Tabs drawn like the navigation bar links */
+.app-shell .nav-tabs {
+  --bs-nav-tabs-border-width: 0;
+  --bs-nav-link-color: #626570;
+  --bs-nav-link-hover-color: var(--mt-primary);
+  --bs-nav-tabs-link-active-color: var(--mt-primary);
+  --bs-nav-tabs-link-active-bg: transparent;
+  gap: 26px;
+  border-bottom: 1px solid var(--mt-divider);
+  margin-bottom: 24px !important;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.app-shell .nav-tabs .nav-link {
+  padding: 10px 0 9px;
+  border-bottom: 3px solid transparent;
+}
+
+.app-shell .nav-tabs .nav-link.active {
+  border-bottom-color: var(--mt-primary);
+}
+
+.app-shell .btn-group .btn-outline-secondary.active,
+.app-shell .btn-group .btn-check:checked + .btn-outline-secondary {
+  background: var(--mt-primary);
+  border-color: var(--mt-primary);
+  color: #fff;
+}
+
+.app-shell dl.row dt {
+  color: var(--mt-muted);
+}
+
+.app-shell dl.row dd {
+  font-weight: 500;
+}
+
+/* ---------- Dialogs and menus ---------- */
+
+.modal {
+  --bs-modal-border-width: 0;
+  --bs-modal-border-radius: 12px;
+  --bs-modal-inner-border-radius: 12px;
+  --bs-modal-padding: 24px;
+  --bs-modal-header-padding: 22px 24px 0;
+  --bs-modal-header-border-width: 0;
+  --bs-modal-footer-border-width: 0;
+  --bs-modal-footer-gap: 10px;
+}
+
+.modal .modal-footer,
+.offcanvas .modal-footer {
+  padding: 0 24px 22px;
+}
+
+.modal-title,
+.offcanvas-title {
+  font-size: 19px;
+}
+
+.offcanvas {
+  --bs-offcanvas-padding-x: 24px;
+  --bs-offcanvas-padding-y: 20px;
+}
+
+.modal-backdrop {
+  --bs-backdrop-bg: rgb(25, 35, 50);
+  --bs-backdrop-opacity: 0.45;
+}
+
+.dropdown-menu {
+  --bs-dropdown-border-color: #e2e5ea;
+  --bs-dropdown-border-radius: 9px;
+  --bs-dropdown-font-size: 14px;
+  --bs-dropdown-link-color: var(--mt-text);
+  --bs-dropdown-link-active-bg: var(--mt-primary);
+  --bs-dropdown-header-color: var(--mt-faint);
+  box-shadow: 0 8px 24px rgba(23, 45, 77, 0.08);
+}
+
+@media (max-width: 1000px) {
+  .mt-page {
+    padding: 30px 25px;
+  }
+
+  .mt-navbar {
+    padding: 0 20px;
+    gap: 15px;
+  }
+
+  .mt-nav-links {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 650px) {
+  .mt-page {
+    padding: 25px 15px;
+  }
+
+  .mt-navbar {
+    height: auto;
+    padding: 15px;
+    flex-wrap: wrap;
+  }
+
+  .mt-nav-links {
+    order: 3;
+    width: 100%;
+    height: 40px;
+    justify-content: space-between;
+  }
+
+  .mt-user-area {
+    margin-left: auto;
+  }
+}
+
+/* ---------- Public pages (PublicPage.jsx, built on the log-in page's styles) ---------- */
+
+.login-field-error {
+  color: #c52b22;
+  font-size: 12px;
+  margin: 6px 0 0;
+}
+
+.login-field input[aria-invalid='true'] {
+  border-color: #c52b22;
+}
+
+.login-submit-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.public-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.public-actions .login-signup-link {
+  width: 100%;
+}

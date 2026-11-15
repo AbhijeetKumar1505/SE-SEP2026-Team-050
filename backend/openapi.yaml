@@ -1,0 +1,407 @@
+components:
+  responses:
+    BAD_REQUEST:
+      content:
+        application/json:
+          example:
+            code: 400
+            message: The request could not be read.
+            status: Bad Request
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: The request body is not valid JSON.
+    CONFLICT:
+      content:
+        application/json:
+          example:
+            code: 409
+            message: This conflicts with the current state of the resource.
+            status: Conflict
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: The request conflicts with the current state, for example a duplicate
+        or a status that does not allow it.
+    DEFAULT_ERROR:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Any other error, in the shared error format.
+    FORBIDDEN:
+      content:
+        application/json:
+          example:
+            code: 403
+            message: You do not have permission to do this.
+            status: Forbidden
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Logged in, but this role or this user may not do this.
+    INTERNAL_SERVER_ERROR:
+      content:
+        application/json:
+          example:
+            code: 500
+            message: Something went wrong on the server. Please try again.
+            status: Internal Server Error
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Unexpected server error. It is logged; the response never includes
+        its details.
+    NOT_FOUND:
+      content:
+        application/json:
+          example:
+            code: 404
+            message: The requested resource was not found.
+            status: Not Found
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: No such resource, or it is not visible to this user.
+    UNAUTHORIZED:
+      content:
+        application/json:
+          example:
+            code: 401
+            message: Log in to continue.
+            status: Unauthorized
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Not logged in, or the login token has expired.
+    UNPROCESSABLE_ENTITY:
+      content:
+        application/json:
+          example:
+            code: 422
+            errors:
+              json:
+                description:
+                - Shorter than minimum length 30.
+            message: Some fields are invalid.
+            status: Unprocessable Entity
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: One or more fields are invalid. `errors` names each field and what
+        is wrong with it.
+  schemas:
+    Error:
+      additionalProperties: false
+      properties:
+        code:
+          description: HTTP status code
+          example: 404
+          type: integer
+        errors:
+          additionalProperties: {}
+          description: Validation errors by location and field (422 only)
+          type: object
+        message:
+          description: What went wrong, in plain words
+          type: string
+        status:
+          description: HTTP status name
+          example: Not Found
+          type: string
+      required:
+      - code
+      - message
+      - status
+      type: object
+    Health:
+      additionalProperties: false
+      properties:
+        status:
+          example: ok
+          type: string
+        version:
+          example: 0.1.0
+          type: string
+      required:
+      - status
+      - version
+      type: object
+    Login:
+      additionalProperties: false
+      properties:
+        email:
+          example: 23f1002345@ds.study.iitm.ac.in
+          format: email
+          type: string
+        password:
+          example: a-strong-password
+          maxLength: 128
+          minLength: 1
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+      type: object
+    PaginationMetadata:
+      additionalProperties: false
+      properties:
+        first_page:
+          description: First available page number.
+          type: integer
+        last_page:
+          description: Last available page number.
+          type: integer
+        next_page:
+          description: Next page number.
+          type: integer
+        page:
+          description: Current page number.
+          type: integer
+        previous_page:
+          description: Previous page number.
+          type: integer
+        total:
+          description: Total number of items.
+          type: integer
+        total_pages:
+          description: Total number of pages.
+          type: integer
+      type: object
+    Token:
+      additionalProperties: false
+      properties:
+        access_token:
+          description: 'Send as: Authorization: Bearer <token>'
+          type: string
+        expires_in:
+          description: Seconds until the token expires
+          type: integer
+        token_type:
+          example: Bearer
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - access_token
+      - expires_in
+      - token_type
+      - user
+      type: object
+    User:
+      additionalProperties: false
+      properties:
+        email:
+          example: 23f1002345@ds.study.iitm.ac.in
+          format: email
+          type: string
+        id:
+          example: 7
+          type: integer
+        roles:
+          example:
+          - student
+          items:
+            enum:
+            - student
+            - mentor
+            - iic
+            - leadership
+            type: string
+          type: array
+      required:
+      - email
+      - id
+      - roles
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: The access token returned by the login endpoint. It carries the
+        user's role.
+      scheme: bearer
+      type: http
+info:
+  contact:
+    name: Team 050, IITM BS Software Engineering
+  description: 'REST API of the Student Mentoring and Career Support Platform (IITM
+    BS Software Engineering project, September 2026, Team 050).
+
+
+    Every endpoint lists the user stories it implements in `x-user-stories`, and every
+    error uses the shared `Error` schema. Endpoints that need a login take a bearer
+    token in the `Authorization` header.'
+  title: IITM BS Mentoring API
+  version: 0.1.0
+openapi: 3.0.3
+paths:
+  /api/auth/login:
+    post:
+      description: 'Exchanges an email and password for an access token. Send the
+        token on later requests in the
+
+        `Authorization` header as `Bearer <token>`. The token carries the user''s
+        roles.
+
+
+        Students can log in once they have verified their email (US-01), and mentors
+        once they have
+
+        activated their account (US-14). A wrong email and a wrong password give the
+        same 401.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      summary: Log in
+      tags:
+      - auth
+      x-user-stories:
+      - US-01
+      - US-14
+  /api/auth/logout:
+    post:
+      description: Revokes the token sent with this request. Any later request with
+        it gets 401.
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Log out
+      tags:
+      - auth
+      x-user-stories:
+      - US-01
+      - US-14
+  /api/auth/me:
+    get:
+      description: 'Returns the account behind the token, with its roles. The frontend
+        uses it to choose which
+
+        pages to show.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Get the logged-in user
+      tags:
+      - auth
+      x-user-stories:
+      - US-01
+      - US-14
+  /api/health:
+    get:
+      description: Used by the host's health check and by CI. Needs no login.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+          description: OK
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      summary: Report that the API is running
+      tags:
+      - system
+servers:
+- description: Local development server (flask run)
+  url: http://127.0.0.1:5000
+tags:
+- description: Health check for the host and CI.
+  name: system
+- description: 'C1 Identity and access: Sign-up, email verification, mentor activation,
+    login and roles (US-01, US-14).'
+  name: auth
+- description: 'C2 Students and roster: IIC''s roster of registered students and each
+    student''s profile (US-02, US-15).'
+  name: students
+- description: 'C3 Mentor pool: Verified mentors, their expertise, availability and
+    capacity (US-10, US-14, US-18).'
+  name: mentors
+- description: 'C4 Settings and tags: Topic tags, approved email domains and timing
+    windows (US-01, US-03, US-21).'
+  name: settings
+- description: 'C5 Problem intake: Students'' problems, their status and IIC''s queue
+    (US-03, US-05, US-16, US-20).'
+  name: problems
+- description: 'C6 Recommendations: Up to 4 ranked mentors for a problem, with reasons
+    (US-04).'
+  name: matching
+- description: 'C7 Mentorships: Assignment, accept or decline, goal, next steps and
+    ending (US-05, US-06, US-09, US-13, US-16).'
+  name: mentorships
+- description: 'C8 Cases: Change, end and misconduct cases, decided by IIC (US-07,
+    US-18).'
+  name: cases
+- description: 'C9 Sessions: Scheduled and logged sessions, with no conversation content
+    (US-11).'
+  name: sessions
+- description: 'C10 Progress feedback: Progress status from student and mentor, seen
+    only by IIC (US-08, US-12).'
+  name: feedback
+- description: 'C11 Monitoring and alerts: IIC''s monitoring view and the daily escalation
+    checks (US-17, US-21).'
+  name: monitoring
+- description: 'C12 Programme insights: Aggregate demand, supply and outcome figures
+    for leadership (US-19).'
+  name: insights
+- description: 'C13 Notifications: Email and dashboard notices for every event (Most
+    stories).'
+  name: notifications
+- description: 'C14 Audit log: Permanent record of decisions and status changes (US-14,
+    US-18).'
+  name: audit
+x-tagGroups:
+- name: Platform foundation
+  tags:
+  - system
+  - settings
+  - notifications
+  - audit
+- name: Onboarding and profiles
+  tags:
+  - auth
+  - students
+  - mentors
+- name: Mentor matching
+  tags:
+  - problems
+  - matching
+  - mentorships
+- name: Mentorship tracking and feedback
+  tags:
+  - sessions
+  - feedback
+  - monitoring
+- name: Changes, termination and safety
+  tags:
+  - cases
+- name: Programme insights
+  tags:
+  - insights

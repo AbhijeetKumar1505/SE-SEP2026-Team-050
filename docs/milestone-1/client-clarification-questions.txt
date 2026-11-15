@@ -1,0 +1,25 @@
+CLIENT CLARIFICATION QUESTIONS
+
+1. Student Profile and Data Fetching
+   Should students enter their details manually during registration, or should their information be fetched automatically from the existing IIC database?
+
+2. Student Problem Submission and Topic Tags
+   When submitting a mentoring request, should students describe their requirements in their own words, select relevant topic tags, or do both? If tags are required, should students select them manually or should the system suggest tags based on their descriptions?
+
+3. Initiation of Communication
+   After a mentor is assigned, who is expected to initiate the first communication: the mentee or the mentor? Should the platform provide any guidelines or notifications to facilitate the initial interaction?
+
+4. In-App Communication and Encryption
+   Is an in-app communication feature required for students and mentors, or should they communicate through external channels such as email or calls? If in-app communication is required, what are the expectations regarding end-to-end encryption and conversation confidentiality?
+
+5. Mentor Non-Responsiveness
+   If a mentor does not respond within seven days, even after receiving a reminder, what should happen next? Should the system notify the IIC coordinator, allow reassignment to another mentor, or follow another escalation process?
+
+6. Mentor Registration and Onboarding
+   How should mentors register on the platform? Will mentors register themselves through a registration form, or will the IIC team add their profiles manually? Should mentor profiles require approval from the IIC before becoming available for recommendations?
+
+7. Onboarding IIC-Registered Students
+   How should students already registered with the IIC be onboarded onto the platform? Should they register and access the platform themselves, or should they receive an invitation email with instructions to sign up? Is automatic account creation or bulk onboarding expected?
+
+8. Mentor Recommendation System
+   Should the system recommend a shortlist of three to four suitable mentors for each student request, allowing the IIC coordinator to select one, or should it display all eligible mentors who match the student's requirements? Should the final assignment always be made by the IIC coordinator?

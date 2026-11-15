@@ -32,7 +32,7 @@ This section identifies the components of the platform and describes what each o
 <rect x="10" y="96" width="660" height="58" rx="6" fill="#e8f0fb" stroke="#1f4e8c" stroke-width="1.5"/>
 <text x="340" y="115" font-size="12" font-weight="700" fill="#1f4e8c" text-anchor="middle">Web client: React single-page app</text>
 <text x="340" y="132" font-size="10.5" fill="#1d1d1f" text-anchor="middle">Student pages · Mentor pages · IIC pages · Insights page</text>
-<text x="340" y="147" font-size="9.5" fill="#5b5b66" text-anchor="middle">App shell, routing and role guards · shared UI components · API client (mock data in Milestone 2)</text>
+<text x="340" y="147" font-size="9.5" fill="#5b5b66" text-anchor="middle">App shell, routing and role guards · shared UI components · API client (from Milestone 3)</text>
 <line x1="340" y1="156" x2="340" y2="186" stroke="#5b5b66" stroke-width="1.2" marker-start="url(#cmp-arrow)" marker-end="url(#cmp-arrow)"/>
 <text x="350" y="175" font-size="9.5" fill="#5b5b66">REST requests in JSON, with a token that carries the role</text>
 <rect x="10" y="188" width="660" height="312" rx="6" fill="#f7f9fc" stroke="#1f4e8c" stroke-width="1.5"/>
@@ -333,7 +333,7 @@ The web client is a React single-page app. Pages are grouped by role, and each g
 | F3 | Mentor pages | Dashboard with assignments to accept or decline; availability, contact and capacity settings; the mentor's view of the mentorship workspace; the end-mentorship dialog | C3, C7, C9, C10 | SCRUM-60, SCRUM-61 |
 | F4 | IIC pages | Registered students with CSV import; the mentor pool with add, CSV import and verify; the problem queue; the assignment page with recommendations; the monitoring table; the case page; settings and topic tags | C2–C8, C11, C14 | SCRUM-62, SCRUM-63 |
 | F5 | Insights page | Date-range picker, demand against supply by topic, median time to assignment, active mentorships, outcomes and CSV export | C12 | SCRUM-64 |
-| F6 | API client | One file per backend component. In Milestone 2 it returns mock data in the same shape as the API, so pages need no changes when it switches to real requests in Milestone 3 | All | SCRUM-56, SCRUM-75 |
+| F6 | API client | One file per backend component, added in Milestone 3. In Milestone 2 each page keeps its own sample data in its state, so the pages work without a backend; Milestone 3 replaces that data with calls to this client | All | SCRUM-56, SCRUM-75 |
 
 Several pages share the same building blocks, which are built once:
 
@@ -431,5 +431,25 @@ Every user story is served by at least one component, and every component serves
 | US-19 See demand, supply and outcomes | C12 | C3, C5, C7, C10 |
 | US-20 Say how I like to be guided | C5 | C3, C6 |
 | US-21 Stop assignments and mentorships from stalling | C11 | C4, C5, C7, C13, C14 |
+
+### 1.9 Who can see what
+
+The visibility rules in Section 1.3 apply across several components, so this table collects them by role. The API checks them on every request (Section 1.1, rule 2).
+
+| Data | Student | Mentor | IIC | Programme leadership |
+|---|---|---|---|---|
+| Student profile: level, completed courses, career interest | Own | Their mentee's, from assignment (C7) | All | No |
+| CGPA | Own | No | All | No |
+| Problem and its topic tags | Own | Only once assigned to them (C5) | All | Counts by topic (C12) |
+| Guidance preferences | Own | No | All | No |
+| Mentor recommendations | No | No | All (C6) | No |
+| Mentor's contact details | Their mentor's, after acceptance (C7) | Own | All | No |
+| Goal, next steps and sessions | Own mentorship | Own mentorships | All | Counts only |
+| Private session notes | Own notes | Own notes | No (C9) | No |
+| Progress feedback | Writes it | Writes it | All (C10) | Outcomes as counts |
+| Cases | Own, and their outcome | Own, and their outcome | All (C8) | No |
+| Monitoring flags and audit history | No | No | All (C11, C14) | No |
+
+No role can see what was said in a mentoring conversation, because the platform never stores it (rule 3).
 
 <div class="page-break"></div>

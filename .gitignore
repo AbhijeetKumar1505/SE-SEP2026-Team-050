@@ -1,4 +1,14 @@
 node_modules/
+
+# Python virtual environments, wherever they are created (python -m venv .venv / venv / env)
+backend/*env/
+venv/
+env/
+ENV/
+# Python caches
+__pycache__/
+*.py[cod]
+
 /docs/internal-solution-thinking
 
 # Interview data stays out of git for participant privacy.
@@ -10,3 +20,6 @@ docs/*/recordings/
 *.mp3
 *.wav
 *.webm
+
+# Built submission archives: rebuild with python submission/build_zips.py
+submission/
