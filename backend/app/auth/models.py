@@ -1,4 +1,4 @@
-"""C1 tables: USER, ROLE and USER_ROLE as in the Milestone 2 ER diagram, plus REVOKED_TOKEN.
+"""C1 tables: USER, ROLE and USER_ROLE as in the Milestone 2 ER diagram, plus REVOKED_TOKEN and EMAIL_VERIFICATION.
 
 REVOKED_TOKEN is not in the ER diagram. It records logged-out tokens until they expire, so a
 token stops working at logout instead of when it runs out (SCRUM-71).
@@ -59,3 +59,21 @@ class RevokedToken(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     jti = db.Column(db.String(36), nullable=False, unique=True)  # the token's unique ID
     expires_at = db.Column(db.DateTime(timezone=True), nullable=False)  # safe to delete after this
+
+
+class EmailVerification(db.Model):
+    """One-time email verification token (valid for 24h) for sign-up or activation."""
+
+    __tablename__ = "email_verification"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
+    token_hash = db.Column(db.String(255), nullable=False, unique=True)
+    expires_at = db.Column(db.DateTime(timezone=True), nullable=False)
+    used_at = db.Column(db.DateTime(timezone=True))
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+
+    user = db.relationship("User", backref=db.backref("email_verifications", cascade="all, delete-orphan"))
+
+    def __repr__(self) -> str:
+        return f"<EmailVerification user_id={self.user_id}>"
