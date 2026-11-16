@@ -22,7 +22,7 @@ from .feedback.models import Feedback
 from .matching.models import Recommendation
 from .mentors.models import Availability, Mentor
 from .mentorships.models import Mentorship
-from .notifications.models import EmailTemplate
+from .notifications.services import ensure_templates
 from .problems.models import Problem
 from .sessions.models import Session
 from .settings.models import EmailDomain, TimingWindow, TopicTag
@@ -505,33 +505,8 @@ def seed_database() -> dict[str, int]:
             ]
         )
 
-    # 10. Email templates
-    if EmailTemplate.query.count() == 0:
-        db.session.add_all(
-            [
-                EmailTemplate(
-                    template_key="assignment_notice",
-                    subject="New student problem assigned to you",
-                    body=(
-                        "Hello {mentor_name}, a student has been assigned to you. "
-                        "Please review and respond within 72 hours."
-                    ),
-                ),
-                EmailTemplate(
-                    template_key="acceptance_notice",
-                    subject="Your mentor has accepted your request",
-                    body=(
-                        "Hello {student_name}, {mentor_name} has accepted your request. "
-                        "Here are their preferred contact details."
-                    ),
-                ),
-                EmailTemplate(
-                    template_key="session_reminder",
-                    subject="Upcoming mentoring session in 24 hours",
-                    body="Reminder: You have a scheduled mentoring session tomorrow.",
-                ),
-            ]
-        )
+    # 10. Email templates, copied from app/notifications/templates.py
+    ensure_templates()
 
     db.session.commit()
 

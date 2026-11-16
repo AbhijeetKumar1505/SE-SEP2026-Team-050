@@ -1,4 +1,9 @@
 components:
+  headers:
+    PAGINATION:
+      description: Pagination metadata
+      schema:
+        $ref: '#/components/schemas/PaginationMetadata'
   responses:
     BAD_REQUEST:
       content:
@@ -84,6 +89,60 @@ components:
       description: One or more fields are invalid. `errors` names each field and what
         is wrong with it.
   schemas:
+    Actor:
+      additionalProperties: false
+      properties:
+        email:
+          example: deepa.krishnan@iitm.ac.in
+          format: email
+          type: string
+        id:
+          example: 2
+          type: integer
+      required:
+      - email
+      - id
+      type: object
+    AuditEntry:
+      additionalProperties: false
+      properties:
+        action:
+          example: verify_mentor
+          type: string
+        actor:
+          anyOf:
+          - $ref: '#/components/schemas/Actor'
+          - nullable: true
+            type: object
+          description: Who did it. Empty for automatic actions, such as the daily
+            checks
+        created_at:
+          description: When it happened (UTC)
+          format: date-time
+          type: string
+        details:
+          example: Verified after checking LinkedIn and employer.
+          nullable: true
+          type: string
+        entity_id:
+          example: 3
+          nullable: true
+          type: integer
+        entity_type:
+          example: mentor
+          type: string
+        id:
+          example: 41
+          type: integer
+      required:
+      - action
+      - actor
+      - created_at
+      - details
+      - entity_id
+      - entity_type
+      - id
+      type: object
     Error:
       additionalProperties: false
       properties:
@@ -136,6 +195,39 @@ components:
       required:
       - email
       - password
+      type: object
+    Notification:
+      additionalProperties: false
+      properties:
+        body:
+          example: Hello Rahul, a student has been assigned to you. Please review
+            and respond within 72 hours.
+          type: string
+        created_at:
+          description: When it was raised (UTC)
+          format: date-time
+          type: string
+        id:
+          example: 12
+          type: integer
+        link:
+          description: Page in the web app it opens
+          example: /mentor
+          nullable: true
+          type: string
+        read:
+          example: false
+          type: boolean
+        subject:
+          example: New student problem assigned to you
+          type: string
+      required:
+      - body
+      - created_at
+      - id
+      - link
+      - read
+      - subject
       type: object
     PaginationMetadata:
       additionalProperties: false
@@ -229,6 +321,91 @@ info:
   version: 0.1.0
 openapi: 3.0.3
 paths:
+  /api/audit:
+    get:
+      description: 'Who did what, to which record, when and why, newest first. With
+        `entity_type` and `entity_id`
+
+        it is the history of one record, such as a case or a mentor. Only IIC coordinators
+        can read the
+
+        audit log, and nobody can change it.
+
+
+        Paginated: `page` and `page_size` choose the page, and the `X-Pagination`
+        header gives the
+
+        total.'
+      parameters:
+      - description: Only entries about this kind of record, such as `mentor`
+        in: query
+        name: entity_type
+        required: false
+        schema:
+          example: mentor
+          pattern: ^[a-z][a-z0-9_]{0,63}$
+          type: string
+      - description: Only entries about this record. Needs `entity_type`
+        in: query
+        name: entity_id
+        required: false
+        schema:
+          example: 3
+          minimum: 1
+          type: integer
+      - description: Only entries for this action
+        in: query
+        name: action
+        required: false
+        schema:
+          example: verify_mentor
+          pattern: ^[a-z][a-z0-9_]{0,63}$
+          type: string
+      - in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          minimum: 1
+          type: integer
+      - in: query
+        name: page_size
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuditEntry'
+                type: array
+          description: OK
+          headers:
+            X-Pagination:
+              $ref: '#/components/headers/PAGINATION'
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: List audit entries
+      tags:
+      - audit
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-14
+      - US-18
   /api/auth/login:
     post:
       description: 'Exchanges an email and password for an access token. Send the
@@ -329,6 +506,116 @@ paths:
       summary: Report that the API is running
       tags:
       - system
+  /api/notifications:
+    get:
+      description: 'The logged-in user''s dashboard notices, newest first: assignments,
+        status changes, acceptances,
+
+        reminders and decisions. Each was also sent by email. With `unread=true` only
+        unread notices
+
+        are listed, and the `X-Pagination` header''s `total` is the count for the
+        bell.'
+      parameters:
+      - description: Only notices not yet marked as read (for the bell's count)
+        in: query
+        name: unread
+        required: false
+        schema:
+          default: false
+          type: boolean
+      - in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          minimum: 1
+          type: integer
+      - in: query
+        name: page_size
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Notification'
+                type: array
+          description: OK
+          headers:
+            X-Pagination:
+              $ref: '#/components/headers/PAGINATION'
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: List my notices
+      tags:
+      - notifications
+      x-user-stories:
+      - US-05
+      - US-09
+  /api/notifications/read-all:
+    post:
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Mark all my notices as read
+      tags:
+      - notifications
+      x-user-stories:
+      - US-05
+      - US-09
+  /api/notifications/{notification_id}/read:
+    parameters:
+    - in: path
+      name: notification_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'Marking it again changes nothing. A notice is shown only to its
+        recipient, so anyone else''s
+
+        gets 404.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Mark a notice as read
+      tags:
+      - notifications
+      x-user-stories:
+      - US-05
+      - US-09
 servers:
 - description: Local development server (flask run)
   url: http://127.0.0.1:5000

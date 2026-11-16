@@ -45,6 +45,8 @@ class Config:
 
     # The React dev server; set CORS_ORIGINS to a comma-separated list on the host.
     CORS_ORIGINS = [o.strip() for o in os.environ.get("CORS_ORIGINS", "http://localhost:5173").split(",") if o.strip()]
+    # Where the web app runs, for the links in emails.
+    FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")
 
     MAIL_SERVER = os.environ.get("MAIL_SERVER", "localhost")
     MAIL_PORT = int(os.environ.get("MAIL_PORT", "25"))

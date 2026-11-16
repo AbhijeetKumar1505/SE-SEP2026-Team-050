@@ -19,7 +19,7 @@ The Milestone 3 and 4 YAML is written with: flask openapi write --format=yaml op
 import http
 import re
 
-from flask_smorest import Api, Blueprint
+from flask_smorest import Api, Blueprint, Page
 from flask_smorest.utils import prepare_response
 from marshmallow import Schema, fields
 
@@ -118,6 +118,23 @@ class MentoringApi(Api):
     def init_app(self, app, *, spec_kwargs=None):
         super().init_app(app, spec_kwargs=spec_kwargs)
         self.spec.components.security_scheme("bearerAuth", SECURITY_SCHEME)
+
+
+class QueryPage(Page):
+    """Pager for list endpoints that return a SQLAlchemy query. It counts and fetches only one page.
+
+        @blp.response(200, ItemSchema(many=True))
+        @blp.paginate(QueryPage, page_size=20, max_page_size=100)
+        def list_items():
+            return db.session.query(Item).order_by(Item.id)
+
+    Clients choose the page with ?page=2&page_size=20. The X-Pagination response header gives the
+    total, the page count and the neighbouring pages.
+    """
+
+    @property
+    def item_count(self):
+        return self.collection.order_by(None).count()
 
 
 class ApiBlueprint(Blueprint):

@@ -26,10 +26,14 @@ def spec(client):
     return client.get("/api/docs/openapi.json").get_json()
 
 
+HTTP_METHODS = {"get", "put", "post", "delete", "options", "head", "patch", "trace"}
+
+
 def operations(spec):
     for path, item in spec["paths"].items():
         for method, operation in item.items():
-            yield f"{method.upper()} {path}", operation
+            if method in HTTP_METHODS:  # a path item can also hold shared "parameters"
+                yield f"{method.upper()} {path}", operation
 
 
 def test_info_servers_and_security_scheme(spec):

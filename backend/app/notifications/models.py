@@ -3,6 +3,12 @@
 from ..extensions import db
 from ..models import utcnow
 
+# What happened to a notification's email.
+QUEUED = "queued"  # waiting for the change that raised it to be committed
+SENT = "sent"  # handed to the mail server (or, with MAIL_SUPPRESS_SEND, written to the log)
+FAILED = "failed"  # the mail server refused it; the dashboard notice still shows
+EMAIL_STATUSES = (QUEUED, SENT, FAILED)
+
 
 class EmailTemplate(db.Model):
     """Email and notice templates."""
@@ -24,19 +30,20 @@ class Notification(db.Model):
     __tablename__ = "notification"
 
     id = db.Column(db.Integer, primary_key=True)
-    recipient_user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
+    recipient_user_id = db.Column(
+        db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True
+    )  # each user's notice list is read by this
     email_template_id = db.Column(db.Integer, db.ForeignKey("email_template.id"))
     subject = db.Column(db.String(255))
     body = db.Column(db.Text)
     link = db.Column(db.String(255))
-    status = db.Column(db.String(32), nullable=False, default="queued")  # queued, sent, failed
+    status = db.Column(db.String(32), nullable=False, default=QUEUED)  # one of EMAIL_STATUSES
     read = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
     sent_at = db.Column(db.DateTime(timezone=True))
 
-    recipient = db.relationship(
-        "User", backref=db.backref("notifications", cascade="all, delete-orphan", lazy="selectin")
-    )
+    # Loaded only when used: every request loads the logged-in user, and their notices can be many.
+    recipient = db.relationship("User", backref=db.backref("notifications", cascade="all, delete-orphan"))
     template = db.relationship("EmailTemplate")
 
     def __repr__(self) -> str:
