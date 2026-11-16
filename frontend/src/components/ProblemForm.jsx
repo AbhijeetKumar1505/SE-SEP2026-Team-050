@@ -3,19 +3,26 @@ import { Controller, useForm, useWatch } from 'react-hook-form'
 import { PROBLEM_LIMITS as L } from '../constants/student'
 import { optional, required } from '../utils/rules'
 import Field from './Field'
+import ProblemCoach from './ProblemCoach'
 import TagPicker from './TagPicker'
 
 const EMPTY = { problem: '', tags: [], goal: '', guidance: '' }
 
-// The problem form, for submitting a new problem and for editing one.
-export default function ProblemForm({ defaultValues = EMPTY, submitLabel, onSubmit, onCancel }) {
+// The problem form, for submitting a new problem and for editing one. coach shows the AI problem coach (S2).
+export default function ProblemForm({ defaultValues = EMPTY, submitLabel, onSubmit, onCancel, coach = false }) {
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({ defaultValues })
-  const length = useWatch({ control, name: 'problem' }).length
+  const problem = useWatch({ control, name: 'problem' })
+  const tags = useWatch({ control, name: 'tags' })
+  const length = problem.length
+  // Suggested tags join the chosen ones, up to the limit.
+  const addTags = (names) =>
+    setValue('tags', [...tags, ...names.filter((n) => !tags.includes(n))].slice(0, L.tagsMax), { shouldValidate: true })
   return (
     <Form onSubmit={handleSubmit(onSubmit)} noValidate>
       <Field
@@ -31,6 +38,7 @@ export default function ProblemForm({ defaultValues = EMPTY, submitLabel, onSubm
       <div className="form-text text-end mb-3">
         {length} / {L.descMax}
       </div>
+      {coach && <ProblemCoach text={problem} selected={tags} onAdd={addTags} />}
 
       <div className="mb-3">
         <div className="form-label">Topics</div>

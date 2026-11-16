@@ -62,6 +62,9 @@ export function acceptAssignment(id) {
     sessions: [],
     progress: null,
     caseId: null,
+    feedback: [],
+    wellbeingFlag: null,
+    history: [],
     reachedOutAt: null,
     studentCheckpointDue: day(db.settings.feedbackDays),
   })
@@ -99,6 +102,7 @@ export function submitProgress(id, progress, comment) {
   const m = find(id)
   m.progress = progress // visible to IIC only
   m.progressComment = comment
+  m.feedback.unshift({ id: uid(), date: day(0), from: 'Mentor', progress, comment }) // IIC reads it in the mentorship review (I8)
   m.checkpointDue = day(db.settings.feedbackDays)
   return delay()
 }

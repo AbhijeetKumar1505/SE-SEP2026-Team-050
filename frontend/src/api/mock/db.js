@@ -1,3 +1,4 @@
+import { wellbeingCheck } from './ai'
 import { ago, day, uid } from './mockUtils'
 
 // One shared in-memory store, so what IIC does shows up for mentors and vice versa.
@@ -72,8 +73,36 @@ const mentorship = (id, name, roll, mentorName, startedAgo, sessions, checkpoint
   sessions,
   progress: null,
   caseId: null,
+  feedback: [], // progress feedback from both sides, newest first (I8)
+  wellbeingFlag: null, // set by the AI wellbeing check when a student's comment may need attention (I8)
+  history: [],
   ...extra,
 })
+
+// Progress feedback, newest first, from [id, daysAgo, 'Student' | 'Mentor', progress, comment].
+// Also sets each side's latest progress, which the mentor and student pages read.
+const withFeedback = (...entries) => {
+  const feedback = entries.map(([id, daysAgo, from, progress, comment]) => ({ id, date: day(-daysAgo), from, progress, comment }))
+  const latest = (from) => feedback.find((f) => f.from === from)
+  return {
+    feedback,
+    progress: latest('Mentor')?.progress ?? null,
+    progressComment: latest('Mentor')?.comment,
+    studentProgress: latest('Student')?.progress,
+    studentComment: latest('Student')?.comment,
+  }
+}
+
+// A wellbeing flag the AI raised when the comment arrived, not yet looked at by IIC.
+const flagged = (m, feedbackId, hoursAgo) => {
+  const at = ago(hoursAgo)
+  const { comment } = m.feedback.find((f) => f.id === feedbackId)
+  return {
+    ...m,
+    wellbeingFlag: { feedbackId, ...wellbeingCheck(comment), status: 'open', at },
+    history: [{ at, text: 'AI flagged a feedback comment for a wellbeing check' }],
+  }
+}
 
 const student = (name, roll, signedUp, profile) => ({
   id: roll,
@@ -167,10 +196,30 @@ export const db = {
 
   mentorships: [
     mentorship('r1', 'Karan Mehta', '22f3001876', 'Meera Iyer', 20, [], 4, { problemId: 'p1' }),
-    mentorship('r2', 'Sneha Pillai', '23f2000451', 'Arjun Shah', 34, held(1, 1, 20), 3, { problemId: 'p2', progress: 'Some progress' }),
+    flagged(
+      mentorship('r2', 'Sneha Pillai', '23f2000451', 'Arjun Shah', 34, held(1, 1, 20), 3, {
+        problemId: 'p2',
+        ...withFeedback(
+          ['f3', 4, 'Mentor', 'Some progress', 'Sneha hasn’t replied to my last two messages.'],
+          [
+            'f2',
+            6,
+            'Student',
+            'No progress',
+            'I’ve fallen behind because exams and my internship hours piled up. Honestly I’m exhausted all the time and I’ve stopped enjoying any of this.',
+          ],
+          ['f1', 16, 'Mentor', 'Some progress', 'First call went well. We agreed on a Python refresher before starting ML.'],
+        ),
+      }),
+      'f2',
+      140,
+    ),
     mentorship('r3', 'Fatima Khan', '22f1000932', 'Priya Natarajan', 26, held(3, 2, 10), -9, {
-      progress: 'Some progress',
       caseId: 'C-014',
+      ...withFeedback(
+        ['f2', 12, 'Student', 'Some progress', 'Useful advice, but our call times keep clashing and we have rescheduled twice.'],
+        ['f1', 19, 'Mentor', 'Some progress', 'Good start on the portfolio plan. I travel a lot next month, so calls may move.'],
+      ),
     }),
     mentorship('r4', 'Vikram Das', '23f3002201', 'Manoj Pillai', 11, [], 3),
     mentorship(
@@ -204,14 +253,26 @@ export const db = {
       ],
       3,
       {
-        progress: 'Some progress',
+        ...withFeedback(['f1', 9, 'Mentor', 'Some progress', 'Karthik finished the SQL practice set and is setting up Airflow.']),
         steps: [
           { id: 't1', text: 'Finish the SQL window-functions practice set', done: true },
           { id: 't2', text: 'Install Airflow locally and run the tutorial DAG', done: false },
         ],
       },
     ),
-    mentorship('r7', 'Rohan Gupta', '21f2000078', 'Meera Iyer', 35, held(5, 5, 1), 5, { progress: 'Goal met' }),
+    mentorship(
+      'r7',
+      'Rohan Gupta',
+      '21f2000078',
+      'Meera Iyer',
+      35,
+      held(5, 5, 1),
+      5,
+      withFeedback(
+        ['f2', 2, 'Student', 'Goal met', 'I got the internship offer I was preparing for. Thank you!'],
+        ['f1', 3, 'Mentor', 'Goal met', 'Rohan cleared both interview rounds.'],
+      ),
+    ),
   ],
 
   students: [

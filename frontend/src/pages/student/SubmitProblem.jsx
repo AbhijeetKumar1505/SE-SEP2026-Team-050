@@ -26,6 +26,7 @@ export default function SubmitProblem() {
       ) : (
         <Section title="Your problem">
           <ProblemForm
+            coach
             submitLabel="Submit problem"
             onSubmit={async (values) => {
               await submitProblem(values)

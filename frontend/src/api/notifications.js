@@ -32,6 +32,9 @@ function forIic() {
     count('Submitted') > 0 && item('new', `${plural(count('Submitted'), 'new problem')} to review`, '/iic'),
     toVerify > 0 && item('verify', `${plural(toVerify, 'mentor')} to verify`, '/iic/mentors'),
     ...db.cases.filter((c) => c.status === 'Open').map((c) => item(c.id, `Case ${c.id} is open`, `/iic/cases/${c.id}`)),
+    ...db.mentorships
+      .filter((m) => m.wellbeingFlag?.status === 'open')
+      .map((m) => item(`${m.id}-wellbeing`, `Wellbeing check (AI): a comment from ${m.student.name}`, `/iic/mentorships/${m.id}`)),
   ].filter(Boolean)
 }
 

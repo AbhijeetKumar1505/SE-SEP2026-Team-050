@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Alert, Button, Col, ListGroup, Row } from 'react-bootstrap'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { explainFit } from '../../api/ai'
 import { assignMentor, closeProblem, getEligibleMentors, getProblem, getRecommendations } from '../../api/iic'
 import Details from '../../components/Details'
 import Loading from '../../components/Loading'
@@ -20,14 +21,33 @@ export default function ReviewAssign() {
   const [mentors] = useFetch(showAll ? getEligibleMentors : getRecommendations, id)
   const [error, setError] = useState('')
   const [closing, setClosing] = useState(false)
+  const [notes, setNotes] = useState(null) // AI fit notes for the listed mentors: null | 'writing' | { [mentorId]: note }
   if (!p || !mentors) return <Loading />
 
   const { student } = p
   const assigned = ['Awaiting mentor', 'Mentor assigned'].includes(p.status) // a student has one mentor at a time
+  const notesShown = notes && notes !== 'writing'
   const assign = (mentorId) =>
     assignMentor(id, mentorId)
       .then(() => navigate('/iic'))
       .catch((e) => setError(e.message))
+  const explain = () => {
+    setNotes('writing')
+    explainFit(
+      id,
+      mentors.map((m) => m.id),
+    )
+      .then(setNotes)
+      .catch((e) => {
+        setNotes(null)
+        setError(e.message)
+      })
+  }
+  // The notes belong to the list they were written for.
+  const toggleList = () => {
+    setShowAll(!showAll)
+    setNotes(null)
+  }
 
   return (
     <>
@@ -87,11 +107,29 @@ export default function ReviewAssign() {
             <Section
               title={showAll ? 'All eligible mentors' : 'Recommended mentors'}
               action={
-                <Button size="sm" variant="outline-primary" onClick={() => setShowAll(!showAll)}>
-                  {showAll ? 'Back to recommendations' : 'Browse all eligible mentors'}
-                </Button>
+                <div className="d-flex flex-wrap justify-content-end gap-2">
+                  {notesShown ? (
+                    <Button size="sm" variant="outline-secondary" onClick={() => setNotes(null)}>
+                      Hide AI notes
+                    </Button>
+                  ) : (
+                    <Button size="sm" variant="outline-primary" disabled={notes === 'writing' || !mentors.length} onClick={explain}>
+                      <i className="bi bi-stars me-1" />
+                      {notes === 'writing' ? 'Writing notes…' : 'Explain fit with AI'}
+                    </Button>
+                  )}
+                  <Button size="sm" variant="outline-primary" onClick={toggleList}>
+                    {showAll ? 'Back to recommendations' : 'Browse all eligible mentors'}
+                  </Button>
+                </div>
               }
             >
+              {notesShown && (
+                <p className="small text-muted">
+                  <i className="bi bi-stars text-primary me-1" />
+                  AI notes explain the ranking; they don’t change it. Check each mentor’s profile before you assign.
+                </p>
+              )}
               {error && (
                 <Alert variant="danger" className="small">
                   {error}
@@ -118,6 +156,12 @@ export default function ReviewAssign() {
                       <div className="small text-muted">
                         {m.availability} · {m.timezone} · Style: {m.style}
                       </div>
+                      {notesShown && notes[m.id] && (
+                        <div className="small bg-primary-subtle text-primary-emphasis rounded p-2 mt-2">
+                          <i className="bi bi-stars me-1" />
+                          <strong>Why this mentor (AI):</strong> {notes[m.id]}
+                        </div>
+                      )}
                     </div>
                     <Button size="sm" onClick={() => assign(m.id)}>
                       Assign
