@@ -1,5 +1,5 @@
 node_modules/
-
+.claude
 # Python virtual environments, wherever they are created (python -m venv .venv / venv / env)
 backend/*env/
 venv/

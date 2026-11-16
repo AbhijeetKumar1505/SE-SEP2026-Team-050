@@ -124,6 +124,51 @@ flask openapi write --format=yaml openapi.yaml
 
 A test fails if `openapi.yaml` no longer matches the code. The shared parts of the document (the error format, the login scheme and the epic each module belongs to) are in `app/openapi.py`.
 
+### List endpoints
+
+An endpoint that returns a list pages through it with `QueryPage` from `app/openapi.py`. The view returns a SQLAlchemy query, and only the requested page is fetched:
+
+```python
+@blp.route("")
+@blp.stories("US-16")
+@blp.auth("iic")
+@blp.response(200, ProblemSchema(many=True))
+@blp.paginate(QueryPage, page_size=20, max_page_size=100)
+def list_queue():
+    """List the problem queue"""
+    return services.queue()  # a query, already ordered
+```
+
+Clients choose the page with `?page=2&page_size=20`. The `X-Pagination` response header gives the total and the page count.
+
+## Recording actions and notifying people
+
+Most stories have to keep a record of a decision (C14) and tell someone about it (C13). Both helpers join the change you are making, so call them before you commit:
+
+```python
+from app.audit import services as audit
+from app.notifications import services as notifications
+
+mentorship.status = "active"
+audit.record("accept_assignment", "mentorship", mentorship.id, actor=get_current_user(), details="Accepted.")
+notifications.notify(student.user, "acceptance_notice", link="/student", student_name=..., mentor_name=...)
+db.session.commit()
+```
+
+- **`audit.record(action, entity_type, entity_id, actor=..., details=...)`** adds an entry to the audit log.
+  - `action` and `entity_type` are snake_case names, such as `verify_mentor` and `mentor`.
+  - `actor` must always be given: the logged-in user, or `None` for automatic actions such as the daily checks.
+  - Entries are never edited or deleted, and the code refuses to do either.
+  - IIC reads them with `GET /api/audit`. Add `?entity_type=mentor&entity_id=3` for one record's history.
+- **`notifications.notify(user, template_key, link=..., **values)`** gives the user a dashboard notice and an email.
+  - The email is sent only after the commit, so a change that fails never emails anyone. If the mail server refuses it, the notice is marked `failed` and the change still stands.
+  - `link` is the page in the web app the notice opens, such as `/student`. The email links to it through `FRONTEND_URL`.
+  - Each event has one template in `app/notifications/templates.py`. Add yours there with your story. A missing placeholder value is an error.
+  - Users read their notices with `GET /api/notifications` (`?unread=true` for the bell) and mark them read with `POST /api/notifications/<id>/read` or `POST /api/notifications/read-all`.
+- **Never put conversation content** in an audit entry or a notification.
+
+In development, emails are written to the log instead of being sent. In tests, check them with `mail.record_messages()`; see `tests/test_notifications.py`.
+
 ## Errors
 
 Every error, including validation failures and unexpected server errors, comes back in one JSON shape:
@@ -147,6 +192,7 @@ Every error, including validation failures and unexpected server errors, comes b
 | `SECRET_KEY` | a development-only value | Signs tokens and links. Production refuses to start without its own value |
 | `DATABASE_URL` | SQLite in `instance/mentoring.db` | Set to a PostgreSQL URL on the host |
 | `CORS_ORIGINS` | `http://localhost:5173` | Frontend origins allowed to call the API |
+| `FRONTEND_URL` | `http://localhost:5173` | Where the web app runs, for the links in emails |
 | `MAIL_SUPPRESS_SEND` | `true` | Keep `true` until an email provider is chosen |
 
 The full list is in `.env.example`.

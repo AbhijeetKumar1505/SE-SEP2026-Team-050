@@ -51,7 +51,10 @@ def create_app(config_name: str | None = None) -> Flask:
     migrate.init_app(app, db)
     jwt.init_app(app)
     mail.init_app(app)
-    cors.init_app(app, resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}})
+    # X-Pagination carries the totals of list endpoints; browsers hide response headers not listed here.
+    cors.init_app(
+        app, resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"], "expose_headers": ["X-Pagination"]}}
+    )
     api.init_app(app)
 
     for blueprint in BLUEPRINTS:
