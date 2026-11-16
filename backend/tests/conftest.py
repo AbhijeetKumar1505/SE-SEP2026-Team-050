@@ -17,6 +17,7 @@ import pytest
 
 from app import create_app
 from app.auth import services as auth_services
+from app.auth.models import IIC, LEADERSHIP, MENTOR, STUDENT
 from app.auth.tokens import issue_token
 from app.extensions import db
 from app.mentors.models import Availability, Mentor
@@ -91,25 +92,25 @@ def login_as(make_user):
 @pytest.fixture
 def student_user(make_user):
     """A verified user account with the student role."""
-    return make_user(auth_services.STUDENT)
+    return make_user(STUDENT)
 
 
 @pytest.fixture
 def mentor_user(make_user):
     """A verified user account with the mentor role."""
-    return make_user(auth_services.MENTOR)
+    return make_user(MENTOR)
 
 
 @pytest.fixture
 def iic_user(make_user):
     """A verified user account with the IIC coordinator role."""
-    return make_user(auth_services.IIC)
+    return make_user(IIC)
 
 
 @pytest.fixture
 def leadership_user(make_user):
     """A verified user account with the programme leadership role."""
-    return make_user(auth_services.LEADERSHIP)
+    return make_user(LEADERSHIP)
 
 
 # ---------------------------------------------------------------------------

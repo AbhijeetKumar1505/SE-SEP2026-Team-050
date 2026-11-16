@@ -20,32 +20,30 @@ def test_per_role_auth_headers_contain_valid_bearer_token(
         assert len(token) > 20
 
 
-def test_authenticated_clients_can_access_protected_whoami(
-    student_client, mentor_client, iic_client, leadership_client
-):
-    """Verify pre-authenticated role clients can access /api/auth/whoami."""
+def test_authenticated_clients_can_access_protected_me(student_client, mentor_client, iic_client, leadership_client):
+    """Verify pre-authenticated role clients can access /api/auth/me."""
     # student
-    res = student_client.get("/api/auth/whoami")
+    res = student_client.get("/api/auth/me")
     assert res.status_code == 200
     assert "student" in res.json["roles"]
 
     # mentor
-    res = mentor_client.get("/api/auth/whoami")
+    res = mentor_client.get("/api/auth/me")
     assert res.status_code == 200
     assert "mentor" in res.json["roles"]
 
     # iic
-    res = iic_client.get("/api/auth/whoami")
+    res = iic_client.get("/api/auth/me")
     assert res.status_code == 200
     assert "iic" in res.json["roles"]
 
     # leadership
-    res = leadership_client.get("/api/auth/whoami")
+    res = leadership_client.get("/api/auth/me")
     assert res.status_code == 200
     assert "leadership" in res.json["roles"]
 
 
 def test_unauthenticated_client_is_rejected_on_protected_endpoints(client):
     """Verify unauthenticated client gets 401 on protected routes."""
-    res = client.get("/api/auth/whoami")
+    res = client.get("/api/auth/me")
     assert res.status_code == 401

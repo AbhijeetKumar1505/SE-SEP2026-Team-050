@@ -16,7 +16,7 @@ from flask.cli import with_appcontext
 
 from .audit.models import AuditLog
 from .auth import services as auth_services
-from .auth.models import User
+from .auth.models import IIC, LEADERSHIP, MENTOR, STUDENT, User
 from .extensions import db
 from .feedback.models import Feedback
 from .matching.models import Recommendation
@@ -133,8 +133,8 @@ def seed_database() -> dict[str, int]:
         return user
 
     # 3. Staff accounts
-    iic_user = get_or_create_user("deepa.iic@ds.study.iitm.ac.in", (auth_services.IIC,))
-    get_or_create_user("leadership@ds.study.iitm.ac.in", (auth_services.LEADERSHIP,))
+    iic_user = get_or_create_user("deepa.iic@ds.study.iitm.ac.in", (IIC,))
+    get_or_create_user("leadership@ds.study.iitm.ac.in", (LEADERSHIP,))
 
     # 4. Mentors
     mentors_spec = [
@@ -194,8 +194,7 @@ def seed_database() -> dict[str, int]:
             "email": "vikram.mentor@ds.study.iitm.ac.in",
             "name": "Vikram Iyer",
             "bio": (
-                "Doctoral Researcher in Computational Neuroscience and Machine Learning at European Research "
-                "Institute."
+                "Doctoral Researcher in Computational Neuroscience and Machine Learning at European Research Institute."
             ),
             "org": "NeuroTech Institute",
             "style": "Academic guidance, foreign university admissions and scholarship navigation.",
@@ -209,7 +208,7 @@ def seed_database() -> dict[str, int]:
     now = datetime.now(UTC)
 
     for spec in mentors_spec:
-        user = get_or_create_user(spec["email"], (auth_services.MENTOR,))
+        user = get_or_create_user(spec["email"], (MENTOR,))
         mentor = Mentor.query.filter_by(user_id=user.id).first()
         if not mentor:
             mentor = Mentor(
@@ -290,7 +289,7 @@ def seed_database() -> dict[str, int]:
 
     student_records = []
     for spec in students_spec:
-        user = get_or_create_user(spec["email"], (auth_services.STUDENT,))
+        user = get_or_create_user(spec["email"], (STUDENT,))
         student = Student.query.filter_by(user_id=user.id).first()
         if not student:
             student = Student(
@@ -393,8 +392,7 @@ def seed_database() -> dict[str, int]:
             status="active",
             goal="Finalize elective selections and build a benchmarked object detection project for resume.",
             next_steps=(
-                "1. Review elective syllabus; 2. Implement baseline YOLO detection; "
-                "3. Document inference benchmarks."
+                "1. Review elective syllabus; 2. Implement baseline YOLO detection; 3. Document inference benchmarks."
             ),
             assigned_at=now - timedelta(days=10),
             answered_at=now - timedelta(days=9),
