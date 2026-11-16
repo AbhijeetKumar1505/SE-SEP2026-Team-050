@@ -1,4 +1,4 @@
-import { DEMO_PASSWORD } from '../constants/demo'
+import { DEMO_ACCOUNTS, DEMO_PASSWORD } from '../constants/demo'
 import { db } from './mock/db'
 import { delay, uid } from './mock/mockUtils'
 import { session } from './mock/session'
@@ -27,6 +27,14 @@ export function login(email, password) {
   if (!account || (account.record.password ?? DEMO_PASSWORD) !== password) return fail('Email or password is incorrect.')
   if (account.role === 'student' && !account.record.verified) return fail('Verify your email first. Check your inbox for the link.')
   return delay(signIn(account))
+}
+
+// Prototype only: the header's role switcher signs straight in as that role's demo account.
+// Removed in M3 together with the demo accounts.
+export function switchDemoRole(role) {
+  const { email } = DEMO_ACCOUNTS.find((a) => a.role === role)
+  const account = accounts().find((a) => same(a.record.email, email))
+  return account ? delay(signIn(account)) : fail('That demo account isn’t available.')
 }
 
 // Students must be on IIC's roster, with the roster's email.

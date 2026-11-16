@@ -4,7 +4,7 @@ Team 050, IITM BS Software Engineering project (September 2026 term), problem st
 
 This folder is the web client for Milestone 2. It is a React single-page app with the pages for all four roles: students, mentors, IIC coordinators and programme leadership. The pages are connected and the routing between them works.
 
-As the milestone asks, the app is **not connected to a backend yet**. Each page keeps its own sample data, so changes you make while clicking through are lost when you reload. From Milestone 3 the pages call the team's Flask REST API instead.
+The app is **not connected to the backend yet**. Pages get their data through `src/api/`, which for now runs an in-memory mock (`src/api/mock/`). What you do in one role shows up in the others while you click through, and everything resets when you reload. In Milestone 3 each function in `src/api/` becomes a call to the team's Flask REST API with the same signature, and `src/api/mock/` is deleted.
 
 ## Requirements
 
@@ -21,7 +21,7 @@ npm install
 npm run dev
 ```
 
-Then open **http://localhost:5173** in your browser. The app opens on the mentor dashboard.
+Then open **http://localhost:5173** in your browser. The app opens on the welcome page.
 
 These steps are the same on Windows, macOS and Linux. `npm install` downloads the packages into `node_modules/` and only needs to be run once.
 
@@ -36,13 +36,13 @@ These steps are the same on Windows, macOS and Linux. `npm install` downloads th
 
 ## How to explore the prototype
 
-There is no real login until the API exists, so the app signs you in as a sample user:
+Login runs against the mock until the API exists. Log in with a demo account below, or use the shortcuts on the login page.
 
-- **Switch role** from the login page: `student`, `mentor`, `iic` or `leadership`.
-- **Try the sign-up flow** at http://localhost:5173/welcome: *Get Started* → sign-up → *Verify your email*. The bar at the bottom of the verify page, **Open the verification link**, stands in for the link in the email. It signs in a new student, who then completes their profile and submits a problem.
-- **Mentor activation:** http://localhost:5173/activate/demo shows the page a newly verified mentor opens from their email. http://localhost:5173/activate/expired shows an expired link.
+- **Switch role** at any time with the drop-down in the header (Student, Mentor, IIC, Leadership). It signs you in as that role's demo account. It is a prototype aid and goes away with the demo accounts in Milestone 3.
+- **Try the sign-up flow** at http://localhost:5173: *Get Started* → sign-up → *Verify your email*. The **open the verification link** shortcut on the verify page stands in for the link in the email. It signs in a new student, who then completes their profile and submits a problem.
+- **Mentor activation:** as IIC, open **Mentor pool** and verify a mentor who is *Pending verification*. The confirmation has an **open the link** shortcut to the page the mentor would open from their email. http://localhost:5173/activate/expired shows an expired link.
 
-A refresh logs you out (the mock session lives in memory).
+A refresh logs you out, because the mock session lives in memory. Move between pages with the app's own links rather than typing addresses.
 
 ## Demo accounts
 
@@ -59,18 +59,16 @@ All use the password `password123` (or use the shortcuts on the login page):
 
 | Role | Address | Page | User stories |
 |---|---|---|---|
-| Public | `/welcome` | Welcome | US-01 |
+| Public | `/` | Welcome | US-01 |
 | Public | `/login` | Log in (A1) | US-01 |
 | Public | `/signup` | Student sign-up (A2) | US-01 |
-| Public | `/verify-email` | Verify your email (A3) | US-01 |
-| Public | `/forgot-password`, `/reset-password` | Password reset | US-01 |
+| Public | `/verify-email`, `/verify-email/:token` | Verify your email (A3) | US-01 |
+| Public | `/forgot-password`, `/reset-password/:token` | Password reset | US-01 |
 | Public | `/activate/:token` | Mentor account activation (A4) | US-14 |
-| Student | `/student/onboarding` | Complete your profile (S1) | US-02 |
+| Student | `/student/profile` | Profile; a new student completes it first (S1) | US-02 |
 | Student | `/student/problem/new` | Submit your problem, with the AI problem coach (S2) | US-03, US-20 |
-| Student | `/student/problem` | My mentoring problem and its status (S3) | US-03, US-05 |
-| Student | `/student` | Dashboard: mentor assigned (S4) | US-05 |
+| Student | `/student` | My mentoring problem, its status and the assigned mentor (S3, S4) | US-03, US-05 |
 | Student | `/student/mentorship` | Mentorship workspace, feedback, change or end request (S5–S7) | US-06, US-07, US-08, US-11 |
-| Student | `/student/profile` | Profile | US-02 |
 | Mentor | `/mentor` | Dashboard: assignments to accept or decline, active mentorships (M1, M2) | US-09, US-10 |
 | Mentor | `/mentor/availability` | Availability and contact (M3) | US-10 |
 | Mentor | `/mentor/mentorships/r6` | Mentorship workspace: log a session, progress feedback, end (M4–M6) | US-06, US-11, US-12, US-13 |
@@ -84,15 +82,15 @@ All use the password `password123` (or use the shortcuts on the login page):
 | IIC | `/iic/settings` | Settings, topic tags and audit log (I7) | US-01, US-03, US-21 |
 | Leadership | `/leadership` | Programme insights (L1) | US-19 |
 
-Addresses with an id (`p1`, `r6`, `r2`, `C-014`) are sample records. You reach the others by clicking through the lists on each page. Switch to the matching role before opening an address directly.
+Addresses with an id (`p1`, `r6`, `r2`, `C-014`) are sample records. Since a refresh logs you out, reach them by clicking through the lists on each page.
 
 ### AI features
 
-The three AI features show sample responses in this milestone. In every one, the user decides what to do with the suggestion.
+The three AI calls are in `src/api/ai.js`. Until the API calls a model, rule-based stand-ins in `src/api/mock/ai.js` answer them. In every feature, the user decides what to do with the suggestion.
 
-- **Problem coach** (student, `/student/problem/new`): write a description of at least 30 characters and press **Check my problem**. It suggests topic tags and points out missing detail.
-- **Mentor fit notes** (IIC, `/iic/problems/p1`): press **Explain fit with AI** to see why each recommended mentor fits. The ranking itself never changes.
-- **Feedback review** (IIC, `/iic/mentorships/r2`): press **Summarise with AI**, and act on the wellbeing flag with **I'll follow up** or **Not a concern**.
+- **Problem coach** (Student → **Submit a new problem**): write a description of at least 30 characters and press **Check my problem**. It suggests topic tags from IIC's list, which you can add with one click, and points out missing detail. The demo student already has an open problem, so withdraw it on **My problem** first.
+- **Mentor fit notes** (IIC → **Problem queue** → **Open**): press **Explain fit with AI** to see why each recommended mentor fits. The ranking itself never changes.
+- **Feedback review** (IIC → **Monitoring** → **Open** on Sneha Pillai's row, or the bell): read both sides' feedback, press **Summarise with AI**, and act on the wellbeing flag with **I'll follow up** or **Not a concern**. New student feedback is checked when it is sent, so a worrying comment raises a new flag for IIC.
 
 ## Project structure
 
@@ -100,7 +98,6 @@ The three AI features show sample responses in this milestone. In every one, the
 frontend/
 ├── index.html            Page shell that loads src/main.jsx
 ├── package.json          Scripts and dependencies
-├── theme.css             Design tokens, applied as Bootstrap overrides
 ├── vite.config.js        Vite configuration
 ├── eslint.config.js      Lint rules
 ├── .prettierrc           Code formatting rules
@@ -108,7 +105,8 @@ frontend/
 └── src/
     ├── main.jsx          Entry point: router, sign-in context, global styles
     ├── App.jsx           Top-level routes
-    ├── api/              Centralized layer for communication with backend and external servers, and mock data and implementations
+    ├── theme.css         Design tokens, applied as Bootstrap overrides
+    ├── api/              All calls to the backend (ai.js holds the three AI features); mock/ answers them until Milestone 3
     ├── routes/           Routes for each role (account, student, mentor, IIC, leadership)
     ├── pages/            One component per screen; auth/, student/, mentor/, iic/ and leadership/ hold those roles' pages
     ├── components/       Shared layout and UI pieces (layouts, tables, modals, badges)
@@ -126,4 +124,5 @@ React 19, Vite 8, React Router 7, React Bootstrap 2 (Bootstrap 5 and Bootstrap I
 
 - **`npm install` fails or Vite will not start:** check `node -v`. Versions older than 20.19 are not supported.
 - **Port 5173 is already in use:** Vite picks the next free port and prints it in the terminal. Open that address instead.
-- **A page sends you to a different dashboard:** the page belongs to another role. Switch role first (see above).
+- **A page sends you to a different dashboard:** the page belongs to another role. Switch role with the drop-down in the header first.
+- **You land on the login page after typing an address:** a refresh logs you out. Log in again and use the app's links.

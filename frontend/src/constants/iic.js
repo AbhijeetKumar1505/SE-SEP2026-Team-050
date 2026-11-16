@@ -8,6 +8,7 @@ export const FLAGS = {
   firstSession: { label: 'First session overdue', hint: (s) => `${s.firstSessionDays}+ days since acceptance` },
   inactive: { label: 'Inactive', hint: (s) => `${s.inactiveDays}+ days without a held session` },
   feedback: { label: 'Feedback overdue', hint: (s) => `${s.feedbackOverdueDays}+ days past the checkpoint` },
+  wellbeing: { label: 'Wellbeing check (AI)', hint: () => 'AI flagged a feedback comment for IIC to read' },
 }
 
 export const DECISIONS = [

@@ -57,7 +57,7 @@ export default function Monitoring() {
       cell: (r) => (
         <span className="d-flex flex-wrap gap-1">
           {r.flags.map((f) => (
-            <Pill key={f} tone="warning">
+            <Pill key={f} tone={f === 'wellbeing' ? 'danger' : 'warning'}>
               {FLAGS[f].label}
             </Pill>
           ))}
@@ -66,12 +66,18 @@ export default function Monitoring() {
     },
     {
       header: '',
-      cell: (r) =>
-        r.caseId && (
-          <Button as={Link} to={`/iic/cases/${r.caseId}`} size="sm" variant="outline-primary">
-            Open case
+      cell: (r) => (
+        <span className="d-flex justify-content-end gap-2 text-nowrap">
+          {r.caseId && (
+            <Button as={Link} to={`/iic/cases/${r.caseId}`} size="sm" variant="outline-secondary">
+              Open case
+            </Button>
+          )}
+          <Button as={Link} to={`/iic/mentorships/${r.id}`} size="sm" variant="outline-primary">
+            Open
           </Button>
-        ),
+        </span>
+      ),
     },
   ]
 

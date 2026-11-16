@@ -2,6 +2,7 @@ import { Route } from 'react-router-dom'
 import AppLayout from '../components/AppLayout'
 import CaseDetail from '../pages/iic/CaseDetail'
 import MentorPool from '../pages/iic/MentorPool'
+import MentorshipReview from '../pages/iic/MentorshipReview'
 import Monitoring from '../pages/iic/Monitoring'
 import ProblemQueue from '../pages/iic/ProblemQueue'
 import Roster from '../pages/iic/Roster'
@@ -15,6 +16,7 @@ export default (
     <Route path="mentors" element={<MentorPool />} />
     <Route path="students" element={<Roster />} />
     <Route path="monitoring" element={<Monitoring />} />
+    <Route path="mentorships/:id" element={<MentorshipReview />} />
     <Route path="cases/:id" element={<CaseDetail />} />
     <Route path="settings" element={<Settings />} />
   </Route>

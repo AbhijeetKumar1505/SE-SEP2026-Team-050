@@ -1,3 +1,4 @@
+import { wellbeingCheck } from './mock/ai'
 import { day, delay, uid } from './mock/mockUtils'
 import { db } from './mock/db'
 import { session } from './mock/session'
@@ -116,7 +117,16 @@ export function saveGoal(id, goal) {
 
 export function submitFeedback(id, progress, comment) {
   const m = find(id)
+  const entry = { id: uid(), date: day(0), from: 'Student', progress, comment }
+  m.feedback.unshift(entry) // IIC reads it in the mentorship review (I8)
   Object.assign(m, { studentProgress: progress, studentComment: comment, studentCheckpointDue: day(db.settings.feedbackDays) })
+  // Backend: the AI wellbeing check runs on each new student comment and only flags it for IIC to read.
+  const flag = comment && m.wellbeingFlag?.status !== 'open' && wellbeingCheck(comment)
+  if (flag) {
+    const at = new Date().toISOString()
+    m.wellbeingFlag = { feedbackId: entry.id, ...flag, status: 'open', at }
+    m.history.unshift({ at, text: 'AI flagged a feedback comment for a wellbeing check' })
+  }
   return delay()
 }
 

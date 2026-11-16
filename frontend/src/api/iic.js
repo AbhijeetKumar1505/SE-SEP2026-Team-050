@@ -227,6 +227,7 @@ function summary(m) {
     !heldSessions.length && daysSince(m.startedAt) >= settings.firstSessionDays && 'firstSession',
     daysSince(last ?? m.startedAt) >= settings.inactiveDays && 'inactive',
     daysSince(m.checkpointDue) >= settings.feedbackOverdueDays && 'feedback',
+    m.wellbeingFlag?.status === 'open' && 'wellbeing',
   ].filter(Boolean)
   return {
     id: m.id,
@@ -250,6 +251,40 @@ export const getMonitoring = () =>
     settings: db.settings,
     dailyChecks: db.dailyChecks,
   })
+
+// ---- I8: one mentorship's feedback from both sides, with the AI wellbeing flag ----
+export function getMentorshipReview(id) {
+  const m = byId(db.mentorships, id)
+  return found(
+    m && {
+      id: m.id,
+      student: m.student.name,
+      mentor: m.mentor,
+      startedAt: m.startedAt,
+      caseId: m.caseId,
+      // Dates and durations only: IIC never sees what was discussed.
+      sessions: m.sessions
+        .map(({ id: sessionId, date, duration, status, confirmed }) => ({ id: sessionId, date, duration, status, confirmed }))
+        .toSorted((a, b) => b.date.localeCompare(a.date)),
+      feedback: m.feedback,
+      flag: m.wellbeingFlag,
+      history: m.history,
+    },
+    'Mentorship',
+  )
+}
+
+// IIC's answer to the flag: 'reviewed' (will follow up) or 'dismissed' (not a concern). Recorded in the history.
+// The AI never contacts anyone or changes the mentorship.
+export function resolveWellbeingFlag(id, outcome) {
+  const m = byId(db.mentorships, id)
+  m.wellbeingFlag.status = outcome
+  const text =
+    outcome === 'reviewed' ? 'reviewed the AI wellbeing flag and will follow up' : 'marked the AI wellbeing flag as not a concern'
+  log(m.history, `${ACTOR} ${text}`)
+  log(db.audit, `${ACTOR} ${text} for ${m.student.name}`)
+  return delay()
+}
 
 // ---- I6: cases ----
 export function getCase(id) {
