@@ -1,38 +1,33 @@
-import { Dropdown } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Badge, Dropdown } from 'react-bootstrap'
+import { Link, useLocation } from 'react-router-dom'
+import { getNotifications } from '../api/notifications'
+import useFetch from '../hooks/useFetch'
 
-// Sample notifications per role, until the Flask API sends them. [id, text, link]
-const NOTIFICATIONS = {
-  mentor: [
-    ['p6', 'Neha Joshi was assigned to you', '/mentor'],
-    ['cr1', 'Deepa Krishnan asked you to take on one more student', '/mentor'],
-    ['r6-confirm', 'Karthik Subramanian logged a session to confirm', '/mentor/mentorships/r6'],
-  ],
-  iic: [
-    ['reassign', '2 problems to reassign', '/iic'],
-    ['new', '3 new problems to review', '/iic'],
-    ['verify', '3 mentors to verify', '/iic/mentors'],
-    ['C-014', 'Case C-014 is open', '/iic/cases/C-014'],
-    ['r2-wellbeing', 'Wellbeing check (AI): a comment from Sneha Pillai', '/iic/mentorships/r2'],
-  ],
-}
-
-// Bell with a count and a list of what needs attention.
+// Bell with a count and a list of what needs attention. Refreshes on navigation and when opened.
 export default function NotificationBell({ role }) {
-  const items = NOTIFICATIONS[role] ?? []
-  const count = items.length
+  const { pathname } = useLocation()
+  const [items, reload] = useFetch(getNotifications, role)
+  useEffect(() => {
+    reload()
+  }, [pathname, reload])
+  const count = items?.length ?? 0
   return (
-    <Dropdown align="end">
-      <Dropdown.Toggle variant="link" bsPrefix="mt-bell" aria-label={`Notifications (${count})`}>
-        <i className="bi bi-bell" />
-        {count > 0 && <b>{count}</b>}
+    <Dropdown align="end" onToggle={(open) => open && reload()}>
+      <Dropdown.Toggle variant="link" bsPrefix="p-0" className="text-body position-relative" aria-label={`Notifications (${count})`}>
+        <i className="bi bi-bell fs-5" />
+        {count > 0 && (
+          <Badge pill bg="danger" className="position-absolute top-0 start-100 translate-middle">
+            {count}
+          </Badge>
+        )}
       </Dropdown.Toggle>
       <Dropdown.Menu>
         <Dropdown.Header>Notifications</Dropdown.Header>
         {count === 0 && <Dropdown.ItemText className="text-muted">You’re all caught up.</Dropdown.ItemText>}
-        {items.map(([id, text, to]) => (
-          <Dropdown.Item key={id} as={Link} to={to}>
-            {text}
+        {items?.map((n) => (
+          <Dropdown.Item key={n.id} as={Link} to={n.to}>
+            {n.text}
           </Dropdown.Item>
         ))}
       </Dropdown.Menu>

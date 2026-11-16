@@ -1,11 +1,13 @@
-// Topic tags, drawn like the expertise tags on the student pages (.mt-tag in theme.css).
+import { Badge } from 'react-bootstrap'
+
+// Outlined topic chips.
 export default function Tags({ tags }) {
   return (
-    <div className="d-flex flex-wrap gap-2">
+    <div className="d-flex flex-wrap gap-1">
       {tags.map((t) => (
-        <span key={t} className="mt-tag">
+        <Badge key={t} bg="white" text="body-secondary" className="border fw-normal">
           {t}
-        </span>
+        </Badge>
       ))}
     </div>
   )

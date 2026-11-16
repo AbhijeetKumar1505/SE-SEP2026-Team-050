@@ -1,58 +1,17 @@
 import { Alert, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import { getQueue } from '../../api/iic'
 import DataTable from '../../components/DataTable'
 import FilterBar from '../../components/FilterBar'
+import Loading from '../../components/Loading'
 import StatusBadge from '../../components/StatusBadge'
 import Tags from '../../components/Tags'
 import { PROBLEM_STATUSES } from '../../constants/iic'
+import useFetch from '../../hooks/useFetch'
 import useFilter, { chipsBy } from '../../hooks/useFilter'
-import { dayOffset, daysSince, fmtDate, plural } from '../../utils/format'
+import { daysSince, fmtDate, plural } from '../../utils/format'
 
 const CHIPS = chipsBy('All open', PROBLEM_STATUSES, (p) => p.status)
-
-// Sample data for this page. Each page keeps its own data until the Flask API is connected.
-const problem = (id, name, roll, daysAgo, status, tags, reassignReason) => ({
-  id,
-  student: { name, roll },
-  submittedAt: dayOffset(-daysAgo),
-  status,
-  tags,
-  reassignReason,
-})
-
-const PROBLEMS = [
-  problem(
-    'p1',
-    'Karan Mehta',
-    '22f3001876',
-    9,
-    'Reassignment needed',
-    ['SQL and database design', 'Data engineering'],
-    'the assigned mentor didn’t respond within 72 h.',
-  ),
-  problem(
-    'p2',
-    'Sneha Pillai',
-    '23f2000451',
-    7,
-    'Reassignment needed',
-    ['Machine learning', 'Python programming'],
-    'the mentorship has been inactive for 14 days.',
-  ),
-  problem('p3', 'Ananya Rao', '23f1002345', 3, 'Submitted', [
-    'Data engineering',
-    'SQL and database design',
-    'Industry and role requirements',
-  ]),
-  problem('p4', 'Rohit Verma', '23f1004420', 2, 'Submitted', ['Job search strategy', 'Resume and portfolio']),
-  problem('p5', 'Vikram Das', '23f3002201', 1, 'Submitted', ['Machine learning', 'Choosing a master’s programme']),
-  problem('p6', 'Neha Joshi', '21f1005567', 1, 'Awaiting mentor', ['Choosing a career path', 'Job search strategy']),
-]
-
-// Reassignment needed is pinned to the top, then oldest first.
-const QUEUE = PROBLEMS.toSorted(
-  (a, b) => (b.status === 'Reassignment needed') - (a.status === 'Reassignment needed') || a.submittedAt.localeCompare(b.submittedAt),
-)
 
 const columns = [
   { header: 'Submitted', cell: (p) => fmtDate(p.submittedAt) },
@@ -79,10 +38,11 @@ const columns = [
 ]
 
 export default function ProblemQueue() {
-  const problems = QUEUE // this page only reads the queue
-  const filter = useFilter(problems, CHIPS, (p) => [p.student.name, p.student.roll])
+  const [data] = useFetch(getQueue)
+  const filter = useFilter(data?.problems ?? [], CHIPS, (p) => [p.student.name, p.student.roll])
+  if (!data) return <Loading />
 
-  const reassign = problems.filter((p) => p.status === 'Reassignment needed')
+  const reassign = data.problems.filter((p) => p.status === 'Reassignment needed')
   return (
     <>
       <h1 className="h3 mb-4">Problem queue</h1>
@@ -103,7 +63,7 @@ export default function ProblemQueue() {
       <FilterBar chips={CHIPS} {...filter} placeholder="Search by name or roll number" />
       <DataTable columns={columns} rows={filter.filtered} empty="No problems match." />
       <p className="small text-muted mt-2">
-        Showing {filter.filtered.length} of {problems.length}
+        Showing {filter.filtered.length} of {data.problems.length}
       </p>
     </>
   )

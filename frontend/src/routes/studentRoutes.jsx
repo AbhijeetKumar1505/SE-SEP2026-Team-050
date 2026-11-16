@@ -1,27 +1,18 @@
 import { Route } from 'react-router-dom'
-import StudentLayout from '../components/StudentLayout'
-import { StudentOnboardingScreen } from '../pages/AccountScreens'
-import StudentMentorAssigned from '../pages/StudentMentorAssigned'
-import StudentMentorshipWorkspace from '../pages/StudentMentorshipWorkspace'
-import StudentMyProblem, { Navbar } from '../pages/StudentMyProblem'
-import StudentProfile from '../pages/StudentProfile'
-import StudentSubmitProblem from '../pages/StudentSubmitProblem'
+import AppLayout from '../components/AppLayout'
+import RequireProfile from '../pages/student/RequireProfile'
+import StudentHome from '../pages/student/StudentHome'
+import StudentMentorship from '../pages/student/StudentMentorship'
+import StudentProfile from '../pages/student/StudentProfile'
+import SubmitProblem from '../pages/student/SubmitProblem'
 
 export default (
-  <Route path="/student" element={<StudentLayout />}>
-    <Route index element={<StudentMentorAssigned />} />
-    <Route path="problem" element={<StudentMyProblem />} />
-    <Route path="problem/new" element={<StudentSubmitProblem />} />
-    <Route path="mentorship" element={<StudentMentorshipWorkspace />} />
-    <Route
-      path="profile"
-      element={
-        <div className="dashboard-page">
-          <Navbar activeTab="profile" />
-          <StudentProfile />
-        </div>
-      }
-    />
-    <Route path="onboarding" element={<StudentOnboardingScreen />} />
+  <Route path="/student" element={<AppLayout role="student" />}>
+    <Route path="profile" element={<StudentProfile />} />
+    <Route element={<RequireProfile />}>
+      <Route index element={<StudentHome />} />
+      <Route path="problem/new" element={<SubmitProblem />} />
+      <Route path="mentorship" element={<StudentMentorship />} />
+    </Route>
   </Route>
 )

@@ -11,7 +11,10 @@ export const daysSince = (d) => Math.max(0, Math.round((Date.now() - toDate(d)) 
 export const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
 export const fmtDateTime = (d) =>
   new Date(d).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })
-
-// Sample data uses dates relative to today, so the prototype always looks current.
-export const dayOffset = (days) => new Date(Date.now() + days * 864e5).toLocaleDateString('en-CA') // YYYY-MM-DD
-export const hoursAgo = (hours) => new Date(Date.now() - hours * 36e5).toISOString()
+export const initials = (name) =>
+  name
+    .split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()

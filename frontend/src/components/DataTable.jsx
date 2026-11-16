@@ -4,7 +4,7 @@ import { Table } from 'react-bootstrap'
 export default function DataTable({ columns, rows, empty = 'Nothing to show.' }) {
   if (!rows.length) return <p className="text-muted">{empty}</p>
   return (
-    <Table hover responsive className="align-middle mb-0">
+    <Table hover responsive className="align-middle bg-white border mb-0">
       <thead>
         <tr>
           {columns.map((c, i) => (

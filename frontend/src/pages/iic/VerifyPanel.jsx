@@ -1,18 +1,19 @@
 import { Button, Form, Offcanvas } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
+import { getTags } from '../../api/tags'
 import Details from '../../components/Details'
-import { TAGS } from '../../constants/tags'
+import useFetch from '../../hooks/useFetch'
 
 // Side panel: check a mentor's credentials, set their expertise tags, verify.
 export default function VerifyPanel({ mentor, onClose, onVerify }) {
-  const tags = TAGS.filter((t) => t.active)
+  const [tags] = useFetch(getTags)
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({ defaultValues: { expertise: mentor.expertise } })
-  function submit({ expertise }) {
-    onVerify(mentor.id, expertise)
+  const submit = async ({ expertise }) => {
+    await onVerify(mentor.id, expertise)
     onClose()
   }
   return (
@@ -32,19 +33,21 @@ export default function VerifyPanel({ mentor, onClose, onVerify }) {
         <Form onSubmit={handleSubmit(submit)} noValidate className="mt-4">
           <Form.Label>Expertise tags</Form.Label>
           <div className="border rounded p-2 mb-1">
-            {tags.map((t) => (
-              <Form.Check
-                key={t.id}
-                id={`tag-${t.id}`}
-                label={t.name}
-                value={t.name}
-                {...register('expertise', { validate: (v) => v.length > 0 || 'Choose at least one tag.' })}
-              />
-            ))}
+            {tags
+              ?.filter((t) => t.active)
+              .map((t) => (
+                <Form.Check
+                  key={t.id}
+                  id={`tag-${t.id}`}
+                  label={t.name}
+                  value={t.name}
+                  {...register('expertise', { validate: (v) => v.length > 0 || 'Choose at least one tag.' })}
+                />
+              ))}
           </div>
           {errors.expertise && <div className="text-danger small">{errors.expertise.message}</div>}
           <p className="small text-muted mt-2">An activation link (valid for 7 days) will be emailed to the mentor.</p>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={!tags || isSubmitting}>
             Verify and send activation link
           </Button>
         </Form>

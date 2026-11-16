@@ -38,10 +38,22 @@ These steps are the same on Windows, macOS and Linux. `npm install` downloads th
 
 There is no real login until the API exists, so the app signs you in as a sample user:
 
-- **Switch role** with the drop-down at the top right of the mentor, IIC and leadership pages: `student`, `mentor`, `iic` or `leadership`.
-- **Leave the student pages** by reloading the browser (the app starts again as the mentor) or by opening http://localhost:5173/logged-out and choosing a role. The student pages follow the student design and have their own navigation bar, without the drop-down.
+- **Switch role** from the login page: `student`, `mentor`, `iic` or `leadership`.
 - **Try the sign-up flow** at http://localhost:5173/welcome: *Get Started* → sign-up → *Verify your email*. The bar at the bottom of the verify page, **Open the verification link**, stands in for the link in the email. It signs in a new student, who then completes their profile and submits a problem.
 - **Mentor activation:** http://localhost:5173/activate/demo shows the page a newly verified mentor opens from their email. http://localhost:5173/activate/expired shows an expired link.
+
+A refresh logs you out (the mock session lives in memory).
+
+## Demo accounts
+
+All use the password `password123` (or use the shortcuts on the login page):
+
+| Role | Email |
+|---|---|
+| Student | 23f1002345@ds.study.iitm.ac.in |
+| Mentor | rahul.menon@example.com |
+| IIC | deepa.krishnan@iitm.ac.in |
+| Leadership | anand.rajan@iitm.ac.in |
 
 ### Pages
 
@@ -88,6 +100,7 @@ The three AI features show sample responses in this milestone. In every one, the
 frontend/
 ├── index.html            Page shell that loads src/main.jsx
 ├── package.json          Scripts and dependencies
+├── theme.css             Design tokens, applied as Bootstrap overrides
 ├── vite.config.js        Vite configuration
 ├── eslint.config.js      Lint rules
 ├── .prettierrc           Code formatting rules
@@ -95,8 +108,9 @@ frontend/
 └── src/
     ├── main.jsx          Entry point: router, sign-in context, global styles
     ├── App.jsx           Top-level routes
+    ├── api/              Centralized layer for communication with backend and external servers, and mock data and implementations
     ├── routes/           Routes for each role (account, student, mentor, IIC, leadership)
-    ├── pages/            One component per screen; iic/, mentor/ and leadership/ hold those roles' pages
+    ├── pages/            One component per screen; auth/, student/, mentor/, iic/ and leadership/ hold those roles' pages
     ├── components/       Shared layout and UI pieces (layouts, tables, modals, badges)
     ├── context/          Signed-in user (sample users until the API exists)
     ├── constants/        Labels, statuses, navigation links and the topic-tag list

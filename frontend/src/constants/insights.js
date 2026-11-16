@@ -4,10 +4,10 @@ export const RANGES = [
   { value: '12m', label: 'Last 12 months' },
 ]
 
-// The app's blue and orange (theme.css). A blue and orange pair stays distinguishable for colour-blind readers.
+// Blue vs orange (Okabe-Ito), chosen so the two series stay distinguishable for colour-blind readers.
 export const SERIES = {
-  problems: { label: 'Problems submitted', color: '#245a9a' },
-  mentors: { label: 'Mentors available', color: '#bd6500' },
+  problems: { label: 'Problems submitted', color: '#0072B2' },
+  mentors: { label: 'Mentors available', color: '#E69F00' },
 }
 
 export const OUTCOMES = [

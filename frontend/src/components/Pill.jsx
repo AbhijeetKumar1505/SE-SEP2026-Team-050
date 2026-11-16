@@ -1,5 +1,10 @@
-// Status pill in the student design: soft background, coloured text.
-// Tones: primary, secondary, success, warning, danger (see .mt-pill in theme.css).
+import { Badge } from 'react-bootstrap'
+
+// Muted label: soft background, darker text. Tones: primary, secondary, success, warning, danger.
 export default function Pill({ tone = 'secondary', children }) {
-  return <span className={`mt-pill mt-pill-${tone}`}>{children}</span>
+  return (
+    <Badge bg={`${tone}-subtle`} text={`${tone}-emphasis`} className={`border border-${tone}-subtle fw-medium`}>
+      {children}
+    </Badge>
+  )
 }
