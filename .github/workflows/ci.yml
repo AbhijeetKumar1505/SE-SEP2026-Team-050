@@ -13,6 +13,9 @@ jobs:
     defaults:
       run:
         working-directory: backend
+        # Naming the shell makes GitHub run "bash -eo pipefail", so a failing command
+        # piped into tee (the pytest step) still fails the job.
+        shell: bash
 
     steps:
       - name: Checkout repository
