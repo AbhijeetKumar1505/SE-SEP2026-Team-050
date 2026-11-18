@@ -30,6 +30,27 @@ class UserSchema(Schema):
         attribute="role_names",
         metadata={"example": ["student"]},
     )
+    # The name and roll number on the student or mentor profile, so the web app can greet the user
+    # without a second request. Staff accounts have no profile and fall back to the email's first part.
+    name = fields.Method(
+        "get_name",
+        required=True,
+        metadata={"description": "Display name from the student or mentor profile", "example": "Ananya Rao"},
+    )
+    roll = fields.Method(
+        "get_roll",
+        allow_none=True,
+        metadata={"description": "Student roll number; null for staff and mentors", "example": "23f1002345"},
+    )
+
+    def get_name(self, user) -> str:
+        for profile in (user.student_profile, user.mentor_profile):
+            if profile is not None:
+                return profile.name
+        return user.email.split("@")[0]
+
+    def get_roll(self, user) -> str | None:
+        return user.student_profile.student_number if user.student_profile is not None else None
 
 
 class TokenSchema(Schema):

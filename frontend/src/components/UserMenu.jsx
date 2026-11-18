@@ -19,8 +19,8 @@ export default function UserMenu() {
       </Dropdown.Toggle>
       <Dropdown.Menu>
         <Dropdown.Item
-          onClick={() => {
-            logout()
+          onClick={async () => {
+            await logout()
             navigate('/login')
           }}
         >

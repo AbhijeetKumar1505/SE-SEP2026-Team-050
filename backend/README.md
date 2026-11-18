@@ -72,7 +72,7 @@ Each module package grows four files as its stories are built:
 
 ## Login and access control
 
-There are four roles: `student`, `mentor`, `iic` (IIC coordinator) and `leadership`. `POST /api/auth/login` returns an access token that lasts 8 hours and carries the user's roles; send it as `Authorization: Bearer <token>`. `POST /api/auth/logout` revokes it, and `GET /api/auth/me` returns the logged-in user.
+There are four roles: `student`, `mentor`, `iic` (IIC coordinator) and `leadership`. `POST /api/auth/login` returns an access token that lasts 8 hours and carries the user's roles; send it as `Authorization: Bearer <token>`. `POST /api/auth/logout` revokes it, and `GET /api/auth/me` returns the logged-in user with their roles, name and (for students) roll number.
 
 Protect an endpoint with `@blp.auth(...)`. It refuses the request and also documents the rule in the YAML:
 

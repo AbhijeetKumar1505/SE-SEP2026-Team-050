@@ -4,7 +4,9 @@ Team 050, IITM BS Software Engineering project (September 2026 term), problem st
 
 This folder is the web client for Milestone 2. It is a React single-page app with the pages for all four roles: students, mentors, IIC coordinators and programme leadership. The pages are connected and the routing between them works.
 
-The app is **not connected to the backend yet**. Pages get their data through `src/api/`, which for now runs an in-memory mock (`src/api/mock/`). What you do in one role shows up in the others while you click through, and everything resets when you reload. In Milestone 3 each function in `src/api/` becomes a call to the team's Flask REST API with the same signature, and `src/api/mock/` is deleted.
+Login, logout, "who am I" and the notification bell now call the backend. Every other page still gets its data through the in-memory mock in `src/api/mock/`, so work in one role shows up in the others while you click through, and that data resets when you reload. In Milestone 3 the remaining functions in `src/api/` become calls to the Flask REST API with the same signature, and `src/api/mock/` is deleted.
+
+`src/api/client.js` holds the shared API code: the base URL, the login token in `localStorage`, and error handling. In development Vite proxies `/api` to `http://127.0.0.1:5000`, so start the backend too (see [backend/README.md](../backend/README.md)). To call a different origin, copy `.env.example` to `.env` and set `VITE_API_URL`.
 
 ## Requirements
 
@@ -36,24 +38,24 @@ These steps are the same on Windows, macOS and Linux. `npm install` downloads th
 
 ## How to explore the prototype
 
-Login runs against the mock until the API exists. Log in with a demo account below, or use the shortcuts on the login page.
+Login calls the backend. Run `flask db upgrade` and `flask seed-data` in `backend/` first, then log in with a demo account below or use the shortcuts on the login page. The token is kept in `localStorage`, so a refresh keeps you signed in until you log out or the token expires.
 
 - **Switch role** at any time with the drop-down in the header (Student, Mentor, IIC, Leadership). It signs you in as that role's demo account. It is a prototype aid and goes away with the demo accounts in Milestone 3.
 - **Try the sign-up flow** at http://localhost:5173: *Get Started* → sign-up → *Verify your email*. The **open the verification link** shortcut on the verify page stands in for the link in the email. It signs in a new student, who then completes their profile and submits a problem.
 - **Mentor activation:** as IIC, open **Mentor pool** and verify a mentor who is *Pending verification*. The confirmation has an **open the link** shortcut to the page the mentor would open from their email. http://localhost:5173/activate/expired shows an expired link.
 
-A refresh logs you out, because the mock session lives in memory. Move between pages with the app's own links rather than typing addresses.
-
 ## Demo accounts
 
-All use the password `password123` (or use the shortcuts on the login page):
+These are the accounts `flask seed-data` creates in the backend. All use the password `Password123!` (or use the shortcuts on the login page):
 
 | Role | Email |
 |---|---|
-| Student | 23f1002345@ds.study.iitm.ac.in |
-| Mentor | rahul.menon@example.com |
-| IIC | deepa.krishnan@iitm.ac.in |
-| Leadership | anand.rajan@iitm.ac.in |
+| Student | rahul.student@ds.study.iitm.ac.in |
+| Mentor | arun.mentor@ds.study.iitm.ac.in |
+| IIC | deepa.iic@ds.study.iitm.ac.in |
+| Leadership | leadership@ds.study.iitm.ac.in |
+
+The sign-up and password-reset flows still use the mock, so accounts created there do not exist in the backend yet.
 
 ### Pages
 

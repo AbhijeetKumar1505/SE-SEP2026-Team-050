@@ -1,16 +1,14 @@
-import { tags } from './mock/tagData'
-import { delay, uid } from './mock/mockUtils'
+// Topic tags. Backend stays snake_case; the tag list shape ({ id, name, group, problems, active })
+// is shared with the pages as-is.
+import { request } from './client'
 
-export const getTags = () => delay(tags)
+export const getTags = () => request('/api/settings/tags')
 
-export function addTag({ name, group }) {
-  if (tags.some((t) => t.name.toLowerCase() === name.toLowerCase())) return Promise.reject(new Error('That tag already exists.'))
-  tags.push({ id: uid(), name, group, problems: 0, active: true })
-  return delay()
+export async function addTag({ name, group }) {
+  return request('/api/settings/tags', { method: 'POST', body: { name, group } })
 }
 
 // Tags are retired, never deleted, so past problems and insights keep their topics.
-export function setTagActive(id, active) {
-  tags.find((t) => t.id === id).active = active
-  return delay()
+export async function setTagActive(id, active) {
+  return request(`/api/settings/tags/${id}`, { method: 'PUT', body: { active } })
 }
