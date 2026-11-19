@@ -23,6 +23,7 @@ class Mentor(db.Model):
     mentoring_style = db.Column(db.Text)
     preferred_channel = db.Column(db.String(64), default="Google Meet")
     time_zone = db.Column(db.String(64), default="Asia/Kolkata")
+    contact = db.Column(db.String(254))  # email or phone for students to reach the mentor
     # pending, verified, active, removed
     verification_status = db.Column(db.String(32), nullable=False, default="pending")
     verified_at = db.Column(db.DateTime(timezone=True))
@@ -54,3 +55,23 @@ class Availability(db.Model):
 
     def __repr__(self) -> str:
         return f"<Availability mentor_id={self.mentor_id} {self.day_of_week} {self.start_time}-{self.end_time}>"
+
+
+class CapacityRequest(db.Model):
+    """IIC's request for a mentor to take on more mentees (US-18)."""
+
+    __tablename__ = "capacity_request"
+
+    id = db.Column(db.Integer, primary_key=True)
+    mentor_id = db.Column(db.Integer, db.ForeignKey("mentor.id", ondelete="CASCADE"), nullable=False)
+    by_user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)  # IIC coordinator who asked
+    # pending, accepted, declined
+    status = db.Column(db.String(32), nullable=False, default="pending")
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+    responded_at = db.Column(db.DateTime(timezone=True))
+
+    mentor = db.relationship("Mentor", foreign_keys=[mentor_id], backref=db.backref("capacity_requests"))
+    by_user = db.relationship("User", foreign_keys=[by_user_id])
+
+    def __repr__(self) -> str:
+        return f"<CapacityRequest {self.id} mentor_id={self.mentor_id} status={self.status}>"

@@ -103,6 +103,52 @@ components:
       - email
       - id
       type: object
+    Assignment:
+      additionalProperties: false
+      properties:
+        assigned_at:
+          format: date-time
+          type: string
+        assigned_by:
+          example: deepa
+          type: string
+        deadline:
+          description: When the mentor must respond (UTC)
+          format: date-time
+          type: string
+        goal:
+          example: Clarity on electives
+          type: string
+        id:
+          example: 3
+          type: integer
+        problem:
+          example: Choosing electives...
+          type: string
+        student:
+          additionalProperties: {}
+          example:
+            careerInterest: Job
+            courses: Python, DBMS
+            level: BS
+            name: Rahul
+          type: object
+        tags:
+          example:
+          - Computer vision
+          items:
+            type: string
+          type: array
+      required:
+      - assigned_at
+      - assigned_by
+      - deadline
+      - goal
+      - id
+      - problem
+      - student
+      - tags
+      type: object
     AuditEntry:
       additionalProperties: false
       properties:
@@ -142,6 +188,32 @@ components:
       - entity_id
       - entity_type
       - id
+      type: object
+    CapacityRequestAnswer:
+      additionalProperties: false
+      properties:
+        accept:
+          example: true
+          type: boolean
+      required:
+      - accept
+      type: object
+    CapacityRequestResponse:
+      additionalProperties: false
+      properties:
+        capacity:
+          example: 2
+          type: integer
+        id:
+          example: 1
+          type: integer
+        status:
+          example: accepted
+          type: string
+      required:
+      - capacity
+      - id
+      - status
       type: object
     Case:
       additionalProperties: false
@@ -204,6 +276,87 @@ components:
       - case_type
       - details
       - mentorship_id
+      type: object
+    Dashboard:
+      additionalProperties: false
+      properties:
+        assignments:
+          items:
+            $ref: '#/components/schemas/Assignment'
+          type: array
+        capacity:
+          example: 2
+          type: integer
+        capacity_request:
+          additionalProperties: {}
+          example:
+            by: deepa
+            from: 1
+            id: 1
+            to: 2
+          nullable: true
+          type: object
+        confirmed:
+          example: 3
+          type: integer
+        load:
+          example: 1
+          type: integer
+        mentorships:
+          items:
+            $ref: '#/components/schemas/MentorshipSummary'
+          type: array
+        next_checkpoint:
+          additionalProperties: {}
+          example:
+            date: '2026-11-30'
+            student:
+              name: Rahul
+          nullable: true
+          type: object
+        sessions_this_month:
+          example: 4
+          type: integer
+      required:
+      - assignments
+      - capacity
+      - confirmed
+      - load
+      - mentorships
+      - sessions_this_month
+      type: object
+    DeclineAssignment:
+      additionalProperties: false
+      properties:
+        note:
+          description: Details for IIC (optional)
+          example: I'm travelling next month.
+          maxLength: 500
+          nullable: true
+          type: string
+        reason:
+          enum:
+          - Outside my expertise
+          - No time right now
+          - Not a good fit
+          - Other
+          example: No time right now
+          type: string
+      required:
+      - reason
+      type: object
+    DeclineResponse:
+      additionalProperties: false
+      properties:
+        id:
+          description: The problem that goes back to IIC's queue
+          type: integer
+        status:
+          example: reassignment_needed
+          type: string
+      required:
+      - id
+      - status
       type: object
     Error:
       additionalProperties: false
@@ -366,6 +519,86 @@ components:
       - email
       - password
       type: object
+    MentorProfile:
+      additionalProperties: false
+      properties:
+        availability:
+          example: "Monday 18:00\u201319:00"
+          type: string
+        available:
+          example: true
+          type: boolean
+        capacity:
+          example: 1
+          type: integer
+        channel:
+          example: Google Meet
+          type: string
+        contact:
+          example: arun.mentor@ds.study.iitm.ac.in
+          type: string
+        experience:
+          example:
+          - Robotics India
+          items:
+            type: string
+          type: array
+        expertise:
+          example:
+          - Computer vision
+          - Deep learning
+          items:
+            type: string
+          type: array
+        id:
+          example: 2
+          type: integer
+        name:
+          example: Arun Kumar
+          type: string
+        timezone:
+          example: Asia/Kolkata
+          type: string
+      required:
+      - availability
+      - available
+      - capacity
+      - channel
+      - contact
+      - experience
+      - expertise
+      - id
+      - name
+      - timezone
+      type: object
+    MentorProfileUpdate:
+      additionalProperties: false
+      properties:
+        availability:
+          example: "Monday 18:00\u201319:00, Saturday 10:00\u201311:30"
+          maxLength: 200
+          type: string
+        available:
+          default: true
+          example: true
+          type: boolean
+        channel:
+          enum:
+          - Google Meet
+          - Phone
+          - Email
+          - Other
+          example: Google Meet
+          type: string
+        contact:
+          example: arun.mentor@ds.study.iitm.ac.in
+          maxLength: 120
+          type: string
+        timezone:
+          example: Asia/Kolkata
+          maxLength: 64
+          type: string
+      type: object
     MentorSummary:
       additionalProperties: false
       properties:
@@ -477,6 +710,31 @@ components:
       - status
       - steps
       - topics
+      type: object
+    MentorshipSummary:
+      additionalProperties: false
+      properties:
+        held:
+          example: 3
+          type: integer
+        id:
+          example: 2
+          type: integer
+        next_session:
+          additionalProperties: {}
+          nullable: true
+          type: object
+        started_at:
+          format: date-time
+          type: string
+        student:
+          additionalProperties: {}
+          type: object
+      required:
+      - held
+      - id
+      - started_at
+      - student
       type: object
     MentorshipUpdate:
       additionalProperties: false
@@ -1244,6 +1502,267 @@ paths:
       summary: Report that the API is running
       tags:
       - system
+  /api/mentors/capacity-requests/{request_id}/answer:
+    parameters:
+    - in: path
+      name: request_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'IIC asks whether the mentor can take on one more student. Accepting
+        raises the
+
+        mentor''s capacity by one; declining leaves it unchanged.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapacityRequestAnswer'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapacityRequestResponse'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Accept or decline a capacity increase request
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-18
+  /api/mentors/me:
+    get:
+      description: 'Availability, contact details, capacity and expertise. Capacity
+        and expertise are
+
+        read-only here; they are set by IIC.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorProfile'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Get my profile
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-10
+    put:
+      description: 'Saves whether the mentor is available for new students, their
+        preferred channel,
+
+        contact details, when they are free and their time zone.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentorProfileUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorProfile'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Update my availability and contact details
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-10
+  /api/mentors/me/dashboard:
+    get:
+      description: 'Capacity and load, pending assignments waiting for a response,
+        active mentorships,
+
+        session stats this month and the next progress-feedback checkpoint.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: My mentor dashboard
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-10
+  /api/mentors/mentorships/{mentorship_id}:
+    get:
+      description: 'The mentor''s view of an active mentorship: student, start date,
+        sessions held
+
+        and the next planned session.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorshipSummary'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Get a mentorship's detail
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-10
+    parameters:
+    - in: path
+      name: mentorship_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+  /api/mentors/mentorships/{mentorship_id}/accept:
+    parameters:
+    - in: path
+      name: mentorship_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'Activates the mentorship, notifies the student and moves the problem
+        to
+
+        "mentor assigned". Only the assigned mentor may accept.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorshipSummary'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Accept a pending assignment
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-05
+  /api/mentors/mentorships/{mentorship_id}/decline:
+    parameters:
+    - in: path
+      name: mentorship_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'The problem goes back to IIC''s queue so another mentor can be
+        assigned.
+
+        Only the assigned mentor may decline.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeclineAssignment'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeclineResponse'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Decline a pending assignment
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-05
   /api/mentorships/me:
     get:
       description: 'The student''s active mentorship, with the mentor''s contact details,
