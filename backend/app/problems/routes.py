@@ -27,7 +27,7 @@ def submit_status():
 
 
 @blp.route("", methods=["POST"])
-@blp.stories("US-03")
+@blp.stories("US-03", "US-15")
 @blp.auth("student")
 @blp.errors(409, 422)
 @blp.arguments(ProblemWriteSchema)
@@ -37,7 +37,8 @@ def submit_problem(values):
 
     The student describes their problem, picks one to five active topic tags and says what they want
     to achieve. IIC reviews it next. A student has one open problem at a time, and must finish their
-    profile first, so a duplicate or an incomplete profile gets 409.
+    profile first, so a duplicate or an incomplete profile gets 409. A student IIC has removed from
+    the roster gets 403 "You are not registered with IIC" (US-15).
     """
     student = get_student(get_current_user())
     return services.serialize_problem(services.submit_problem(student, values, actor=get_current_user()))

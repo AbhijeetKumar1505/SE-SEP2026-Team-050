@@ -21,7 +21,7 @@ WRONG_LOGIN = "Email or password is incorrect."
 # Sign-up (US-01). The messages are the ones in the story's acceptance criteria.
 VERIFICATION_HOURS = 24
 NOT_INSTITUTE_EMAIL = "Use your IITM BS institute email."
-NOT_ON_ROSTER = "You are not registered with IIC. Please contact IIC to register."
+NOT_ON_ROSTER = roster.NOT_REGISTERED
 NOT_ROSTER_EMAIL = "Use the institute email IIC registered for this roll number."
 ACCOUNT_EXISTS = "An account already exists for this roll number. Log in instead."
 EMAIL_TAKEN = "An account already exists for this email. Log in instead."

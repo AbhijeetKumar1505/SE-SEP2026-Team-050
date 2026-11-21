@@ -91,6 +91,19 @@ Students create their own accounts. Mentors are activated by IIC instead (US-14)
 
 Only a SHA-256 hash of each link's token is stored. In development the email, with its link, is written to the Flask log. `flask seed-data` puts three students on the roster who haven't signed up yet, to try it with: `23F1002345`, `23F1002346` and `24F1000101`, each with the email `<roll number>@ds.study.iitm.ac.in`.
 
+### IIC's roster (US-15)
+
+Only students on IIC's roster can sign up or submit a problem. IIC keeps the roster up to date with these endpoints, which are all for IIC only:
+
+| Endpoint | What it does |
+|---|---|
+| `GET /api/students/roster` | Lists the students, each with whether they have signed up and completed their profile, plus the result of the last import |
+| `POST /api/students/roster/import` | Imports CSV rows. The template's columns are `name`, `roll number` and `institute email`; the web app sends them as `name`, `roll_number` and `institute_email`. Valid rows are saved, and a roll number already on the roster is updated instead of duplicated. Invalid rows come back in `errors`, each with its CSV row number (the header is row 1) and the reason |
+| `POST /api/students/roster` | Adds one student, with the same checks as the import |
+| `POST /api/students/roster/<id>/remove` | Removes a student, with a reason. Their sign-up and new problems are refused with "You are not registered with IIC". An account and mentorship they already have carry on |
+
+Each import, addition and removal is recorded in the audit log. In tests, the `sample_student` fixture is on the roster; a student you create yourself needs a `RosterEntry` to submit a problem.
+
 ### Protecting endpoints
 
 Protect an endpoint with `@blp.auth(...)`. It refuses the request and also documents the rule in the YAML:
