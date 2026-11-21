@@ -1,0 +1,2 @@
+# Shell scripts run in WSL or Linux, where a Windows line ending breaks them.
+*.sh text eol=lf
