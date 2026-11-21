@@ -8,7 +8,7 @@ from ..auth.models import User
 from ..extensions import db
 from ..models import utcnow
 from ..settings.models import TopicTag
-from ..students.services import is_complete
+from ..students.services import is_complete, require_on_roster
 from .models import Problem
 
 # A student may edit or withdraw until a mentor accepts.
@@ -84,6 +84,7 @@ def _resolve_tags(names: list[str]) -> list[TopicTag]:
 
 
 def submit_problem(student, values: dict, *, actor: User) -> Problem:
+    require_on_roster(student)
     if not is_complete(student):
         abort(409, message="Complete your profile first.")
     if has_open_problem(student.id):
