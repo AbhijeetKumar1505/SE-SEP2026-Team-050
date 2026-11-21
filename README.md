@@ -65,6 +65,19 @@ npm run dev
 
 The app runs at http://localhost:5173. Login and the notification bell call the backend (Vite proxies `/api` to port 5000, so keep Flask running); the other pages still use the mock. Its README lists the demo accounts and how to reach every page.
 
+**Running in WSL (optional, on Windows).** WSL runs the project on Linux, as CI does, and adds [Mailpit](https://mailpit.axllent.org) to catch the emails the backend sends. From the repository folder inside WSL:
+
+```bash
+bash scripts/wsl/setup.sh    # once, and safe to repeat
+bash scripts/wsl/dev.sh up   # starts the API, the web app and Mailpit in the background
+```
+
+- **What the setup installs:** a Python 3.12 environment in `~/.venvs/se-sep2026-team-050`, the frontend packages for Linux, Mailpit, and a `backend/.env` that sends emails to Mailpit. It also upgrades and seeds the database. It needs no `sudo`.
+- **The servers keep running after you close the terminal.** `dev.sh status` shows them, `dev.sh logs api` (or `web` or `mail`) follows a log, and `dev.sh down` stops them. Both reload when you save a file, including from Windows.
+- **Emails:** open http://localhost:8025 to read them and click their links, such as the sign-up verification link.
+- **Running `flask` or `pytest` yourself:** first activate the environment with `source ~/.venvs/se-sep2026-team-050/bin/activate`.
+- **If downloads time out,** WSL's DNS may be broken. Check with `getent hosts pypi.org`.
+
 ## Repository layout
 
 | Folder | What it holds |

@@ -1,0 +1,21 @@
+{
+  // New terminals open in WSL (your default distro), in the project folder, with the backend's
+  // Python environment active. The project runs inside WSL; see "Running in WSL" in README.md.
+  "terminal.integrated.profiles.windows": {
+    "WSL": {
+      "path": "C:\\Windows\\System32\\wsl.exe",
+      "args": ["-e", "bash", "--rcfile", "scripts/wsl/terminal.bashrc"],
+      "icon": "terminal-linux"
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "WSL",
+
+  // The Python environment lives in WSL, so the Python extension must not type Windows
+  // activation commands into the terminal.
+  "python.terminal.activateEnvironment": false,
+
+  // Shell scripts run in Linux, where a Windows line ending breaks them (see .gitattributes).
+  "[shellscript]": {
+    "files.eol": "\n"
+  }
+}
