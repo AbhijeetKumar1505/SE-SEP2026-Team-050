@@ -6,14 +6,16 @@ import { NAV_LINKS } from '../constants/nav'
 import { useAuth } from '../context/useAuth'
 import Brand from './Brand'
 import ErrorBoundary from './ErrorBoundary'
+import Loading from './Loading'
 import NotificationBell from './NotificationBell'
 import UserMenu from './UserMenu'
 
 // Shell for one role: sends visitors to login and other roles to their own home.
 export default function AppLayout({ role }) {
-  const { user, setUser } = useAuth()
+  const { user, setUser, ready } = useAuth()
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  if (!ready) return <Loading />
   if (!user) return <Navigate to="/login" replace />
   if (user.role !== role) return <Navigate to={`/${user.role}`} replace />
 

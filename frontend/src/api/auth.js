@@ -1,20 +1,62 @@
 import { DEMO_ACCOUNTS, DEMO_PASSWORD } from '../constants/demo'
+import { clearToken, request, setToken } from './client'
 import { db } from './mock/db'
 import { delay, uid } from './mock/mockUtils'
 import { session } from './mock/session'
 
-// Mock implementation. In M3 each function becomes a fetch() with the same signature and return shape.
-// Links that the backend would email are returned as `link`, so the prototype can open them.
+// Login, logout and "who am I" call the Flask API. Sign-up, verification and password reset
+// stay on the in-memory mock until the backend endpoints exist (a later Sprint 1 story).
 
 const same = (a, b) => a.toLowerCase() === b.toLowerCase()
 const fail = (message) => Promise.reject(new Error(message))
 
-// Every account as { role, record }, so password changes land on the stored record.
-const accounts = () => [
-  ...db.students.filter((s) => s.signedUp).map((record) => ({ role: 'student', record })),
-  ...db.mentors.filter((m) => m.status === 'Active').map((record) => ({ role: 'mentor', record })),
-  ...db.staff.map((record) => ({ role: record.role, record })),
-]
+// The backend answers with every role, but the pages route by one role. Prefer the profile role.
+const ROLE_ORDER = ['student', 'mentor', 'iic', 'leadership']
+
+function toUser({ id, email, roles, name, roll }) {
+  const role = ROLE_ORDER.find((r) => roles.includes(r)) ?? roles[0]
+  return { id, email, roles, role, name: name || email, roll: roll ?? undefined }
+}
+
+// The other pages still read the mock, so point it at a demo record for the role that logged in.
+// Removed with src/api/mock/ once every page calls the API.
+function setMockRecord(role) {
+  if (role === 'student') session.studentId = '23f1002345'
+  if (role === 'mentor') session.mentorId = 'm01'
+}
+
+export async function login(email, password) {
+  const { access_token: token, user: account } = await request('/api/auth/login', {
+    method: 'POST',
+    body: { email, password },
+    auth: false,
+  })
+  setToken(token)
+  const user = toUser(account)
+  setMockRecord(user.role)
+  return user
+}
+
+export async function me() {
+  return toUser(await request('/api/auth/me'))
+}
+
+export async function logout() {
+  try {
+    await request('/api/auth/logout', { method: 'POST' })
+  } finally {
+    clearToken()
+  }
+}
+
+// Prototype only: the header's role switcher signs in as that role's demo account.
+// Removed in M3 together with the demo accounts.
+export function switchDemoRole(role) {
+  const account = DEMO_ACCOUNTS.find((a) => a.role === role)
+  return account ? login(account.email, DEMO_PASSWORD) : fail('That demo account isn’t available.')
+}
+
+// ---- Mock: endpoint not built on the backend yet ----
 
 export function signIn({ role, record }) {
   if (role === 'mentor') session.mentorId = record.id
@@ -22,20 +64,12 @@ export function signIn({ role, record }) {
   return { id: record.id, role, name: record.name, roll: record.roll }
 }
 
-export function login(email, password) {
-  const account = accounts().find((a) => same(a.record.email, email))
-  if (!account || (account.record.password ?? DEMO_PASSWORD) !== password) return fail('Email or password is incorrect.')
-  if (account.role === 'student' && !account.record.verified) return fail('Verify your email first. Check your inbox for the link.')
-  return delay(signIn(account))
-}
-
-// Prototype only: the header's role switcher signs straight in as that role's demo account.
-// Removed in M3 together with the demo accounts.
-export function switchDemoRole(role) {
-  const { email } = DEMO_ACCOUNTS.find((a) => a.role === role)
-  const account = accounts().find((a) => same(a.record.email, email))
-  return account ? delay(signIn(account)) : fail('That demo account isn’t available.')
-}
+// Every account as { role, record }, so password changes land on the stored record.
+const accounts = () => [
+  ...db.students.filter((s) => s.signedUp).map((record) => ({ role: 'student', record })),
+  ...db.mentors.filter((m) => m.status === 'Active').map((record) => ({ role: 'mentor', record })),
+  ...db.staff.map((record) => ({ role: record.role, record })),
+]
 
 // Students must be on IIC's roster, with the roster's email.
 export function signup({ rollNumber, email, password }) {

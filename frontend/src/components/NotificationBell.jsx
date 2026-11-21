@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Badge, Dropdown } from 'react-bootstrap'
 import { Link, useLocation } from 'react-router-dom'
-import { getNotifications } from '../api/notifications'
+import { getNotifications, markNotificationRead } from '../api/notifications'
 import useFetch from '../hooks/useFetch'
 
 // Bell with a count and a list of what needs attention. Refreshes on navigation and when opened.
@@ -26,7 +26,7 @@ export default function NotificationBell({ role }) {
         <Dropdown.Header>Notifications</Dropdown.Header>
         {count === 0 && <Dropdown.ItemText className="text-muted">You’re all caught up.</Dropdown.ItemText>}
         {items?.map((n) => (
-          <Dropdown.Item key={n.id} as={Link} to={n.to}>
+          <Dropdown.Item key={n.id} as={Link} to={n.to} onClick={() => markNotificationRead(n.id).then(reload, () => {})}>
             {n.text}
           </Dropdown.Item>
         ))}

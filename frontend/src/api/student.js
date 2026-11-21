@@ -1,152 +1,192 @@
-import { wellbeingCheck } from './mock/ai'
-import { day, delay, uid } from './mock/mockUtils'
-import { db } from './mock/db'
-import { session } from './mock/session'
-import { EDITABLE } from '../constants/student'
+// Student-side API. Each call goes through the shared request() wrapper in client.js.
+// The backend stays snake_case; this layer maps responses to the camelCase shapes the
+// student pages expect, and request bodies to the backend's snake_case fields.
+import { request } from './client'
 
-// Student-side API. Mock implementation; in M3 each function becomes a fetch() with the same signature.
+// Backend status short names -> the display labels the pages render (see constants/status.js).
+export const PROBLEM_STATUS = {
+  submitted: 'Submitted',
+  under_review: 'Under review',
+  awaiting_mentor: 'Awaiting mentor',
+  mentor_assigned: 'Mentor assigned',
+  reassignment_needed: 'Reassignment needed',
+  closed: 'Closed by IIC',
+  withdrawn: 'Withdrawn',
+}
 
-const me = () => db.students.find((s) => s.id === session.studentId)
-const myProblem = () => db.problems.findLast((p) => p.student.roll === me().roll)
-const myMentorship = () => db.mentorships.find((m) => m.student.roll === me().roll)
-const isOpen = (p) => p && !['Withdrawn', 'Closed by IIC'].includes(p.status)
-const fail = (message) => Promise.reject(new Error(message))
+// Progress feedback labels -> backend values (and back when reading).
+export const PROGRESS_FEEDBACK = {
+  'No progress': 'no_progress',
+  'Some progress': 'some_progress',
+  'Goal met': 'goal_met',
+}
 
-// What a student may see of their problem: never the mentor's identity before they accept, nor IIC's notes.
-const view = ({ id, status, submittedAt, problem, tags, goal, guidance, closeReason }) => ({
-  id,
-  status,
-  submittedAt,
-  problem,
-  tags,
-  goal,
-  guidance,
-  closeReason,
+export const CASE_TYPE = {
+  'Request a different mentor': 'change',
+  'End the mentorship': 'end',
+  'Report a concern': 'misconduct',
+}
+
+// Session status short names -> display labels.
+export const SESSION_STATUS = {
+  planned: 'Planned',
+  held: 'Held',
+  cancelled: 'Cancelled',
+}
+
+const problemStatusLabel = (status) => PROBLEM_STATUS[status] ?? status
+
+const sessionStatusLabel = (status) => SESSION_STATUS[status] ?? status
+
+const mapProblem = (p) => ({
+  id: p.id,
+  status: problemStatusLabel(p.status),
+  submittedAt: p.submitted_at,
+  problem: p.description,
+  tags: p.tags,
+  goal: p.desired_outcome,
+  guidance: p.guidance_preferences ?? '',
+  closeReason: p.close_reason,
 })
 
-export function getHome() {
-  const s = me()
-  const m = myMentorship()
-  return delay({
-    problem: myProblem() && view(myProblem()),
-    mentorship: m && { reachedOut: !!m.reachedOutAt, mentor: m.mentor },
-    profile: s.profile && { ...s.profile, courseCount: s.profile.courses.split(',').filter((c) => c.trim()).length },
-    acceptHours: db.settings.acceptHours,
-  })
+const mapMentor = (mentor) => ({
+  name: mentor.name,
+  headline: mentor.headline,
+  channel: mentor.channel,
+  contact: mentor.contact,
+  availability: mentor.availability,
+  timezone: mentor.time_zone,
+  expertise: mentor.expertise,
+  experience: mentor.experience,
+})
+
+// ---- Home ----
+
+export async function getHome() {
+  const data = await request('/api/students/me/home')
+  return {
+    problem: data.problem ? mapProblem(data.problem) : null,
+    mentorship: data.mentorship
+      ? { reachedOut: !!data.mentorship.reached_out, mentor: data.mentorship.mentor }
+      : null,
+    profile: data.profile
+      ? {
+          level: data.profile.level,
+          careerInterest: data.profile.career_interest,
+          courseCount: data.profile.course_count,
+        }
+      : null,
+    acceptHours: data.accept_hours,
+  }
 }
 
 // ---- S1: profile ----
-export function getProfile() {
-  const { name, roll, email, profile } = me()
-  return delay({ name, roll, email, complete: !!profile, ...profile })
+
+export async function getProfile() {
+  const p = await request('/api/students/me')
+  return {
+    name: p.name,
+    roll: p.student_number,
+    email: p.email,
+    complete: p.complete,
+    level: p.programme,
+    cgpa: p.cgpa,
+    courses: p.completed_courses,
+    careerInterest: p.career_interest,
+  }
 }
 
-export function saveProfile({ level, cgpa, courses, careerInterest }) {
-  me().profile = { level, cgpa, courses, careerInterest } // CGPA is visible to IIC only
-  return delay()
+export async function saveProfile({ level, cgpa, courses, careerInterest }) {
+  return request('/api/students/me', {
+    method: 'PUT',
+    body: { programme: level, cgpa, completed_courses: courses, career_interest: careerInterest },
+  })
 }
 
 // ---- S2 / S3: problem ----
-export const getSubmitStatus = () => delay({ hasOpenProblem: isOpen(myProblem()) || !!myMentorship() })
 
-export function submitProblem({ problem, tags, goal, guidance }) {
-  const s = me()
-  if (isOpen(myProblem()) || myMentorship()) return fail('You already have an open problem.')
-  if (!s.profile) return fail('Complete your profile first.')
-  const { level, cgpa, careerInterest, courses } = s.profile
-  db.problems.push({
-    id: uid(),
-    student: { name: s.name, roll: s.roll, email: s.email, level, cgpa, careerInterest, courses },
-    submittedAt: day(0),
-    status: 'Submitted',
-    problem,
-    tags,
-    goal,
-    guidance,
+export async function getSubmitStatus() {
+  return request('/api/problems/me/status')
+}
+
+export async function submitProblem({ problem, tags, goal, guidance }) {
+  return request('/api/problems', {
+    method: 'POST',
+    body: { description: problem, tags, desired_outcome: goal, guidance_preferences: guidance },
   })
-  return delay()
 }
 
-export function updateProblem(id, values) {
-  const p = db.problems.find((x) => x.id === id)
-  if (!EDITABLE.includes(p.status)) return fail('This request can’t be edited any more.')
-  Object.assign(p, values)
-  return delay()
-}
-
-export function withdrawProblem(id) {
-  const p = db.problems.find((x) => x.id === id)
-  if (!EDITABLE.includes(p.status)) return fail('This request can’t be withdrawn any more.')
-  p.status = 'Withdrawn'
-  return delay()
-}
-
-// ---- S4 / S5: mentorship ----
-export function getMyMentorship() {
-  const m = myMentorship()
-  if (!m) return delay({ mentorship: null })
-  const mentor = db.mentors.find((x) => x.name === m.mentor)
-  const { name, headline, channel, contact, availability, timezone, expertise, experience } = mentor
-  return delay({
-    mentorship: {
-      id: m.id,
-      startedAt: m.startedAt,
-      reachedOutAt: m.reachedOutAt,
-      goal: m.goal,
-      steps: m.steps,
-      sessions: m.sessions,
-      checkpointDue: m.studentCheckpointDue,
-      caseOpen: db.cases.some((c) => c.id === m.caseId && c.status === 'Open'),
-      topics: myProblem()?.tags ?? [],
-      mentor: { name, headline, channel, contact, availability, timezone, expertise, experience },
+export async function updateProblem(id, values) {
+  return request(`/api/problems/${id}`, {
+    method: 'PUT',
+    body: {
+      description: values.problem,
+      tags: values.tags,
+      desired_outcome: values.goal,
+      guidance_preferences: values.guidance,
     },
   })
 }
 
-const find = (id) => db.mentorships.find((m) => m.id === id)
-
-export function markReachedOut(id) {
-  find(id).reachedOutAt = day(0) // the mentor and IIC can see this
-  return delay()
+export async function withdrawProblem(id) {
+  return request(`/api/problems/${id}/withdraw`, { method: 'POST' })
 }
 
-export function saveGoal(id, goal) {
-  find(id).goal = goal
-  return delay()
-}
+// ---- S4 / S5: mentorship ----
 
-export function submitFeedback(id, progress, comment) {
-  const m = find(id)
-  const entry = { id: uid(), date: day(0), from: 'Student', progress, comment }
-  m.feedback.unshift(entry) // IIC reads it in the mentorship review (I8)
-  Object.assign(m, { studentProgress: progress, studentComment: comment, studentCheckpointDue: day(db.settings.feedbackDays) })
-  // Backend: the AI wellbeing check runs on each new student comment and only flags it for IIC to read.
-  const flag = comment && m.wellbeingFlag?.status !== 'open' && wellbeingCheck(comment)
-  if (flag) {
-    const at = new Date().toISOString()
-    m.wellbeingFlag = { feedbackId: entry.id, ...flag, status: 'open', at }
-    m.history.unshift({ at, text: 'AI flagged a feedback comment for a wellbeing check' })
+const mapSession = (s) => ({
+  id: s.id,
+  date: s.date,
+  time: s.time,
+  duration: s.duration,
+  topic: s.topic,
+  channel: s.channel,
+  link: s.link,
+  status: sessionStatusLabel(s.status),
+  confirmed: s.confirmed,
+  loggedBy: s.logged_by,
+})
+
+export async function getMyMentorship() {
+  const data = await request('/api/mentorships/me')
+  if (!data.mentorship) return { mentorship: null }
+  const m = data.mentorship
+  return {
+    mentorship: {
+      id: m.id,
+      startedAt: m.assigned_at,
+      reachedOutAt: m.reached_out_at,
+      goal: m.goal,
+      steps: m.steps,
+      sessions: m.sessions.map(mapSession),
+      checkpointDue: m.checkpoint_due,
+      caseOpen: m.case_open,
+      topics: m.topics,
+      mentor: mapMentor(m.mentor),
+    },
   }
-  return delay()
+}
+
+export async function markReachedOut(id) {
+  return request(`/api/mentorships/${id}/reached-out`, { method: 'POST' })
+}
+
+export async function saveGoal(id, goal) {
+  return request(`/api/mentorships/${id}`, { method: 'PUT', body: { goal } })
+}
+
+export async function submitFeedback(id, progress, comment) {
+  return request('/api/feedback', {
+    method: 'POST',
+    body: { mentorship_id: id, progress_status: PROGRESS_FEEDBACK[progress], comment },
+  })
 }
 
 // ---- S7: asks IIC to change or end the mentorship ----
-export function openCase(id, request, reason) {
-  const m = find(id)
-  const caseId = `C-${String(14 + db.cases.length).padStart(3, '0')}`
-  const at = new Date().toISOString()
-  db.cases.push({
-    id: caseId,
-    type: 'Student request',
-    status: 'Open',
-    student: m.student.name,
-    mentor: m.mentor,
-    openedAt: at,
-    request,
-    reason,
-    mentorResponse: '',
-    history: [{ at, text: `Case opened by ${m.student.name}` }],
+
+export async function openCase(id, requestType, reason) {
+  return request('/api/cases', {
+    method: 'POST',
+    body: { mentorship_id: id, case_type: CASE_TYPE[requestType], details: reason },
   })
-  m.caseId = caseId
-  return delay()
 }

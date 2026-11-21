@@ -32,11 +32,23 @@ def test_login_returns_a_token_that_identifies_the_user(client, make_user):
     body = response.get_json()
     assert body["token_type"] == "Bearer"
     assert body["expires_in"] == 8 * 3600
-    assert body["user"] == {"id": user.id, "email": user.email, "roles": ["student"]}
+    assert body["user"] == {
+        "id": user.id,
+        "email": user.email,
+        "roles": ["student"],
+        "name": user.email.split("@")[0],
+        "roll": None,
+    }
 
     me = client.get(ME, headers={"Authorization": f"Bearer {body['access_token']}"})
     assert me.status_code == 200
     assert me.get_json() == body["user"]
+
+
+def test_login_returns_the_profile_name_and_roll_number(client, sample_student):
+    response = login(client, sample_student.user.email)
+    assert response.get_json()["user"]["name"] == "Sample Student"
+    assert response.get_json()["user"]["roll"] == sample_student.student_number
 
 
 def test_login_ignores_email_case_and_spaces(client, make_user):

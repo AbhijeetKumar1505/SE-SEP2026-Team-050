@@ -63,7 +63,7 @@ npm install
 npm run dev
 ```
 
-The app runs at http://localhost:5173. It doesn't call the backend yet. Its README lists the demo accounts and how to reach every page.
+The app runs at http://localhost:5173. Login and the notification bell call the backend (Vite proxies `/api` to port 5000, so keep Flask running); the other pages still use the mock. Its README lists the demo accounts and how to reach every page.
 
 ## Repository layout
 

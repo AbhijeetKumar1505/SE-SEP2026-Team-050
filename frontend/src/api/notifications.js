@@ -1,55 +1,11 @@
-import { plural, today } from '../utils/format'
-import { db } from './mock/db'
-import { delay } from './mock/mockUtils'
-import { session } from './mock/session'
+import { request } from './client'
 
-// To-do style notifications derived from the current data. In M3 the backend returns them.
-const item = (id, text, to) => ({ id, text, to })
-
-function forMentor() {
-  const me = db.mentors.find((m) => m.id === session.mentorId)
-  const waiting = db.problems.filter((p) => p.status === 'Awaiting mentor' && p.mentor === me.name)
-  const requests = db.capacityRequests.filter((r) => r.mentorId === me.id && r.status === 'Pending')
-  const perMentorship = db.mentorships
-    .filter((m) => m.mentor === me.name)
-    .flatMap((m) => [
-      m.sessions.some((s) => s.status === 'Held' && !s.confirmed && s.loggedBy === 'student') &&
-        item(`${m.id}-confirm`, `${m.student.name} logged a session to confirm`, `/mentor/mentorships/${m.id}`),
-      m.checkpointDue <= today() && item(`${m.id}-feedback`, `Progress feedback due for ${m.student.name}`, `/mentor/mentorships/${m.id}`),
-    ])
-  return [
-    ...waiting.map((p) => item(p.id, `${p.student.name} was assigned to you`, '/mentor')),
-    ...requests.map((r) => item(r.id, `${r.by} asked you to take on one more student`, '/mentor')),
-    ...perMentorship,
-  ].filter(Boolean)
+// The backend stores one notice per event, for the logged-in user: { id, subject, body, link, read }.
+// The bell shows the unread ones and opens the page in `link`. The role is not needed: the API
+// reads the user from the token.
+export async function getNotifications() {
+  const notices = await request('/api/notifications?unread=true&page_size=100')
+  return notices.map(({ id, subject, link }) => ({ id, text: subject, to: link || '/' }))
 }
 
-function forIic() {
-  const count = (status) => db.problems.filter((p) => p.status === status).length
-  const toVerify = db.mentors.filter((m) => m.status === 'Pending verification').length
-  return [
-    count('Reassignment needed') > 0 && item('reassign', `${plural(count('Reassignment needed'), 'problem')} to reassign`, '/iic'),
-    count('Submitted') > 0 && item('new', `${plural(count('Submitted'), 'new problem')} to review`, '/iic'),
-    toVerify > 0 && item('verify', `${plural(toVerify, 'mentor')} to verify`, '/iic/mentors'),
-    ...db.cases.filter((c) => c.status === 'Open').map((c) => item(c.id, `Case ${c.id} is open`, `/iic/cases/${c.id}`)),
-    ...db.mentorships
-      .filter((m) => m.wellbeingFlag?.status === 'open')
-      .map((m) => item(`${m.id}-wellbeing`, `Wellbeing check (AI): a comment from ${m.student.name}`, `/iic/mentorships/${m.id}`)),
-  ].filter(Boolean)
-}
-
-function forStudent() {
-  const s = db.students.find((x) => x.id === session.studentId)
-  const p = db.problems.findLast((x) => x.student.roll === s.roll)
-  const m = db.mentorships.find((x) => x.student.roll === s.roll)
-  return [
-    p?.status === 'Reassignment needed' && item('reassign', 'IIC is finding you another mentor', '/student'),
-    p?.status === 'Closed by IIC' && item('closed', 'IIC closed your problem', '/student'),
-    m && !m.reachedOutAt && item('reach', `${m.mentor} accepted. Send your first message`, '/student/mentorship'),
-    m?.sessions.some((x) => x.status === 'Held' && !x.confirmed && x.loggedBy === 'mentor') &&
-      item('confirm', 'A session is waiting for your confirmation', '/student/mentorship'),
-    m && m.studentCheckpointDue <= today() && item('feedback', 'Progress feedback is due', '/student/mentorship'),
-  ].filter(Boolean)
-}
-
-export const getNotifications = (role) => delay({ student: forStudent, mentor: forMentor, iic: forIic }[role]?.() ?? [])
+export const markNotificationRead = (id) => request(`/api/notifications/${id}/read`, { method: 'POST' })

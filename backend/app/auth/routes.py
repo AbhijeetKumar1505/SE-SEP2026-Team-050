@@ -52,7 +52,8 @@ def logout():
 def me():
     """Get the logged-in user
 
-    Returns the account behind the token, with its roles. The frontend uses it to choose which
-    pages to show.
+    Returns the account behind the token, with its roles and the name and roll number from the
+    student or mentor profile. The frontend uses it to choose which pages to show and to greet
+    the user.
     """
     return get_current_user()

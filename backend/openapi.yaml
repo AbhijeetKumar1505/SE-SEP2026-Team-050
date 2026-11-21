@@ -103,6 +103,52 @@ components:
       - email
       - id
       type: object
+    Assignment:
+      additionalProperties: false
+      properties:
+        assigned_at:
+          format: date-time
+          type: string
+        assigned_by:
+          example: deepa
+          type: string
+        deadline:
+          description: When the mentor must respond (UTC)
+          format: date-time
+          type: string
+        goal:
+          example: Clarity on electives
+          type: string
+        id:
+          example: 3
+          type: integer
+        problem:
+          example: Choosing electives...
+          type: string
+        student:
+          additionalProperties: {}
+          example:
+            careerInterest: Job
+            courses: Python, DBMS
+            level: BS
+            name: Rahul
+          type: object
+        tags:
+          example:
+          - Computer vision
+          items:
+            type: string
+          type: array
+      required:
+      - assigned_at
+      - assigned_by
+      - deadline
+      - goal
+      - id
+      - problem
+      - student
+      - tags
+      type: object
     AuditEntry:
       additionalProperties: false
       properties:
@@ -143,6 +189,175 @@ components:
       - entity_type
       - id
       type: object
+    CapacityRequestAnswer:
+      additionalProperties: false
+      properties:
+        accept:
+          example: true
+          type: boolean
+      required:
+      - accept
+      type: object
+    CapacityRequestResponse:
+      additionalProperties: false
+      properties:
+        capacity:
+          example: 2
+          type: integer
+        id:
+          example: 1
+          type: integer
+        status:
+          example: accepted
+          type: string
+      required:
+      - capacity
+      - id
+      - status
+      type: object
+    Case:
+      additionalProperties: false
+      properties:
+        case_type:
+          example: change
+          type: string
+        decision:
+          example: reassign
+          nullable: true
+          type: string
+        decision_reason:
+          nullable: true
+          type: string
+        details:
+          type: string
+        id:
+          example: 3
+          type: integer
+        mentorship_id:
+          type: integer
+        opened_at:
+          format: date-time
+          type: string
+        resolved_at:
+          format: date-time
+          nullable: true
+          type: string
+        status:
+          example: under_review
+          type: string
+      required:
+      - case_type
+      - details
+      - id
+      - mentorship_id
+      - opened_at
+      - status
+      type: object
+    CaseCreate:
+      additionalProperties: false
+      properties:
+        case_type:
+          description: change, end or misconduct
+          enum:
+          - change
+          - end
+          - misconduct
+          example: change
+          type: string
+        details:
+          description: What happened, in the reporter's words
+          maxLength: 500
+          minLength: 10
+          type: string
+        mentorship_id:
+          example: 2
+          type: integer
+      required:
+      - case_type
+      - details
+      - mentorship_id
+      type: object
+    Dashboard:
+      additionalProperties: false
+      properties:
+        assignments:
+          items:
+            $ref: '#/components/schemas/Assignment'
+          type: array
+        capacity:
+          example: 2
+          type: integer
+        capacity_request:
+          additionalProperties: {}
+          example:
+            by: deepa
+            from: 1
+            id: 1
+            to: 2
+          nullable: true
+          type: object
+        confirmed:
+          example: 3
+          type: integer
+        load:
+          example: 1
+          type: integer
+        mentorships:
+          items:
+            $ref: '#/components/schemas/MentorshipSummary'
+          type: array
+        next_checkpoint:
+          additionalProperties: {}
+          example:
+            date: '2026-11-30'
+            student:
+              name: Rahul
+          nullable: true
+          type: object
+        sessions_this_month:
+          example: 4
+          type: integer
+      required:
+      - assignments
+      - capacity
+      - confirmed
+      - load
+      - mentorships
+      - sessions_this_month
+      type: object
+    DeclineAssignment:
+      additionalProperties: false
+      properties:
+        note:
+          description: Details for IIC (optional)
+          example: I'm travelling next month.
+          maxLength: 500
+          nullable: true
+          type: string
+        reason:
+          enum:
+          - Outside my expertise
+          - No time right now
+          - Not a good fit
+          - Other
+          example: No time right now
+          type: string
+      required:
+      - reason
+      type: object
+    DeclineResponse:
+      additionalProperties: false
+      properties:
+        id:
+          description: The problem that goes back to IIC's queue
+          type: integer
+        status:
+          example: reassignment_needed
+          type: string
+      required:
+      - id
+      - status
+      type: object
     Error:
       additionalProperties: false
       properties:
@@ -166,6 +381,60 @@ components:
       - message
       - status
       type: object
+    Feedback:
+      additionalProperties: false
+      properties:
+        author_side:
+          description: student or mentor
+          example: student
+          type: string
+        checkpoint_number:
+          example: 1
+          type: integer
+        comment:
+          nullable: true
+          type: string
+        id:
+          example: 7
+          type: integer
+        mentorship_id:
+          type: integer
+        progress_status:
+          example: some_progress
+          type: string
+        submitted_at:
+          format: date-time
+          type: string
+      required:
+      - author_side
+      - checkpoint_number
+      - id
+      - mentorship_id
+      - progress_status
+      - submitted_at
+      type: object
+    FeedbackWrite:
+      additionalProperties: false
+      properties:
+        comment:
+          description: Optional comment; only IIC reads it
+          maxLength: 500
+          nullable: true
+          type: string
+        mentorship_id:
+          example: 2
+          type: integer
+        progress_status:
+          enum:
+          - no_progress
+          - some_progress
+          - goal_met
+          example: some_progress
+          type: string
+      required:
+      - mentorship_id
+      - progress_status
+      type: object
     Health:
       additionalProperties: false
       properties:
@@ -178,6 +447,60 @@ components:
       required:
       - status
       - version
+      type: object
+    Home:
+      additionalProperties: false
+      properties:
+        accept_hours:
+          description: Hours a mentor has to respond
+          example: 72
+          type: integer
+        mentorship:
+          anyOf:
+          - nullable: true
+            type: object
+          - $ref: '#/components/schemas/HomeMentorship'
+        problem:
+          anyOf:
+          - nullable: true
+            type: object
+          - $ref: '#/components/schemas/Problem'
+        profile:
+          anyOf:
+          - nullable: true
+            type: object
+          - $ref: '#/components/schemas/HomeProfile'
+      required:
+      - accept_hours
+      type: object
+    HomeMentorship:
+      additionalProperties: false
+      properties:
+        mentor:
+          example: Arun Kumar
+          type: string
+        reached_out:
+          type: boolean
+      required:
+      - mentor
+      - reached_out
+      type: object
+    HomeProfile:
+      additionalProperties: false
+      properties:
+        career_interest:
+          example: Job
+          type: string
+        course_count:
+          example: 5
+          type: integer
+        level:
+          example: BS
+          type: string
+      required:
+      - career_interest
+      - course_count
+      - level
       type: object
     Login:
       additionalProperties: false
@@ -195,6 +518,315 @@ components:
       required:
       - email
       - password
+      type: object
+    MentorProfile:
+      additionalProperties: false
+      properties:
+        availability:
+          example: "Monday 18:00\u201319:00"
+          type: string
+        available:
+          example: true
+          type: boolean
+        capacity:
+          example: 1
+          type: integer
+        channel:
+          example: Google Meet
+          type: string
+        contact:
+          example: arun.mentor@ds.study.iitm.ac.in
+          type: string
+        experience:
+          example:
+          - Robotics India
+          items:
+            type: string
+          type: array
+        expertise:
+          example:
+          - Computer vision
+          - Deep learning
+          items:
+            type: string
+          type: array
+        id:
+          example: 2
+          type: integer
+        name:
+          example: Arun Kumar
+          type: string
+        timezone:
+          example: Asia/Kolkata
+          type: string
+      required:
+      - availability
+      - available
+      - capacity
+      - channel
+      - contact
+      - experience
+      - expertise
+      - id
+      - name
+      - timezone
+      type: object
+    MentorProfileUpdate:
+      additionalProperties: false
+      properties:
+        availability:
+          example: "Monday 18:00\u201319:00, Saturday 10:00\u201311:30"
+          maxLength: 200
+          type: string
+        available:
+          default: true
+          example: true
+          type: boolean
+        channel:
+          enum:
+          - Google Meet
+          - Phone
+          - Email
+          - Other
+          example: Google Meet
+          type: string
+        contact:
+          example: arun.mentor@ds.study.iitm.ac.in
+          maxLength: 120
+          type: string
+        timezone:
+          example: Asia/Kolkata
+          maxLength: 64
+          type: string
+      type: object
+    MentorSummary:
+      additionalProperties: false
+      properties:
+        availability:
+          example: "Monday 18:00\u201319:00, Saturday 10:00\u201311:30"
+          type: string
+        channel:
+          example: Google Meet
+          type: string
+        contact:
+          description: The mentor's email
+          example: arun@example.com
+          type: string
+        experience:
+          example:
+          - Robotics India
+          items:
+            type: string
+          type: array
+        expertise:
+          example:
+          - Computer vision
+          - Deep learning
+          items:
+            type: string
+          type: array
+        headline:
+          example: Senior Computer Vision Engineer at Robotics India
+          type: string
+        name:
+          example: Arun Kumar
+          type: string
+        time_zone:
+          example: Asia/Kolkata
+          type: string
+      required:
+      - availability
+      - channel
+      - contact
+      - experience
+      - expertise
+      - headline
+      - name
+      - time_zone
+      type: object
+    Mentorship:
+      additionalProperties: false
+      properties:
+        answered_at:
+          description: When the mentor accepted
+          format: date-time
+          nullable: true
+          type: string
+        assigned_at:
+          description: When IIC assigned the mentor (UTC)
+          format: date-time
+          type: string
+        case_open:
+          description: True while IIC is reviewing a case
+          type: boolean
+        checkpoint_due:
+          description: When the student's next progress feedback is due
+          example: '2026-11-30'
+          format: date
+          type: string
+        end_reason:
+          nullable: true
+          type: string
+        ended_at:
+          format: date-time
+          nullable: true
+          type: string
+        goal:
+          nullable: true
+          type: string
+        id:
+          example: 2
+          type: integer
+        mentor:
+          $ref: '#/components/schemas/MentorSummary'
+        reached_out_at:
+          description: When the student first made contact
+          format: date-time
+          nullable: true
+          type: string
+        sessions:
+          items:
+            $ref: '#/components/schemas/Session'
+          type: array
+        status:
+          example: active
+          type: string
+        steps:
+          items:
+            $ref: '#/components/schemas/Step'
+          type: array
+        topics:
+          description: The problem's topic tags
+          items:
+            type: string
+          type: array
+      required:
+      - assigned_at
+      - case_open
+      - checkpoint_due
+      - id
+      - mentor
+      - sessions
+      - status
+      - steps
+      - topics
+      type: object
+    MentorshipDetail:
+      additionalProperties: false
+      properties:
+        answered_at:
+          format: date-time
+          nullable: true
+          type: string
+        assigned_at:
+          format: date-time
+          type: string
+        checkpoint_due:
+          example: '2026-11-30'
+          format: date
+          nullable: true
+          type: string
+        goal:
+          example: Finalize elective selections
+          type: string
+        id:
+          example: 2
+          type: integer
+        mentor:
+          additionalProperties: {}
+          type: object
+        problem:
+          example: Choosing electives...
+          type: string
+        reached_out_at:
+          format: date-time
+          nullable: true
+          type: string
+        sessions:
+          example:
+          - id: 5
+            status: planned
+          items:
+            additionalProperties: {}
+            type: object
+          type: array
+        status:
+          example: active
+          type: string
+        steps:
+          example:
+          - done: false
+            id: s1
+            text: Review syllabus
+          items:
+            additionalProperties: {}
+            type: object
+          type: array
+        student:
+          additionalProperties: {}
+          type: object
+        topics:
+          example:
+          - Computer vision
+          items:
+            type: string
+          type: array
+      required:
+      - assigned_at
+      - goal
+      - id
+      - mentor
+      - problem
+      - sessions
+      - status
+      - steps
+      - student
+      - topics
+      type: object
+    MentorshipSummary:
+      additionalProperties: false
+      properties:
+        held:
+          example: 3
+          type: integer
+        id:
+          example: 2
+          type: integer
+        next_session:
+          additionalProperties: {}
+          nullable: true
+          type: object
+        started_at:
+          format: date-time
+          type: string
+        student:
+          additionalProperties: {}
+          type: object
+      required:
+      - held
+      - id
+      - started_at
+      - student
+      type: object
+    MentorshipUpdate:
+      additionalProperties: false
+      properties:
+        goal:
+          example: Land a data engineering internship.
+          maxLength: 300
+          minLength: 10
+          type: string
+      required:
+      - goal
+      type: object
+    MyMentorship:
+      additionalProperties: false
+      properties:
+        mentorship:
+          anyOf:
+          - nullable: true
+            type: object
+          - $ref: '#/components/schemas/Mentorship'
       type: object
     Notification:
       additionalProperties: false
@@ -254,6 +886,345 @@ components:
           description: Total number of pages.
           type: integer
       type: object
+    Problem:
+      additionalProperties: false
+      properties:
+        close_reason:
+          nullable: true
+          type: string
+        closed_at:
+          format: date-time
+          nullable: true
+          type: string
+        description:
+          type: string
+        desired_outcome:
+          nullable: true
+          type: string
+        guidance_preferences:
+          nullable: true
+          type: string
+        id:
+          example: 4
+          type: integer
+        status:
+          description: submitted, under_review, awaiting_mentor, mentor_assigned,
+            reassignment_needed, closed or withdrawn
+          example: submitted
+          type: string
+        submitted_at:
+          description: When the student submitted it (UTC)
+          format: date-time
+          type: string
+        tags:
+          example:
+          - Data engineering
+          - SQL and database design
+          items:
+            type: string
+          type: array
+        title:
+          example: Choosing electives and project advice
+          type: string
+      required:
+      - description
+      - id
+      - status
+      - submitted_at
+      - tags
+      - title
+      type: object
+    ProblemWrite:
+      additionalProperties: false
+      properties:
+        description:
+          description: The student's problem, in their own words
+          maxLength: 1000
+          minLength: 30
+          type: string
+        desired_outcome:
+          description: What the student wants to achieve
+          maxLength: 300
+          minLength: 1
+          type: string
+        guidance_preferences:
+          description: How the student likes to be guided (optional)
+          maxLength: 300
+          nullable: true
+          type: string
+        tags:
+          description: One to five topic tag names
+          items:
+            maxLength: 100
+            minLength: 1
+            type: string
+          maxItems: 5
+          minItems: 1
+          type: array
+      required:
+      - description
+      - desired_outcome
+      - tags
+      type: object
+    Session:
+      additionalProperties: false
+      properties:
+        channel:
+          example: Google Meet
+          nullable: true
+          type: string
+        confirmed:
+          description: True once the other participant confirms a held session
+          type: boolean
+        date:
+          example: '2026-11-20'
+          format: date
+          type: string
+        duration:
+          description: Minutes, for a held session
+          example: 45
+          nullable: true
+          type: integer
+        id:
+          example: 5
+          type: integer
+        link:
+          description: Meeting link, if any
+          nullable: true
+          type: string
+        logged_by:
+          description: 'Which side logged it: student or mentor'
+          example: student
+          nullable: true
+          type: string
+        status:
+          description: planned, held or cancelled
+          example: planned
+          type: string
+        time:
+          description: The start time of a planned session, HH:MM
+          example: '18:00'
+          nullable: true
+          type: string
+        topic:
+          example: Project code review
+          nullable: true
+          type: string
+      required:
+      - confirmed
+      - date
+      - id
+      - status
+      type: object
+    SessionWrite:
+      additionalProperties: false
+      properties:
+        channel:
+          example: Google Meet
+          maxLength: 64
+          nullable: true
+          type: string
+        date:
+          example: '2026-11-20'
+          format: date
+          type: string
+        duration:
+          description: Minutes, for a held session
+          example: 45
+          maximum: 480
+          minimum: 5
+          nullable: true
+          type: integer
+        link:
+          example: https://meet.google.com/abc
+          maxLength: 300
+          nullable: true
+          type: string
+        mentorship_id:
+          default: null
+          description: 'Only on create: which mentorship the session belongs to'
+          nullable: true
+          type: integer
+        status:
+          enum:
+          - planned
+          - held
+          example: planned
+          type: string
+        time:
+          description: Start time of a planned session, HH:MM
+          example: '18:00'
+          nullable: true
+          type: string
+        topic:
+          example: Project code review
+          maxLength: 100
+          nullable: true
+          type: string
+      required:
+      - date
+      - status
+      type: object
+    Step:
+      additionalProperties: false
+      properties:
+        done:
+          type: boolean
+        id:
+          example: 8f14e45fceea167a5a36dedd4bea2543
+          type: string
+        text:
+          example: Implement a baseline object detector
+          type: string
+      required:
+      - done
+      - id
+      - text
+      type: object
+    StepWrite:
+      additionalProperties: false
+      properties:
+        text:
+          example: Review the syllabus
+          maxLength: 200
+          minLength: 1
+          type: string
+      required:
+      - text
+      type: object
+    StudentProfile:
+      additionalProperties: false
+      properties:
+        career_interest:
+          nullable: true
+          type: string
+        cgpa:
+          description: Visible to IIC only
+          nullable: true
+          type: number
+        cohort:
+          nullable: true
+          type: string
+        complete:
+          description: True once the student has filled in every field
+          type: boolean
+        completed_courses:
+          description: Course names, comma separated
+          nullable: true
+          type: string
+        email:
+          format: email
+          type: string
+        name:
+          example: Rahul Sundaram
+          type: string
+        programme:
+          example: BS
+          nullable: true
+          type: string
+        student_number:
+          example: 21F1000001
+          type: string
+      required:
+      - complete
+      - email
+      - name
+      - programme
+      - student_number
+      type: object
+    StudentProfileUpdate:
+      additionalProperties: false
+      properties:
+        career_interest:
+          example: Job
+          maxLength: 200
+          minLength: 1
+          type: string
+        cgpa:
+          example: 8.75
+          maximum: 10.0
+          minimum: 0.0
+          type: number
+        completed_courses:
+          example: Math 1, Python, Linear Algebra
+          maxLength: 500
+          minLength: 1
+          type: string
+        programme:
+          enum:
+          - BSc
+          - BS
+          example: BS
+          type: string
+      required:
+      - career_interest
+      - cgpa
+      - completed_courses
+      - programme
+      type: object
+    SubmitStatus:
+      additionalProperties: false
+      properties:
+        has_open_problem:
+          example: false
+          type: boolean
+      required:
+      - has_open_problem
+      type: object
+    Tag:
+      additionalProperties: false
+      properties:
+        active:
+          description: False once IIC retires the tag
+          type: boolean
+        group:
+          description: The tag's group, as IIC lists it
+          example: Technical skills
+          nullable: true
+          type: string
+        id:
+          example: 3
+          type: integer
+        name:
+          example: Data engineering
+          type: string
+        problems:
+          description: Problems using this tag
+          example: 12
+          type: integer
+      required:
+      - active
+      - group
+      - id
+      - name
+      - problems
+      type: object
+    TagCreate:
+      additionalProperties: false
+      properties:
+        group:
+          example: Technical skills
+          maxLength: 64
+          minLength: 2
+          type: string
+        name:
+          example: Data engineering
+          maxLength: 100
+          minLength: 2
+          type: string
+      required:
+      - group
+      - name
+      type: object
+    TagUpdate:
+      additionalProperties: false
+      properties:
+        active:
+          description: False retires the tag; true restores it
+          type: boolean
+      required:
+      - active
+      type: object
     Token:
       additionalProperties: false
       properties:
@@ -284,6 +1255,10 @@ components:
         id:
           example: 7
           type: integer
+        name:
+          description: Display name from the student or mentor profile
+          example: Ananya Rao
+          readOnly: true
         roles:
           example:
           - student
@@ -295,9 +1270,15 @@ components:
             - leadership
             type: string
           type: array
+        roll:
+          description: Student roll number; null for staff and mentors
+          example: 23f1002345
+          nullable: true
+          readOnly: true
       required:
       - email
       - id
+      - name
       - roles
       type: object
   securitySchemes:
@@ -468,10 +1449,13 @@ paths:
       - US-14
   /api/auth/me:
     get:
-      description: 'Returns the account behind the token, with its roles. The frontend
-        uses it to choose which
+      description: 'Returns the account behind the token, with its roles and the name
+        and roll number from the
 
-        pages to show.'
+        student or mentor profile. The frontend uses it to choose which pages to show
+        and to greet
+
+        the user.'
       responses:
         '200':
           content:
@@ -491,6 +1475,90 @@ paths:
       x-user-stories:
       - US-01
       - US-14
+  /api/cases:
+    post:
+      description: 'The student (or the mentor) explains what happened. IIC reviews
+        it and decides; the other
+
+        participant is not told until then. Only one case per mentorship can be open
+        at a time, so a
+
+        second one gets 409.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Case'
+          description: Created
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Ask IIC to change or end a mentorship
+      tags:
+      - cases
+      x-roles:
+      - student
+      - mentor
+      x-user-stories:
+      - US-07
+  /api/feedback:
+    post:
+      description: 'The student and the mentor each report progress separately: no
+        progress, some progress or goal
+
+        met. The comment is optional. Only IIC reads it; it is never shown to the
+        other participant.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackWrite'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+          description: Created
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Submit progress feedback
+      tags:
+      - feedback
+      x-roles:
+      - student
+      - mentor
+      x-user-stories:
+      - US-08
   /api/health:
     get:
       description: Used by the host's health check and by CI. Needs no login.
@@ -506,6 +1574,509 @@ paths:
       summary: Report that the API is running
       tags:
       - system
+  /api/mentors/capacity-requests/{request_id}/answer:
+    parameters:
+    - in: path
+      name: request_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'IIC asks whether the mentor can take on one more student. Accepting
+        raises the
+
+        mentor''s capacity by one; declining leaves it unchanged.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapacityRequestAnswer'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapacityRequestResponse'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Accept or decline a capacity increase request
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-18
+  /api/mentors/me:
+    get:
+      description: 'Availability, contact details, capacity and expertise. Capacity
+        and expertise are
+
+        read-only here; they are set by IIC.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorProfile'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Get my profile
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-10
+    put:
+      description: 'Saves whether the mentor is available for new students, their
+        preferred channel,
+
+        contact details, when they are free and their time zone.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentorProfileUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorProfile'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Update my availability and contact details
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-10
+  /api/mentors/me/dashboard:
+    get:
+      description: 'Capacity and load, pending assignments waiting for a response,
+        active mentorships,
+
+        session stats this month and the next progress-feedback checkpoint.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: My mentor dashboard
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-10
+  /api/mentors/mentorships/{mentorship_id}:
+    get:
+      description: 'The mentor''s view of an active mentorship: student, start date,
+        sessions held
+
+        and the next planned session.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorshipDetail'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Get a mentorship's detail
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-10
+    parameters:
+    - in: path
+      name: mentorship_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+  /api/mentors/mentorships/{mentorship_id}/accept:
+    parameters:
+    - in: path
+      name: mentorship_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'Activates the mentorship, notifies the student and moves the problem
+        to
+
+        "mentor assigned". Only the assigned mentor may accept.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorshipSummary'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Accept a pending assignment
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-05
+  /api/mentors/mentorships/{mentorship_id}/decline:
+    parameters:
+    - in: path
+      name: mentorship_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'The problem goes back to IIC''s queue so another mentor can be
+        assigned.
+
+        Only the assigned mentor may decline.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeclineAssignment'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeclineResponse'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Decline a pending assignment
+      tags:
+      - mentors
+      x-roles:
+      - mentor
+      x-user-stories:
+      - US-05
+  /api/mentorships/me:
+    get:
+      description: 'The student''s active mentorship, with the mentor''s contact details,
+        the goal, next steps, sessions
+
+        and the next feedback checkpoint. `mentorship` is null until a mentor accepts.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyMentorship'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Get my mentorship
+      tags:
+      - mentorships
+      x-roles:
+      - student
+      x-user-stories:
+      - US-05
+      - US-06
+  /api/mentorships/{mentorship_id}:
+    parameters:
+    - in: path
+      name: mentorship_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    put:
+      description: 'Either participant may reword the goal they are working towards.
+        It is shared with the other
+
+        participant and with IIC.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentorshipUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mentorship'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Update the mentorship goal
+      tags:
+      - mentorships
+      x-roles:
+      - student
+      - mentor
+      x-user-stories:
+      - US-06
+  /api/mentorships/{mentorship_id}/reached-out:
+    parameters:
+    - in: path
+      name: mentorship_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'The student makes the first contact themselves; this records the
+        date so the mentor and IIC can
+
+        see it. Sending it again changes nothing.'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Record that I reached out
+      tags:
+      - mentorships
+      x-roles:
+      - student
+      x-user-stories:
+      - US-05
+  /api/mentorships/{mentorship_id}/steps:
+    parameters:
+    - in: path
+      name: mentorship_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: Both participants share one checklist. The response is the updated
+        list.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StepWrite'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Step'
+                type: array
+          description: Created
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Add a next step
+      tags:
+      - mentorships
+      x-roles:
+      - student
+      - mentor
+      x-user-stories:
+      - US-06
+  /api/mentorships/{mentorship_id}/steps/{step_id}:
+    delete:
+      description: The response is the updated list.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Step'
+                type: array
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Remove a next step
+      tags:
+      - mentorships
+      x-roles:
+      - student
+      - mentor
+      x-user-stories:
+      - US-06
+    parameters:
+    - in: path
+      name: mentorship_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    - in: path
+      name: step_id
+      required: true
+      schema:
+        minLength: 1
+        type: string
+  /api/mentorships/{mentorship_id}/steps/{step_id}/toggle:
+    parameters:
+    - in: path
+      name: mentorship_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    - in: path
+      name: step_id
+      required: true
+      schema:
+        minLength: 1
+        type: string
+    post:
+      description: The response is the updated list.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Step'
+                type: array
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Mark a next step done or not done
+      tags:
+      - mentorships
+      x-roles:
+      - student
+      - mentor
+      x-user-stories:
+      - US-06
   /api/notifications:
     get:
       description: 'The logged-in user''s dashboard notices, newest first: assignments,
@@ -616,6 +2187,541 @@ paths:
       x-user-stories:
       - US-05
       - US-09
+  /api/problems:
+    post:
+      description: 'The student describes their problem, picks one to five active
+        topic tags and says what they want
+
+        to achieve. IIC reviews it next. A student has one open problem at a time,
+        and must finish their
+
+        profile first, so a duplicate or an incomplete profile gets 409.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemWrite'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+          description: Created
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Submit a problem
+      tags:
+      - problems
+      x-roles:
+      - student
+      x-user-stories:
+      - US-03
+  /api/problems/me/status:
+    get:
+      description: 'Students have one open problem at a time. `has_open_problem` is
+        true while a submitted problem is
+
+        still with IIC or a mentor, so the form is closed until it is withdrawn or
+        closed.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitStatus'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Can I submit a problem?
+      tags:
+      - problems
+      x-roles:
+      - student
+      x-user-stories:
+      - US-03
+  /api/problems/{problem_id}:
+    parameters:
+    - in: path
+      name: problem_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    put:
+      description: 'Only the student who submitted it may edit it, and only until
+        a mentor accepts. After that the
+
+        request is read-only and gets 409.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemWrite'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Edit my problem
+      tags:
+      - problems
+      x-roles:
+      - student
+      x-user-stories:
+      - US-03
+  /api/problems/{problem_id}/withdraw:
+    parameters:
+    - in: path
+      name: problem_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'IIC stops working on it. Like editing, this is only possible until
+        a mentor accepts; after that
+
+        the student asks IIC to change or end the mentorship instead.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Withdraw my problem
+      tags:
+      - problems
+      x-roles:
+      - student
+      x-user-stories:
+      - US-03
+  /api/sessions:
+    post:
+      description: 'A planned session stores its date and start time; a held session
+        stores its date and duration.
+
+        Only the mentorship''s student or mentor may add one, and the API records
+        which side did.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionWrite'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: Created
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Schedule or log a session
+      tags:
+      - sessions
+      x-roles:
+      - student
+      - mentor
+      x-user-stories:
+      - US-11
+  /api/sessions/{session_id}:
+    parameters:
+    - in: path
+      name: session_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    put:
+      description: 'Editing the details clears the other participant''s confirmation,
+        because a changed session needs
+
+        confirming again.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionWrite'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Edit a session
+      tags:
+      - sessions
+      x-roles:
+      - student
+      - mentor
+      x-user-stories:
+      - US-11
+  /api/sessions/{session_id}/cancel:
+    parameters:
+    - in: path
+      name: session_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'The session stays in the list as cancelled and does not count
+        as held. Only a planned session
+
+        can be cancelled; anything else gets 409.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Cancel a planned session
+      tags:
+      - sessions
+      x-roles:
+      - student
+      - mentor
+      x-user-stories:
+      - US-11
+  /api/sessions/{session_id}/confirm:
+    parameters:
+    - in: path
+      name: session_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'The participant who did not log the session confirms it. Confirming
+        twice, or confirming your
+
+        own log, gets 409.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Confirm a held session
+      tags:
+      - sessions
+      x-roles:
+      - student
+      - mentor
+      x-user-stories:
+      - US-11
+  /api/settings/tags:
+    get:
+      description: 'Every tag IIC has, with the number of problems using it. `active`
+        is false once a tag is retired:
+
+        retired tags stay here so past problems and insights keep their topics, but
+        students cannot choose
+
+        them for a new problem.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Tag'
+                type: array
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: List topic tags
+      tags:
+      - settings
+      x-user-stories:
+      - US-03
+      - US-21
+    post:
+      description: Adds a tag to IIC's shared list. The name is unique, ignoring case,
+        so a duplicate gets 409.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+          description: Created
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Add a topic tag
+      tags:
+      - settings
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-21
+  /api/settings/tags/{tag_id}:
+    parameters:
+    - in: path
+      name: tag_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    put:
+      description: 'IIC retires a tag instead of deleting it, so old problems keep
+        their topics. Sending the same
+
+        value again changes nothing.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Retire or restore a topic tag
+      tags:
+      - settings
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-21
+  /api/students/me:
+    get:
+      description: 'The student''s name and roll number come from IIC''s roster and
+        cannot be edited here. `complete`
+
+        is false until the student has filled in the programme, CGPA, courses and
+        career interest.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentProfile'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Get my profile
+      tags:
+      - students
+      x-roles:
+      - student
+      x-user-stories:
+      - US-02
+    put:
+      description: 'Saves the programme level, CGPA, completed courses and career
+        interest. The CGPA is visible only
+
+        to IIC.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentProfileUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentProfile'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Update my profile
+      tags:
+      - students
+      x-roles:
+      - student
+      x-user-stories:
+      - US-02
+  /api/students/me/home:
+    get:
+      description: 'One request for the student''s home page: their latest problem,
+        their active mentorship if a
+
+        mentor has accepted, and a summary of their profile. `accept_hours` is the
+        time a mentor has to
+
+        respond, from IIC''s timing settings.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Home'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: My student home
+      tags:
+      - students
+      x-roles:
+      - student
+      x-user-stories:
+      - US-02
+      - US-03
+      - US-05
 servers:
 - description: Local development server (flask run)
   url: http://127.0.0.1:5000
