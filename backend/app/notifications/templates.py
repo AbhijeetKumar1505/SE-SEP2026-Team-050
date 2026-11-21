@@ -19,6 +19,14 @@ class Template(NamedTuple):
 
 
 TEMPLATES: dict[str, Template] = {
+    # Email only (send_email): the student cannot log in to see a notice until they use the link.
+    "email_verification": Template(
+        subject="Confirm your email for IITM BS Mentoring",
+        body=(
+            "Hello {name}, confirm your email address to finish signing up for IITM BS Mentoring. "
+            "The link works for {hours} hours. If you did not sign up, you can ignore this email."
+        ),
+    ),
     "assignment_notice": Template(
         subject="New student problem assigned to you",
         body="Hello {mentor_name}, a student has been assigned to you. Please review and respond within 72 hours.",

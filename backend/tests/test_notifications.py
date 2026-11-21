@@ -77,6 +77,35 @@ def test_a_mail_failure_keeps_the_notice_and_the_change(app, student_user, greet
     assert saved.sent_at is None
 
 
+def test_send_email_sends_only_an_email_after_the_commit(app, greeting):
+    with mail.record_messages() as outbox:
+        notifications.send_email(
+            "asha@ds.study.iitm.ac.in", greeting, link="/verify-email/abc", name="Asha", status="x"
+        )
+        assert outbox == []
+        db.session.commit()
+
+    assert len(outbox) == 1
+    assert outbox[0].recipients == ["asha@ds.study.iitm.ac.in"]
+    assert outbox[0].body == "Your problem is x.\n\nOpen this link: http://localhost:5173/verify-email/abc"
+    assert db.session.query(Notification).count() == 0  # no dashboard notice, so the link is not stored
+
+
+def test_send_email_is_dropped_with_a_rollback_and_a_failure_is_only_logged(app, greeting, monkeypatch):
+    with mail.record_messages() as outbox:
+        notifications.send_email("asha@ds.study.iitm.ac.in", greeting, link="/x", name="Asha", status="x")
+        db.session.rollback()
+        db.session.commit()
+    assert outbox == []
+
+    def refuse(_message):
+        raise ConnectionRefusedError("mail server down")
+
+    monkeypatch.setattr(mail, "send", refuse)
+    notifications.send_email("asha@ds.study.iitm.ac.in", greeting, link="/x", name="Asha", status="x")
+    db.session.commit()  # does not raise
+
+
 def test_every_placeholder_needs_a_value(app, student_user, greeting):
     with pytest.raises(ValueError, match="'status'"):
         notifications.notify(student_user, greeting, name="Asha")

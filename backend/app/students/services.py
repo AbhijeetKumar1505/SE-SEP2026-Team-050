@@ -1,11 +1,35 @@
-"""C2 business rules for a student's own profile (US-02)."""
+"""C2 business rules: IIC's roster (US-15) and a student's own profile (US-02)."""
 
 from flask_smorest import abort
+from sqlalchemy import func
 
 from ..audit import services as audit
 from ..auth.models import User
 from ..extensions import db
-from .models import Student
+from .models import RosterEntry, Student
+
+
+def normalize_roll_number(roll_number: str) -> str:
+    """Roll numbers are compared without case or surrounding spaces: 23f1002345 is 23F1002345."""
+    return roll_number.strip().upper()
+
+
+def roster_entry(roll_number: str) -> RosterEntry | None:
+    """The roster entry for a roll number, if IIC has registered the student and not removed them."""
+    return (
+        db.session.query(RosterEntry)
+        .filter(RosterEntry.student_number == normalize_roll_number(roll_number), RosterEntry.removed_at.is_(None))
+        .one_or_none()
+    )
+
+
+def student_with_number(roll_number: str) -> Student | None:
+    """The student profile, and so the account, already created for a roll number."""
+    return (
+        db.session.query(Student)
+        .filter(func.upper(Student.student_number) == normalize_roll_number(roll_number))
+        .one_or_none()
+    )
 
 
 def get_student(user: User) -> Student:

@@ -34,7 +34,7 @@ OUTBOX = "notifications.outbox"  # key in session.info for emails waiting for th
 
 
 class Email(NamedTuple):
-    notification_id: int
+    notification_id: int | None  # None for an email without a dashboard notice (send_email)
     to: str
     subject: str
     body: str
@@ -79,12 +79,9 @@ def notify(recipient: User, template_key: str, *, link: str | None = None, **con
     link is the page in the web app the notice opens, such as "/student". The keyword arguments
     fill the template's placeholders.
     """
-    if link is not None and not link.startswith("/"):
-        raise ValueError("link must be a path in the web app, such as '/student'.")
+    _check_link(link)
     template = get_template(template_key)
-    # A line break in a subject would be an email header injection, so subjects stay on one line.
-    subject = " ".join(render(template.subject, context).split())
-    body = render(template.body, context)
+    subject, body = _render_template(template, context)
 
     notice = Notification(
         recipient_user_id=recipient.id,
@@ -99,9 +96,38 @@ def notify(recipient: User, template_key: str, *, link: str | None = None, **con
     db.session.flush()  # gives the notice its ID, to mark the email sent or failed later
 
     if link is not None:
-        body = f"{body}\n\nOpen it on the platform: {current_app.config['FRONTEND_URL'].rstrip('/')}{link}"
-    db.session.info.setdefault(OUTBOX, []).append(Email(notice.id, recipient.email, subject, body))
+        body = f"{body}\n\nOpen it on the platform: {_page_url(link)}"
+    _queue(Email(notice.id, recipient.email, subject, body))
     return notice
+
+
+def send_email(to: str, template_key: str, *, link: str, **context) -> None:
+    """Email someone, once the current transaction commits, without a dashboard notice.
+
+    For links sent before a person can log in, such as the email verification link (US-01).
+    The link is not stored anywhere; if the mail server refuses the email, it is only logged.
+    """
+    _check_link(link)
+    subject, body = _render_template(get_template(template_key), context)
+    _queue(Email(None, to, subject, f"{body}\n\nOpen this link: {_page_url(link)}"))
+
+
+def _check_link(link: str | None) -> None:
+    if link is not None and not link.startswith("/"):
+        raise ValueError("link must be a path in the web app, such as '/student'.")
+
+
+def _render_template(template: EmailTemplate, context: dict) -> tuple[str, str]:
+    # A line break in a subject would be an email header injection, so subjects stay on one line.
+    return " ".join(render(template.subject, context).split()), render(template.body, context)
+
+
+def _page_url(link: str) -> str:
+    return f"{current_app.config['FRONTEND_URL'].rstrip('/')}{link}"
+
+
+def _queue(email: Email) -> None:
+    db.session.info.setdefault(OUTBOX, []).append(email)
 
 
 def notices_for(user: User, *, unread: bool = False):
@@ -169,13 +195,17 @@ def _deliver(emails: list[Email]) -> None:
         try:
             mail.send(Message(subject=email.subject, recipients=[email.to], body=email.body))
         except Exception:
-            log.exception("Could not email notification %s", email.notification_id)
+            log.exception("Could not send the email %r (notification %s)", email.subject, email.notification_id)
             outcomes.append((email.notification_id, FAILED, None))
             continue
         if suppressed:
             log.info("Email not sent (MAIL_SUPPRESS_SEND) to %s: %s\n%s", email.to, email.subject, email.body)
         outcomes.append((email.notification_id, SENT, utcnow()))
 
+    # Only emails that belong to a notice have a status to record.
+    outcomes = [outcome for outcome in outcomes if outcome[0] is not None]
+    if not outcomes:
+        return
     # The session cannot run SQL while it finishes its commit, so record the outcome on its own connection.
     with db.engine.begin() as connection:
         for notification_id, status, sent_at in outcomes:

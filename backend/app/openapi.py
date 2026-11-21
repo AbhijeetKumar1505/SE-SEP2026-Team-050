@@ -32,9 +32,11 @@ STORY_ID = re.compile(r"^US-\d{2}$")
 ERROR_RESPONSES = {
     400: "The request body is not valid JSON.",
     401: "Not logged in, or the login token has expired.",
-    403: "Logged in, but this role or this user may not do this.",
+    403: "Not allowed for this user, for example the wrong role, someone else's record, or (at sign-up) a roll "
+    "number that is not on IIC's roster.",
     404: "No such resource, or it is not visible to this user.",
     409: "The request conflicts with the current state, for example a duplicate or a status that does not allow it.",
+    410: "The link has expired. Ask for a new one.",
     422: "One or more fields are invalid. `errors` names each field and what is wrong with it.",
     500: "Unexpected server error. It is logged; the response never includes its details.",
 }

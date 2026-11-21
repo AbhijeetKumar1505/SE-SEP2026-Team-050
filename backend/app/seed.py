@@ -6,6 +6,7 @@ Seeds:
 - Standard Timing Windows (C4/C11)
 - Verified mentors with tags, availability, and profiles
 - Registered students with complete profiles and roll numbers
+- IIC's roster: those students plus three who have not signed up yet
 - Realistic problem submissions, recommendations, mentorship pairings, sessions, and feedback
 """
 
@@ -26,7 +27,7 @@ from .notifications.services import ensure_templates
 from .problems.models import Problem
 from .sessions.models import Session
 from .settings.models import EmailDomain, TimingWindow, TopicTag
-from .students.models import Student
+from .students.models import RosterEntry, Student
 
 DEFAULT_PASSWORD = "Password123!"
 
@@ -306,6 +307,17 @@ def seed_database() -> dict[str, int]:
             db.session.flush()
         student_records.append(student)
 
+    # 5b. IIC's roster: the students above, plus three who can try sign-up (US-01, US-15)
+    roster_spec = [(spec["number"], spec["name"], spec["email"]) for spec in students_spec] + [
+        ("23F1002345", "Sneha Pillai", "23f1002345@ds.study.iitm.ac.in"),
+        ("23F1002346", "Arjun Mehta", "23f1002346@ds.study.iitm.ac.in"),
+        ("24F1000101", "Divya Raman", "24f1000101@ds.study.iitm.ac.in"),
+    ]
+    for number, name, email in roster_spec:
+        if not RosterEntry.query.filter_by(student_number=number).first():
+            db.session.add(RosterEntry(student_number=number, name=name, email=email))
+    db.session.flush()
+
     # 6. Problems
     problems_spec = [
         {
@@ -514,6 +526,7 @@ def seed_database() -> dict[str, int]:
         "users": User.query.count(),
         "mentors": Mentor.query.count(),
         "students": Student.query.count(),
+        "roster_entries": RosterEntry.query.count(),
         "topic_tags": TopicTag.query.count(),
         "timing_windows": TimingWindow.query.count(),
         "problems": Problem.query.count(),

@@ -1,14 +1,33 @@
-"""C1 business rules for accounts and login. Tested directly, without HTTP."""
+"""C1 business rules for accounts, sign-up and login. Tested directly, without HTTP."""
+
+import hashlib
+import secrets
+from datetime import timedelta
 
 from flask_smorest import abort
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from ..extensions import db
-from ..models import utcnow
-from .models import ROLES, Role, User
+from ..models import as_utc, utcnow
+from ..notifications.services import send_email
+from ..settings.services import approved_domain
+from ..students import services as roster
+from ..students.models import Student
+from .models import ROLES, STUDENT, EmailVerification, Role, User
 
 MIN_PASSWORD_LENGTH = 8
 WRONG_LOGIN = "Email or password is incorrect."
+
+# Sign-up (US-01). The messages are the ones in the story's acceptance criteria.
+VERIFICATION_HOURS = 24
+NOT_INSTITUTE_EMAIL = "Use your IITM BS institute email."
+NOT_ON_ROSTER = "You are not registered with IIC. Please contact IIC to register."
+NOT_ROSTER_EMAIL = "Use the institute email IIC registered for this roll number."
+ACCOUNT_EXISTS = "An account already exists for this roll number. Log in instead."
+EMAIL_TAKEN = "An account already exists for this email. Log in instead."
+LINK_INVALID = "This link is not valid. Use the newest link we sent, or ask for a new one."
+LINK_USED = "Your email is already verified. Log in instead."
+LINK_EXPIRED = "This link has expired. Ask for a new one."
 # Checked when the email is unknown, so a wrong email takes as long as a wrong password.
 _DUMMY_HASH = generate_password_hash("timing-equaliser")
 
@@ -71,3 +90,88 @@ def authenticate(email: str, password: str) -> User:
     if user.email_verified_at is None:
         abort(403, message="Verify your email address before logging in.")
     return user
+
+
+def sign_up(email: str, roll_number: str, password: str) -> User:
+    """US-01: create an unverified student account and email it a verification link.
+
+    Refusals store nothing. In order:
+    1. the email must be on an approved, enabled domain (C4), otherwise 422;
+    2. the roll number must be on IIC's roster and not removed (C2), otherwise 403;
+    3. the email must be the one IIC registered for that roll number, otherwise 422;
+    4. no verified account may exist for the roll number or the email, otherwise 409.
+
+    Signing up again before verifying sets the new password and sends a new link, and older links
+    stop working. The student's name and roll number come from the roster.
+    """
+    email = normalize_email(email)
+    domain = approved_domain(email)
+    if domain is None:
+        abort(422, message=NOT_INSTITUTE_EMAIL, errors={"json": {"email": [NOT_INSTITUTE_EMAIL]}})
+    entry = roster.roster_entry(roll_number)
+    if entry is None:
+        abort(403, message=NOT_ON_ROSTER)
+    if normalize_email(entry.email) != email:
+        abort(422, message=NOT_ROSTER_EMAIL, errors={"json": {"email": [NOT_ROSTER_EMAIL]}})
+
+    student = roster.student_with_number(entry.student_number)
+    if student is not None:
+        user = student.user
+        if user.email_verified_at is not None or user.email != email:
+            abort(409, message=ACCOUNT_EXISTS)
+    else:
+        if db.session.query(User.id).filter_by(email=email).first() is not None:
+            abort(409, message=EMAIL_TAKEN)
+        user = User(email=email, roles=get_roles([STUDENT]), email_domain=domain)
+        db.session.add(user)
+        db.session.add(Student(user=user, student_number=entry.student_number, name=entry.name))
+
+    user.password_hash = generate_password_hash(password)
+    _send_verification_link(user, name=entry.name)
+    db.session.commit()
+    return user
+
+
+def resend_verification(email: str) -> None:
+    """Send a new link to a student who signed up but has not verified yet; otherwise do nothing.
+
+    The caller always gets the same answer, so it does not reveal which emails have accounts.
+    """
+    user = db.session.query(User).filter_by(email=normalize_email(email)).one_or_none()
+    if user is None or user.email_verified_at is not None or user.student_profile is None:
+        return
+    _send_verification_link(user, name=user.student_profile.name)
+    db.session.commit()
+
+
+def verify_email(token: str) -> User:
+    """Use a verification link: 404 if unknown or replaced, 409 if already used, 410 if expired."""
+    link = db.session.query(EmailVerification).filter_by(token_hash=_hash_token(token)).one_or_none()
+    if link is None:
+        abort(404, message=LINK_INVALID)
+    if link.used_at is not None:
+        abort(409, message=LINK_USED)
+    now = utcnow()
+    if as_utc(link.expires_at) <= now:
+        abort(410, message=LINK_EXPIRED)
+    link.used_at = now
+    link.user.email_verified_at = now
+    db.session.commit()
+    return link.user
+
+
+def _send_verification_link(user: User, *, name: str) -> None:
+    """Replace the user's unused links with a new one, emailed after the commit.
+
+    Only a hash of the token is stored, so a copy of the database cannot be used to verify accounts.
+    """
+    user.email_verifications = [link for link in user.email_verifications if link.used_at is not None]
+    token = secrets.token_urlsafe(32)
+    user.email_verifications.append(
+        EmailVerification(token_hash=_hash_token(token), expires_at=utcnow() + timedelta(hours=VERIFICATION_HOURS))
+    )
+    send_email(user.email, "email_verification", link=f"/verify-email/{token}", name=name, hours=VERIFICATION_HOURS)
+
+
+def _hash_token(token: str) -> str:
+    return hashlib.sha256(token.encode()).hexdigest()
