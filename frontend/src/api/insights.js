@@ -1,28 +1,15 @@
-import { BASE_TOPICS, SCALE } from './mock/insightsData'
-import { day, delay } from './mock/mockUtils'
+import { camelize } from './casing'
+import { request } from './client'
 
 // Aggregates only: no names or contact details ever reach this page.
-export function getInsights(range) {
-  const k = SCALE[range]
-  const topics = BASE_TOPICS.map(([topic, problems, mentors, unassigned]) => ({
-    id: topic,
-    topic,
-    problems: Math.round(problems * k),
-    mentors,
-    unassigned,
-  }))
-  const ended = Math.round(40 * k)
-  const goalMet = Math.round(21 * k)
-  const someProgress = Math.round(14 * k)
-  return delay({
-    problemsSubmitted: Math.round(142 * k),
-    changePct: -18, // vs the previous period of the same length
-    medianDaysToAssignment: 2.4,
-    activeMentorships: 38,
-    asOf: day(0),
-    stillUnassigned: 9,
-    topics,
-    outcomes: { ended, goalMet, someProgress, noProgress: ended - goalMet - someProgress },
-    ratioThreshold: 3, // "demand outstrips supply" at this many problems per available mentor
-  })
+// The server computes everything, including the previous-period comparison and the
+// "demand outstrips supply" threshold (ratio_threshold).
+// TODO(backend): GET /api/insights?range=<range>
+export async function getInsights(range) {
+  const d = camelize(await request(`/api/insights?range=${encodeURIComponent(range)}`))
+  return {
+    ...d, // problemsSubmitted, changePct, medianDaysToAssignment, activeMentorships, asOf,
+    //       stillUnassigned, outcomes { ended, goalMet, someProgress, noProgress }, ratioThreshold
+    topics: d.topics.map((t) => ({ ...t, id: t.id ?? t.topic })), // { id, topic, problems, mentors, unassigned }
+  }
 }

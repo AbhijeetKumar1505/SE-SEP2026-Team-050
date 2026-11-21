@@ -1,43 +1,31 @@
-import { summarise, coachProblem, fitNote } from './mock/ai'
-import { db } from './mock/db'
-import { delay, found } from './mock/mockUtils'
-import { tags } from './mock/tagData'
+import { camelize } from './casing'
+import { request } from './client'
 
-// The three AI features. Mock implementation: rule-based stand-ins in mock/ai.js, with a longer delay
-// like a model call. In M3 each function becomes a fetch() to the Flask API with the same signature and
-// return shape. AI output only advises: the user decides what to do with it.
-const AI_DELAY = 900
+// The three AI features. AI output only advises: the user decides what to do with it.
+// The server holds the model call, so nothing but the fields below leaves the browser.
+// None of these routes exist yet: see BACKEND_CONTRACT.md.
 
-// S2 Problem coach: suggested tags (from IIC's active list) and hints. Only the description is sent.
-export const checkProblem = (text) =>
-  delay(
-    coachProblem(
-      text,
-      tags.filter((t) => t.active).map((t) => t.name),
-    ),
-    AI_DELAY,
-  )
+// S2 Problem coach: suggested tags (from IIC's active list) and hints. Only the description is sent;
+// the server knows which tags are active.
+// TODO(backend): POST /api/ai/problem-coach. The response keys must match what the mock's
+// coachProblem() returned, in snake_case.
+export async function checkProblem(text) {
+  return camelize(await request('/api/ai/problem-coach', { method: 'POST', body: { description: text } }))
+}
 
 // I2 mentor fit notes, as { [mentorId]: note }. They explain the ranking; they never change it.
-export function explainFit(problemId, mentorIds) {
-  const p = db.problems.find((x) => x.id === problemId)
-  if (!p) return found(null, 'Problem')
-  const notes = Object.fromEntries(
-    mentorIds.map((id) => [
-      id,
-      fitNote(
-        p,
-        db.mentors.find((m) => m.id === id),
-      ),
-    ]),
-  )
-  return delay(notes, AI_DELAY)
+// TODO(backend): POST /api/ai/mentor-fit -> { notes: { "<mentor_id>": "..." } }
+export async function explainFit(problemId, mentorIds) {
+  const d = await request('/api/ai/mentor-fit', {
+    method: 'POST',
+    body: { problem_id: problemId, mentor_ids: mentorIds },
+  })
+  return d.notes // keyed by mentor id: deliberately not run through camelize()
 }
 
 // I8 summary of both sides' feedback and the session pattern.
-export function summariseMentorship(id) {
-  const m = db.mentorships.find((x) => x.id === id)
-  if (!m) return found(null, 'Mentorship')
-  const problemStatus = db.problems.find((p) => p.id === m.problemId)?.status
-  return delay({ summary: summarise(m, { problemStatus, settings: db.settings }), feedbackCount: m.feedback.length }, AI_DELAY)
+// TODO(backend): POST /api/ai/mentorships/<id>/summary -> { summary, feedback_count }
+export async function summariseMentorship(id) {
+  const d = await request(`/api/ai/mentorships/${id}/summary`, { method: 'POST' })
+  return { summary: d.summary, feedbackCount: d.feedback_count }
 }
