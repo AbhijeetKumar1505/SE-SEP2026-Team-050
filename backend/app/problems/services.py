@@ -29,9 +29,7 @@ def latest_problem(student_id: int) -> Problem | None:
 
 def has_open_problem(student_id: int) -> bool:
     return (
-        db.session.query(Problem.id)
-        .filter(Problem.student_id == student_id, Problem.status.in_(OPEN_STATUSES))
-        .first()
+        db.session.query(Problem.id).filter(Problem.student_id == student_id, Problem.status.in_(OPEN_STATUSES)).first()
         is not None
     )
 

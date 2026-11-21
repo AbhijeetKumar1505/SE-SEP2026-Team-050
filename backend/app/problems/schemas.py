@@ -11,8 +11,7 @@ class ProblemSchema(Schema):
         required=True,
         metadata={
             "description": (
-                "submitted, under_review, awaiting_mentor, mentor_assigned, "
-                "reassignment_needed, closed or withdrawn"
+                "submitted, under_review, awaiting_mentor, mentor_assigned, reassignment_needed, closed or withdrawn"
             ),
             "example": "submitted",
         },

@@ -48,10 +48,7 @@ def get_dashboard(mentor: Mentor) -> dict:
 
     next_checkpoint = None
     if active:
-        earliest = min(
-            m for m in active
-            if (m.reached_out_at or m.assigned_at) is not None
-        )
+        earliest = min(m for m in active if (m.reached_out_at or m.assigned_at) is not None)
         base = earliest.reached_out_at or earliest.assigned_at
         due = base + timedelta(hours=timing_hours("feedback_checkpoint", 336))
         student = earliest.problem.student
@@ -127,7 +124,9 @@ def serialize_mentorship_summary(mentorship) -> dict:
         "next_session": {
             "date": next_session.planned_at.date().isoformat() if next_session and next_session.planned_at else None,
             "time": next_session.planned_at.strftime("%H:%M") if next_session and next_session.planned_at else None,
-        } if next_session else None,
+        }
+        if next_session
+        else None,
     }
 
 
