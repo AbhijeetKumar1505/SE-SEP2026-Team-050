@@ -1,9 +1,9 @@
 """SCRUM-10/14/18: mentor dashboard, assignments, capacity and profile (C3)."""
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 
 from app.extensions import db
-from app.mentors.models import CapacityRequest, Mentor
+from app.mentors.models import CapacityRequest
 
 DASHBOARD = "/api/mentors/me/dashboard"
 PROFILE = "/api/mentors/me"
@@ -110,7 +110,6 @@ def test_profile_needs_mentor_role(student_client):
 
 
 def test_mentor_answers_capacity_request(mentor_client, sample_mentor, iic_user):
-    from app.auth.models import User
 
     req = CapacityRequest(
         mentor_id=sample_mentor.id,
@@ -120,9 +119,7 @@ def test_mentor_answers_capacity_request(mentor_client, sample_mentor, iic_user)
     db.session.add(req)
     db.session.commit()
 
-    response = mentor_client.post(
-        f"/api/mentors/capacity-requests/{req.id}/answer", json={"accept": True}
-    )
+    response = mentor_client.post(f"/api/mentors/capacity-requests/{req.id}/answer", json={"accept": True})
     assert response.status_code == 200
     body = response.get_json()
     assert body["id"] == req.id
@@ -142,9 +139,7 @@ def test_mentor_declines_capacity_request(mentor_client, sample_mentor, iic_user
     db.session.add(req)
     db.session.commit()
 
-    response = mentor_client.post(
-        f"/api/mentors/capacity-requests/{req.id}/answer", json={"accept": False}
-    )
+    response = mentor_client.post(f"/api/mentors/capacity-requests/{req.id}/answer", json={"accept": False})
     assert response.status_code == 200
     body = response.get_json()
     assert body["status"] == "declined"
@@ -159,7 +154,9 @@ def test_cannot_answer_already_answered_request(mentor_client, sample_mentor, ii
     )
     db.session.add(req)
     db.session.commit()
-    assert mentor_client.post(f"/api/mentors/capacity-requests/{req.id}/answer", json={"accept": True}).status_code == 409
+    assert (
+        mentor_client.post(f"/api/mentors/capacity-requests/{req.id}/answer", json={"accept": True}).status_code == 409
+    )
 
 
 # ---------- Accept / decline assignment ----------
@@ -219,8 +216,8 @@ def test_mentor_declines_assignment(mentor_client, sample_mentor, sample_student
 
 
 def test_another_mentor_cannot_accept_assignment(client, sample_mentor, sample_problem, login_as, make_user):
+    from app.auth.models import MENTOR
     from app.mentorships.models import Mentorship
-    from app.auth.models import MENTOR, User
 
     other_user = make_user(MENTOR, email="other.mentor@ds.study.iitm.ac.in")
     other_mentor = __import__("app.mentors.models", fromlist=["Mentor"]).Mentor(
