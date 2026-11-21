@@ -1,6 +1,86 @@
-from marshmallow import Schema, fields, validate
+from marshmallow import EXCLUDE, Schema, fields, validate
 
 from ..problems.schemas import ProblemSchema
+
+# IIC's roster (US-15)
+
+MAX_IMPORT_ROWS = 5000
+
+
+class RosterRowSchema(Schema):
+    """One CSV row. Rows are checked one by one, so a bad row is reported instead of failing the import."""
+
+    class Meta:
+        unknown = EXCLUDE
+
+    name = fields.String(load_default="", allow_none=True, metadata={"example": "Sneha Pillai"})
+    roll_number = fields.String(load_default="", allow_none=True, metadata={"example": "23f1002345"})
+    institute_email = fields.String(
+        load_default="", allow_none=True, metadata={"example": "23f1002345@ds.study.iitm.ac.in"}
+    )
+
+
+class RosterImportSchema(Schema):
+    file = fields.String(
+        required=True,
+        validate=validate.Length(min=1, max=255),
+        metadata={"description": "Name of the CSV file, shown with the result", "example": "roster_nov_2026.csv"},
+    )
+    rows = fields.List(
+        fields.Nested(RosterRowSchema),
+        required=True,
+        validate=validate.Length(min=1, max=MAX_IMPORT_ROWS),
+        metadata={"description": f"The CSV's rows after the header, in order; at most {MAX_IMPORT_ROWS}"},
+    )
+
+
+class RowErrorSchema(Schema):
+    row = fields.Integer(required=True, metadata={"description": "CSV row number; the header is row 1", "example": 14})
+    reason = fields.String(required=True, metadata={"example": "Roll number is not valid. Use the form 23f1002345."})
+
+
+class RosterImportResultSchema(Schema):
+    file = fields.String(required=True, metadata={"example": "roster_nov_2026.csv"})
+    imported_by = fields.String(required=True, allow_none=True, metadata={"example": "deepa.iic@ds.study.iitm.ac.in"})
+    imported_at = fields.DateTime(required=True)
+    added = fields.Integer(required=True, metadata={"example": 310})
+    updated = fields.Integer(required=True, metadata={"example": 2})
+    errors = fields.List(fields.Nested(RowErrorSchema), required=True)
+
+
+class RosterStudentSchema(Schema):
+    id = fields.Integer(required=True, metadata={"description": "Roster entry ID, used to remove the student"})
+    name = fields.String(required=True, metadata={"example": "Sneha Pillai"})
+    roll = fields.String(required=True, metadata={"example": "23F1002345"})
+    email = fields.String(required=True, metadata={"example": "23f1002345@ds.study.iitm.ac.in"})
+    signed_up = fields.Boolean(required=True, metadata={"description": "Has an account with a verified email"})
+    profile_complete = fields.Boolean(required=True)
+
+
+class RosterSchema(Schema):
+    students = fields.List(fields.Nested(RosterStudentSchema), required=True)
+    last_import = fields.Nested(RosterImportResultSchema, required=True, allow_none=True)
+
+
+class RosterAddSchema(Schema):
+    name = fields.String(required=True, validate=validate.Length(min=1, max=128), metadata={"example": "Sneha Pillai"})
+    roll_number = fields.String(
+        required=True, validate=validate.Length(min=1, max=32), metadata={"example": "23f1002345"}
+    )
+    institute_email = fields.String(
+        required=True, validate=validate.Length(min=3, max=254), metadata={"example": "23f1002345@ds.study.iitm.ac.in"}
+    )
+
+
+class RemoveReasonSchema(Schema):
+    reason = fields.String(
+        required=True,
+        validate=[validate.Length(min=1, max=500), validate.Regexp(r"\S", error="Give a reason.")],
+        metadata={
+            "description": "Why IIC removed the student; kept in the audit log",
+            "example": "Left the programme.",
+        },
+    )
 
 
 class StudentProfileSchema(Schema):

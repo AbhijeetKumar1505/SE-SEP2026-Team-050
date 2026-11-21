@@ -12,7 +12,7 @@
 #   - backend/.env pointing the backend at Mailpit, if there is no backend/.env yet
 # Then it brings the development database up to date and adds the sample data.
 #
-# Start the servers afterwards with: bash scripts/wsl/dev.sh up
+# Start the servers afterwards with: bash scripts/wsl/start.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -89,5 +89,5 @@ cd "$ROOT/backend"
 "$VENV/bin/flask" seed-data
 
 step "Done"
-echo "Start the servers:  bash scripts/wsl/dev.sh up"
+echo "Start the servers:  bash scripts/wsl/start.sh   (stop them with: bash scripts/wsl/stop.sh)"
 echo "Mailpit inbox:      http://localhost:8025"

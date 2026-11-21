@@ -987,6 +987,169 @@ components:
       - desired_outcome
       - tags
       type: object
+    RemoveReason:
+      additionalProperties: false
+      properties:
+        reason:
+          description: Why IIC removed the student; kept in the audit log
+          example: Left the programme.
+          maxLength: 500
+          minLength: 1
+          pattern: \S
+          type: string
+      required:
+      - reason
+      type: object
+    Roster:
+      additionalProperties: false
+      properties:
+        last_import:
+          anyOf:
+          - nullable: true
+            type: object
+          - $ref: '#/components/schemas/RosterImportResult'
+        students:
+          items:
+            $ref: '#/components/schemas/RosterStudent'
+          type: array
+      required:
+      - last_import
+      - students
+      type: object
+    RosterAdd:
+      additionalProperties: false
+      properties:
+        institute_email:
+          example: 23f1002345@ds.study.iitm.ac.in
+          maxLength: 254
+          minLength: 3
+          type: string
+        name:
+          example: Sneha Pillai
+          maxLength: 128
+          minLength: 1
+          type: string
+        roll_number:
+          example: 23f1002345
+          maxLength: 32
+          minLength: 1
+          type: string
+      required:
+      - institute_email
+      - name
+      - roll_number
+      type: object
+    RosterImport:
+      additionalProperties: false
+      properties:
+        file:
+          description: Name of the CSV file, shown with the result
+          example: roster_nov_2026.csv
+          maxLength: 255
+          minLength: 1
+          type: string
+        rows:
+          description: The CSV's rows after the header, in order; at most 5000
+          items:
+            $ref: '#/components/schemas/RosterRow'
+          maxItems: 5000
+          minItems: 1
+          type: array
+      required:
+      - file
+      - rows
+      type: object
+    RosterImportResult:
+      additionalProperties: false
+      properties:
+        added:
+          example: 310
+          type: integer
+        errors:
+          items:
+            $ref: '#/components/schemas/RowError'
+          type: array
+        file:
+          example: roster_nov_2026.csv
+          type: string
+        imported_at:
+          format: date-time
+          type: string
+        imported_by:
+          example: deepa.iic@ds.study.iitm.ac.in
+          nullable: true
+          type: string
+        updated:
+          example: 2
+          type: integer
+      required:
+      - added
+      - errors
+      - file
+      - imported_at
+      - imported_by
+      - updated
+      type: object
+    RosterRow:
+      properties:
+        institute_email:
+          default: ''
+          example: 23f1002345@ds.study.iitm.ac.in
+          nullable: true
+          type: string
+        name:
+          default: ''
+          example: Sneha Pillai
+          nullable: true
+          type: string
+        roll_number:
+          default: ''
+          example: 23f1002345
+          nullable: true
+          type: string
+      type: object
+    RosterStudent:
+      additionalProperties: false
+      properties:
+        email:
+          example: 23f1002345@ds.study.iitm.ac.in
+          type: string
+        id:
+          description: Roster entry ID, used to remove the student
+          type: integer
+        name:
+          example: Sneha Pillai
+          type: string
+        profile_complete:
+          type: boolean
+        roll:
+          example: 23F1002345
+          type: string
+        signed_up:
+          description: Has an account with a verified email
+          type: boolean
+      required:
+      - email
+      - id
+      - name
+      - profile_complete
+      - roll
+      - signed_up
+      type: object
+    RowError:
+      additionalProperties: false
+      properties:
+        reason:
+          example: Roll number is not valid. Use the form 23f1002345.
+          type: string
+        row:
+          description: CSV row number; the header is row 1
+          example: 14
+          type: integer
+      required:
+      - reason
+      - row
+      type: object
     Session:
       additionalProperties: false
       properties:
@@ -2376,7 +2539,10 @@ paths:
         to achieve. IIC reviews it next. A student has one open problem at a time,
         and must finish their
 
-        profile first, so a duplicate or an incomplete profile gets 409.'
+        profile first, so a duplicate or an incomplete profile gets 409. A student
+        IIC has removed from
+
+        the roster gets 403 "You are not registered with IIC" (US-15).'
       requestBody:
         content:
           application/json:
@@ -2409,6 +2575,7 @@ paths:
       - student
       x-user-stories:
       - US-03
+      - US-15
   /api/problems/me/status:
     get:
       description: 'Students have one open problem at a time. `has_open_problem` is
@@ -2903,6 +3070,172 @@ paths:
       - US-02
       - US-03
       - US-05
+  /api/students/roster:
+    get:
+      description: 'Every student IIC has registered and not removed, by name, with
+        whether they have signed up
+
+        (verified their email) and completed their profile. `last_import` is the result
+        of the latest
+
+        CSV import, or null.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Roster'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: List the roster
+      tags:
+      - students
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-15
+    post:
+      description: 'Uses the same checks as the CSV import: 422 with the reason for
+        an invalid name, roll number
+
+        or email, and 409 when the roll number is already on the roster or the email
+        belongs to another
+
+        roll number. A removed student is put back.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RosterAdd'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RosterStudent'
+          description: Created
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Add one student to the roster
+      tags:
+      - students
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-15
+  /api/students/roster/import:
+    post:
+      description: 'The CSV template has three columns: `name`, `roll number` and
+        `institute email`. The web app
+
+        reads the file and sends its rows here as `name`, `roll_number` and `institute_email`.
+
+
+        Each row is checked on its own. Valid rows are saved: a roll number already
+        on the roster is
+
+        updated instead of duplicated, and a removed student is put back. Invalid
+        rows are returned in
+
+        `errors` with their CSV row number (the header is row 1) and the reason, for
+        example an invalid
+
+        roll number, an email outside the approved domains, or a roll number repeated
+        in the file.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RosterImport'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RosterImportResult'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Import the roster from a CSV file
+      tags:
+      - students
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-15
+  /api/students/roster/{entry_id}/remove:
+    parameters:
+    - in: path
+      name: entry_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'The student can no longer sign up or submit a new problem: both
+        are refused with "You are not
+
+        registered with IIC". An account they already have, and any mentorship in
+        progress, carry on.
+
+        The reason is kept in the audit log.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveReason'
+        required: true
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Remove a student from the roster
+      tags:
+      - students
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-15
 servers:
 - description: Local development server (flask run)
   url: http://127.0.0.1:5000

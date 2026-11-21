@@ -25,7 +25,7 @@ from app.mentorships.models import Mentorship
 from app.problems.models import Problem
 from app.seed import seed_tags_and_windows
 from app.settings.models import EmailDomain
-from app.students.models import Student
+from app.students.models import RosterEntry, Student
 
 PASSWORD = "correct-horse-battery"
 _counter = itertools.count(1)
@@ -208,10 +208,11 @@ def leadership_client(client, auth_headers_leadership):
 
 @pytest.fixture
 def sample_student(student_user):
-    """A registered student profile linked to student_user."""
+    """A registered student profile linked to student_user, on IIC's roster as every student is."""
+    number = f"22F{next(_counter):07d}"
     student = Student(
         user_id=student_user.id,
-        student_number=f"22F{next(_counter):06d}",
+        student_number=number,
         name="Sample Student",
         programme="BS",
         cohort="Jan 2022",
@@ -220,6 +221,7 @@ def sample_student(student_user):
         career_interest="Computer Vision and Deep Learning",
     )
     db.session.add(student)
+    db.session.add(RosterEntry(student_number=number, name=student.name, email=student_user.email))
     db.session.commit()
     return student
 

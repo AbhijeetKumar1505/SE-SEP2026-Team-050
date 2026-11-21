@@ -1,4 +1,4 @@
-"""C2 tables: STUDENT, and ROSTER_ENTRY for IIC's roster of registered students.
+"""C2 tables: STUDENT, and ROSTER_ENTRY and ROSTER_IMPORT for IIC's roster of registered students.
 
 ROSTER_ENTRY resolves the Milestone 2 diagram review note on the roster: IIC registers students
 before they sign up, so the roster has its own table and STUDENT.user_id stays required.
@@ -24,6 +24,25 @@ class RosterEntry(db.Model):
 
     def __repr__(self) -> str:
         return f"<RosterEntry {self.student_number}>"
+
+
+class RosterImport(db.Model):
+    """The result of one roster CSV import (US-15), shown to IIC on the roster page."""
+
+    __tablename__ = "roster_import"
+
+    id = db.Column(db.Integer, primary_key=True)
+    file_name = db.Column(db.String(255), nullable=False)
+    imported_by_user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="SET NULL"))
+    added = db.Column(db.Integer, nullable=False)
+    updated = db.Column(db.Integer, nullable=False)
+    errors = db.Column(db.JSON, nullable=False)  # [{"row": 14, "reason": "..."}], row 1 being the header
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+
+    imported_by = db.relationship("User")
+
+    def __repr__(self) -> str:
+        return f"<RosterImport {self.file_name}>"
 
 
 class Student(db.Model):
