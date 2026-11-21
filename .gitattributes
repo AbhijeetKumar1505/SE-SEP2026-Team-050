@@ -1,2 +1,3 @@
-# Shell scripts run in WSL or Linux, where a Windows line ending breaks them.
+# Shell scripts and start-up files run in WSL or Linux, where a Windows line ending breaks them.
 *.sh text eol=lf
+*.bashrc text eol=lf
