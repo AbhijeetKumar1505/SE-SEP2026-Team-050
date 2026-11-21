@@ -69,11 +69,13 @@ The app runs at http://localhost:5173. Login and the notification bell call the 
 
 ```bash
 bash scripts/wsl/setup.sh    # once, and safe to repeat
-bash scripts/wsl/dev.sh up   # starts the API, the web app and Mailpit in the background
+bash scripts/wsl/start.sh    # starts the API, the web app and Mailpit, with a live log terminal for each
+bash scripts/wsl/stop.sh     # stops all three and closes their log terminals
 ```
 
 - **What the setup installs:** a Python 3.12 environment in `~/.venvs/se-sep2026-team-050`, the frontend packages for Linux, Mailpit, and a `backend/.env` that sends emails to Mailpit. It also upgrades and seeds the database. It needs no `sudo`.
-- **The servers keep running after you close the terminal.** `dev.sh status` shows them, `dev.sh logs api` (or `web` or `mail`) follows a log, and `dev.sh down` stops them. Both reload when you save a file, including from Windows.
+- **Log terminals:** `start.sh` opens one Windows Terminal window with a tab per server, showing its log as it happens (three console windows without Windows Terminal). Closing a tab leaves its server running. Running `start.sh` again reopens only the logs you closed.
+- **The servers keep running in the background** as systemd user services, and reload when you save a file, including from Windows. To check on them without the tabs, use `systemctl --user status se050-api se050-web mailpit`.
 - **Emails:** open http://localhost:8025 to read them and click their links, such as the sign-up verification link.
 - **Running `flask` or `pytest` yourself:** first activate the environment with `source ~/.venvs/se-sep2026-team-050/bin/activate`.
 - **If downloads time out,** WSL's DNS may be broken. Check with `getent hosts pypi.org`.
