@@ -42,6 +42,7 @@ To change a setting, copy `.env.example` to `.env` and edit it. Local developmen
 | `flask db upgrade` | Brings the database up to the latest migration |
 | `flask db migrate -m "what changed"` | Generates a migration after a model change. Review it, then commit it with the model |
 | `flask create-user EMAIL --role ROLE` | Creates a verified account, such as the first IIC coordinator |
+| `flask seed-data` | Fills the database with sample users, mentors, problems, mentorships and IIC's roster. Safe to run again |
 
 ## How the code is organised
 
@@ -73,6 +74,24 @@ Each module package grows four files as its stories are built:
 ## Login and access control
 
 There are four roles: `student`, `mentor`, `iic` (IIC coordinator) and `leadership`. `POST /api/auth/login` returns an access token that lasts 8 hours and carries the user's roles; send it as `Authorization: Bearer <token>`. `POST /api/auth/logout` revokes it, and `GET /api/auth/me` returns the logged-in user with their roles, name and (for students) roll number.
+
+### Student sign-up (US-01)
+
+Students create their own accounts. Mentors are activated by IIC instead (US-14).
+
+1. **`POST /api/auth/signup`** with `email`, `roll_number` and `password` (at least 8 characters). The checks run in this order, and a refusal stores nothing:
+   - the email must be on an approved domain in `email_domain` (422 "Use your IITM BS institute email.");
+   - the roll number must be on IIC's roster, `roster_entry`, and not removed (403 "You are not registered with IIC. Please contact IIC to register.");
+   - the email must be the one IIC registered for that roll number (422);
+   - no verified account may exist for the roll number or the email (409 "... Log in instead.").
+
+   On success the account is created unverified, and the student's name comes from the roster. A link that works for 24 hours is emailed to the student. Signing up again before verifying sets the new password and sends a new link.
+2. **`POST /api/auth/verify-email`** with the `token` from the link. This activates the account and returns a login token, like `POST /api/auth/login`. An unknown or replaced link gets 404, a used one 409, and an expired one 410.
+3. **`POST /api/auth/resend-verification`** with `email` sends a new link. It always answers 204, so it doesn't reveal who has signed up.
+
+Only a SHA-256 hash of each link's token is stored. In development the email, with its link, is written to the Flask log. `flask seed-data` puts three students on the roster who haven't signed up yet, to try it with: `23F1002345`, `23F1002346` and `24F1000101`, each with the email `<roll number>@ds.study.iitm.ac.in`.
+
+### Protecting endpoints
 
 Protect an endpoint with `@blp.auth(...)`. It refuses the request and also documents the rule in the YAML:
 
@@ -165,6 +184,7 @@ db.session.commit()
   - `link` is the page in the web app the notice opens, such as `/student`. The email links to it through `FRONTEND_URL`.
   - Each event has one template in `app/notifications/templates.py`. Add yours there with your story. A missing placeholder value is an error.
   - Users read their notices with `GET /api/notifications` (`?unread=true` for the bell) and mark them read with `POST /api/notifications/<id>/read` or `POST /api/notifications/read-all`.
+- **`notifications.send_email(address, template_key, link=..., **values)`** sends only an email, with no dashboard notice. Use it for links sent before someone can log in, such as the sign-up verification link. Like `notify()`, it waits for the commit. The link isn't stored, and a refused email is only logged.
 - **Never put conversation content** in an audit entry or a notification.
 
 In development, emails are written to the log instead of being sent. In tests, check them with `mail.record_messages()`; see `tests/test_notifications.py`.

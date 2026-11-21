@@ -1,4 +1,4 @@
-"""C4 business rules for topic tags (US-03, US-21)."""
+"""C4 business rules: approved email domains (US-01), timing windows and topic tags (US-03, US-21)."""
 
 from flask_smorest import abort
 from sqlalchemy import func
@@ -7,7 +7,15 @@ from ..audit import services as audit
 from ..auth.models import User
 from ..extensions import db
 from ..problems.models import problem_tag
-from .models import TimingWindow, TopicTag
+from .models import EmailDomain, TimingWindow, TopicTag
+
+
+def approved_domain(email: str) -> EmailDomain | None:
+    """The enabled domain an email address belongs to, or None if it may not be used to sign up."""
+    domain = email.rpartition("@")[2].strip().lower()
+    if not domain:
+        return None
+    return db.session.query(EmailDomain).filter_by(domain=domain, enabled=True).one_or_none()
 
 
 def timing_hours(rule_name: str, default: int) -> int:

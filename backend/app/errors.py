@@ -23,6 +23,7 @@ DEFAULT_MESSAGES = {
     404: "The requested resource was not found.",
     405: "This method is not allowed on this URL.",
     409: "This conflicts with the current state of the resource.",
+    410: "This link has expired.",
     422: "Some fields are invalid.",
     500: "Something went wrong on the server. Please try again.",
 }
