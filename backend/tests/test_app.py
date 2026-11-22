@@ -19,6 +19,13 @@ def test_testing_config_uses_in_memory_sqlite(app):
     assert app.config["SQLALCHEMY_DATABASE_URI"] == "sqlite://"
 
 
+def test_development_does_not_print_the_smtp_exchange():
+    """In debug mode Flask-Mail would log every email, links included, unless MAIL_DEBUG says otherwise."""
+    app = create_app("development")
+    assert app.debug
+    assert not app.extensions["mail"].debug  # Flask-Mail stores the smtplib debug level, 0 = off
+
+
 def test_unknown_config_name_is_rejected():
     with pytest.raises(ValueError, match="Unknown configuration"):
         create_app("staging")
