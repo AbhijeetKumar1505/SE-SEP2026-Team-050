@@ -27,6 +27,15 @@ TEMPLATES: dict[str, Template] = {
             "The link works for {hours} hours. If you did not sign up, you can ignore this email."
         ),
     ),
+    # Email only (send_email): the mentor has no password until they use the link (US-14).
+    "mentor_activation": Template(
+        subject="Activate your IITM BS Mentoring account",
+        body=(
+            "Hello {name}, {verified_by} from IIC has verified your mentor profile. Open the link below to "
+            "set a password and activate your account, then set your availability so IIC can match you with "
+            "students. The link works for {days} days."
+        ),
+    ),
     "assignment_notice": Template(
         subject="New student problem assigned to you",
         body="Hello {mentor_name}, a student has been assigned to you. Please review and respond within 72 hours.",

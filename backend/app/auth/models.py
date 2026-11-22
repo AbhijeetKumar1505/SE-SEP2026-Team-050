@@ -61,13 +61,20 @@ class RevokedToken(db.Model):
     expires_at = db.Column(db.DateTime(timezone=True), nullable=False)  # safe to delete after this
 
 
+VERIFY_EMAIL, ACTIVATE_MENTOR = "verify_email", "activate_mentor"
+
+
 class EmailVerification(db.Model):
-    """One-time email verification token (valid for 24h) for sign-up or activation."""
+    """A one-time link sent by email: sign-up verification (24 hours, US-01) or mentor activation (7 days, US-14).
+
+    Only a hash of the token is stored. A link works only for its purpose.
+    """
 
     __tablename__ = "email_verification"
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
+    purpose = db.Column(db.String(32), nullable=False, default=VERIFY_EMAIL, server_default=VERIFY_EMAIL)
     token_hash = db.Column(db.String(255), nullable=False, unique=True)
     expires_at = db.Column(db.DateTime(timezone=True), nullable=False)
     used_at = db.Column(db.DateTime(timezone=True))

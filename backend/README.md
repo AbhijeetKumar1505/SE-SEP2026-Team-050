@@ -104,6 +104,26 @@ Only students on IIC's roster can sign up or submit a problem. IIC keeps the ros
 
 Each import, addition and removal is recorded in the audit log. In tests, the `sample_student` fixture is on the roster; a student you create yourself needs a `RosterEntry` to submit a problem.
 
+### IIC's mentor pool (US-14)
+
+Mentors don't sign up. IIC adds them, verifies them, and the platform emails each one an activation link. A mentor moves through these statuses:
+
+```text
+pending_verification --IIC verifies--> verified --mentor uses the link--> active   (or removed)
+```
+
+| Endpoint | Who | What it does |
+|---|---|---|
+| `GET /api/mentors` | IIC | Lists every mentor with their status, expertise, availability and load |
+| `POST /api/mentors` | IIC | Adds one mentor as *Pending verification* |
+| `POST /api/mentors/import` | IIC | Imports CSV rows: `name`, `email`, `expertise tags` and `experience`, with several values separated by semicolons. A known email is updated, not duplicated. Invalid rows come back with their row number and reason |
+| `POST /api/mentors/<id>/verify` | IIC | Sets the expertise tags, records who verified the mentor and when, and emails an activation link that works for 7 days |
+| `POST /api/mentors/<id>/resend-activation` | IIC | Sends a new link; older ones stop working |
+| `GET /api/mentors/activation/<token>` | anyone | Checks a link (404 unknown or replaced, 410 used or expired) |
+| `POST /api/mentors/activation/<token>` | anyone | Sets the mentor's password and activates the account, then logs them in |
+
+Only mentors who are active, have activated their account and have said they are available can be recommended or assigned. Recommendations (US-04) and assignment (US-16) must start from `mentors.services.assignable_mentors()`. Sign-up and activation links share the `email_verification` table, with a `purpose` that keeps one from working as the other. `flask seed-data` adds Kavya Iyer (`kavya.iyer@example.com`) as a pending mentor, to try verification and activation.
+
 ### Protecting endpoints
 
 Protect an endpoint with `@blp.auth(...)`. It refuses the request and also documents the rule in the YAML:

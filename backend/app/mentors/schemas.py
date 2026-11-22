@@ -1,4 +1,7 @@
-from marshmallow import Schema, fields, validate
+from marshmallow import EXCLUDE, Schema, fields, validate
+
+from ..students.schemas import RowErrorSchema
+from .models import MENTOR_STATUSES
 
 
 class MentorProfileSchema(Schema):
@@ -116,3 +119,105 @@ class DeclineAssignmentSchema(Schema):
 class DeclineResponseSchema(Schema):
     id = fields.Integer(required=True, metadata={"description": "The problem that goes back to IIC's queue"})
     status = fields.String(required=True, metadata={"example": "reassignment_needed"})
+
+
+# IIC's mentor pool (US-14)
+
+MAX_IMPORT_ROWS = 2000
+
+
+class PoolMentorSchema(Schema):
+    id = fields.Integer(required=True, metadata={"example": 4})
+    name = fields.String(required=True, metadata={"example": "Rahul Menon"})
+    email = fields.String(required=True, metadata={"example": "rahul.menon@example.com"})
+    headline = fields.String(allow_none=True, metadata={"example": "Data scientist at Flipkart"})
+    status = fields.String(
+        required=True,
+        validate=validate.OneOf(MENTOR_STATUSES),
+        metadata={"description": "pending_verification, verified (not activated yet), active or removed"},
+    )
+    available = fields.Boolean(required=True)
+    capacity = fields.Integer(required=True, metadata={"example": 1})
+    load = fields.Integer(required=True, metadata={"description": "Pending and active mentorships", "example": 1})
+    expertise = fields.List(fields.String(), required=True, metadata={"example": ["SQL and database design"]})
+    experience = fields.List(fields.String(), required=True, metadata={"example": ["Internship at TCS (3 months)"]})
+    channel = fields.String(allow_none=True, metadata={"example": "Google Meet"})
+    contact = fields.String(allow_none=True)
+    timezone = fields.String(allow_none=True, metadata={"example": "Asia/Kolkata"})
+    availability = fields.List(fields.String(), required=True, metadata={"example": ["Saturday 10:00-12:00"]})
+    capacity_requested = fields.Boolean(required=True, metadata={"description": "IIC has asked for one more student"})
+    verified_by = fields.String(allow_none=True, metadata={"description": "The IIC coordinator who verified them"})
+    verified_at = fields.DateTime(allow_none=True)
+
+
+class MentorAddSchema(Schema):
+    name = fields.String(required=True, validate=validate.Length(min=1, max=128), metadata={"example": "Rahul Menon"})
+    email = fields.Email(
+        required=True, validate=validate.Length(max=254), metadata={"example": "rahul.menon@example.com"}
+    )
+    headline = fields.String(
+        load_default=None, allow_none=True, validate=validate.Length(max=200), metadata={"example": "Data scientist"}
+    )
+
+
+class MentorRowSchema(Schema):
+    """One CSV row. Rows are checked one by one, so a bad row is reported instead of failing the import."""
+
+    class Meta:
+        unknown = EXCLUDE
+
+    name = fields.String(load_default="", allow_none=True, metadata={"example": "Rahul Menon"})
+    email = fields.String(load_default="", allow_none=True, metadata={"example": "rahul.menon@example.com"})
+    expertise_tags = fields.String(
+        load_default="",
+        allow_none=True,
+        metadata={"description": "Topic tag names separated by semicolons", "example": "SQL and database design"},
+    )
+    experience = fields.String(
+        load_default="",
+        allow_none=True,
+        metadata={"description": "Entries separated by semicolons", "example": "Internship at TCS (3 months)"},
+    )
+
+
+class MentorImportSchema(Schema):
+    file = fields.String(required=True, validate=validate.Length(min=1, max=255), metadata={"example": "mentors.csv"})
+    rows = fields.List(
+        fields.Nested(MentorRowSchema),
+        required=True,
+        validate=validate.Length(min=1, max=MAX_IMPORT_ROWS),
+        metadata={"description": f"The CSV's rows after the header, in order; at most {MAX_IMPORT_ROWS}"},
+    )
+
+
+class MentorImportResultSchema(Schema):
+    file = fields.String(required=True, metadata={"example": "mentors.csv"})
+    imported_by = fields.String(required=True, metadata={"example": "deepa.iic@ds.study.iitm.ac.in"})
+    imported_at = fields.DateTime(required=True)
+    added = fields.Integer(required=True, metadata={"example": 12})
+    updated = fields.Integer(required=True, metadata={"example": 1})
+    errors = fields.List(fields.Nested(RowErrorSchema), required=True)
+
+
+class VerifyMentorSchema(Schema):
+    expertise = fields.List(
+        fields.String(validate=validate.Length(min=1, max=100)),
+        required=True,
+        validate=validate.Length(min=1, max=10),
+        metadata={"description": "The mentor's expertise: one to ten topic tag names", "example": ["Data engineering"]},
+    )
+
+
+class ActivationInfoSchema(Schema):
+    valid = fields.Boolean(required=True, metadata={"example": True})
+    name = fields.String(required=True, metadata={"example": "Rahul Menon"})
+    verified_by = fields.String(required=True, metadata={"description": "Who in IIC verified the mentor"})
+
+
+class ActivateSchema(Schema):
+    password = fields.String(
+        required=True,
+        load_only=True,
+        validate=validate.Length(min=8, max=128),
+        metadata={"description": "At least 8 characters", "example": "a-strong-password"},
+    )

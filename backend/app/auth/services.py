@@ -7,13 +7,15 @@ from datetime import timedelta
 from flask_smorest import abort
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from ..audit import services as audit
 from ..extensions import db
+from ..mentors.models import ACTIVE as MENTOR_ACTIVE
 from ..models import as_utc, utcnow
 from ..notifications.services import send_email
 from ..settings.services import approved_domain
 from ..students import services as roster
 from ..students.models import Student
-from .models import ROLES, STUDENT, EmailVerification, Role, User
+from .models import ACTIVATE_MENTOR, ROLES, STUDENT, VERIFY_EMAIL, EmailVerification, Role, User
 
 MIN_PASSWORD_LENGTH = 8
 WRONG_LOGIN = "Email or password is incorrect."
@@ -146,7 +148,7 @@ def resend_verification(email: str) -> None:
 
 def verify_email(token: str) -> User:
     """Use a verification link: 404 if unknown or replaced, 409 if already used, 410 if expired."""
-    link = db.session.query(EmailVerification).filter_by(token_hash=_hash_token(token)).one_or_none()
+    link = _find_link(token, VERIFY_EMAIL)
     if link is None:
         abort(404, message=LINK_INVALID)
     if link.used_at is not None:
@@ -160,17 +162,87 @@ def verify_email(token: str) -> User:
     return link.user
 
 
-def _send_verification_link(user: User, *, name: str) -> None:
-    """Replace the user's unused links with a new one, emailed after the commit.
+def display_name(user: User | None) -> str | None:
+    """The name to show for a user: their student or mentor name, or the first part of their email."""
+    if user is None:
+        return None
+    for profile in (user.student_profile, user.mentor_profile):
+        if profile is not None:
+            return profile.name
+    return user.email.split("@")[0]
 
-    Only a hash of the token is stored, so a copy of the database cannot be used to verify accounts.
+
+# Mentor activation (US-14). IIC verifies a mentor; the mentor sets a password from the emailed link.
+
+ACTIVATION_DAYS = 7
+ACTIVATION_USED = "This link has already been used. Log in instead."
+
+
+def send_activation_link(mentor) -> None:
+    """Email a verified mentor a 7-day activation link, after the commit. Older links stop working."""
+    token = _new_link(mentor.user, ACTIVATE_MENTOR, timedelta(days=ACTIVATION_DAYS))
+    send_email(
+        mentor.user.email,
+        "mentor_activation",
+        link=f"/activate/{token}",
+        name=mentor.name,
+        verified_by=display_name(mentor.verified_by) or "IIC",
+        days=ACTIVATION_DAYS,
+    )
+
+
+def activation_link(token: str) -> EmailVerification:
+    """A usable activation link: 404 if unknown or replaced, 410 if used or expired."""
+    link = _find_link(token, ACTIVATE_MENTOR)
+    if link is None or link.user.mentor_profile is None:
+        abort(404, message=LINK_INVALID)
+    if link.used_at is not None:
+        abort(410, message=ACTIVATION_USED)
+    if as_utc(link.expires_at) <= utcnow():
+        abort(410, message=LINK_EXPIRED)
+    return link
+
+
+def activate_mentor(token: str, password: str) -> User:
+    """Set the mentor's password and make their account active. They are logged in afterwards."""
+    link = activation_link(token)
+    now = utcnow()
+    user = link.user
+    link.used_at = now
+    user.password_hash = generate_password_hash(password)
+    user.email_verified_at = user.email_verified_at or now
+    user.mentor_profile.verification_status = MENTOR_ACTIVE
+
+    audit.record(
+        "activate_mentor", "mentor", user.mentor_profile.id, actor=user, details="Mentor activated their account."
+    )
+    db.session.commit()
+    return user
+
+
+def _send_verification_link(user: User, *, name: str) -> None:
+    """Replace the user's unused sign-up links with a new one, emailed after the commit."""
+    token = _new_link(user, VERIFY_EMAIL, timedelta(hours=VERIFICATION_HOURS))
+    send_email(user.email, "email_verification", link=f"/verify-email/{token}", name=name, hours=VERIFICATION_HOURS)
+
+
+def _new_link(user: User, purpose: str, valid_for: timedelta) -> str:
+    """Add a link for one purpose and drop the user's unused links for it. Returns the token for the email.
+
+    Only a hash of the token is stored, so a copy of the database cannot be used to open the links.
     """
-    user.email_verifications = [link for link in user.email_verifications if link.used_at is not None]
+    user.email_verifications = [
+        link for link in user.email_verifications if link.used_at is not None or link.purpose != purpose
+    ]
     token = secrets.token_urlsafe(32)
     user.email_verifications.append(
-        EmailVerification(token_hash=_hash_token(token), expires_at=utcnow() + timedelta(hours=VERIFICATION_HOURS))
+        EmailVerification(purpose=purpose, token_hash=_hash_token(token), expires_at=utcnow() + valid_for)
     )
-    send_email(user.email, "email_verification", link=f"/verify-email/{token}", name=name, hours=VERIFICATION_HOURS)
+    return token
+
+
+def _find_link(token: str, purpose: str) -> EmailVerification | None:
+    return db.session.query(EmailVerification).filter_by(token_hash=_hash_token(token), purpose=purpose).one_or_none()
 
 
 def _hash_token(token: str) -> str:
