@@ -124,6 +124,16 @@ pending_verification --IIC verifies--> verified --mentor uses the link--> active
 
 Only mentors who are active, have activated their account and have said they are available can be recommended or assigned. Recommendations (US-04) and assignment (US-16) must start from `mentors.services.assignable_mentors()`. Sign-up and activation links share the `email_verification` table, with a `purpose` that keeps one from working as the other. `flask seed-data` adds Kavya Iyer (`kavya.iyer@example.com`) as a pending mentor, to try verification and activation.
 
+### Recommended mentors (US-04)
+
+IIC sees up to four mentors for each problem that is still waiting for one: `GET /api/matching/problems/<id>/recommendations`. The rule is fixed, with no machine learning:
+
+1. **Who is considered:** only mentors from `assignable_mentors()` (active, activated and available) who are below their capacity. A mentor's load counts their pending and active mentorships.
+2. **Who is recommended:** mentors who share at least one topic tag with the problem.
+3. **The order:** most shared tags, then fewest mentees, then the lowest mentor ID.
+
+Each mentor comes back with `shared_tags`, their availability, and their `load` against `capacity`. When nobody shares a tag, the list is empty. `GET /api/matching/problems/<id>/eligible-mentors` lists every mentor who could take the problem, in the same order, so IIC can look further. Both endpoints are IIC only, and they return 409 for a problem that is assigned, closed or withdrawn. Recommendations are worked out on each request; the `recommendation` table from the Milestone 2 design isn't used.
+
 ### Protecting endpoints
 
 Protect an endpoint with `@blp.auth(...)`. It refuses the request and also documents the rule in the YAML:
