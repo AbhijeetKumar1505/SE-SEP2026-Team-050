@@ -36,7 +36,7 @@ Milestones 1 and 2 are submitted. Milestone 3 (Sprint 1) is in progress.
 |---|---|---|---|---|
 | 1 | Identify user requirements | 25 Oct 2026 | Submitted | [docs/milestone-1](docs/milestone-1/README.md) |
 | 2 | Scheduling and design (submitted with `team-050-milestone-1-2.zip`) | 07 Nov 2026 | Submitted | [docs/milestone-2](docs/milestone-2/README.md) |
-| 3 | Sprint 1: API endpoints, test cases, user testing | 22 Nov 2026 | In progress | |
+| 3 | Sprint 1: API endpoints, test cases, user testing | 25 Nov 2026 (extended from 22 Nov) | In progress | |
 | 4 | Sprint 2: API endpoints, test cases, user testing | 06 Dec 2026 | Not started | |
 | 5 | Final report and working prototype (submitted with `team-050-milestone-3-5.zip`) | 20 Dec 2026 | Not started | |
 

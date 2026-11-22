@@ -144,6 +144,15 @@ components:
       - email
       - id
       type: object
+    Assign:
+      additionalProperties: false
+      properties:
+        mentor_id:
+          example: 4
+          type: integer
+      required:
+      - mentor_id
+      type: object
     Assignment:
       additionalProperties: false
       properties:
@@ -416,6 +425,19 @@ components:
       - case_type
       - details
       - mentorship_id
+      type: object
+    CloseProblem:
+      additionalProperties: false
+      properties:
+        reason:
+          description: Told to the student
+          example: This is outside what the programme covers.
+          maxLength: 1000
+          minLength: 1
+          pattern: \S
+          type: string
+      required:
+      - reason
       type: object
     Dashboard:
       additionalProperties: false
@@ -1265,6 +1287,76 @@ components:
       - tags
       - title
       type: object
+    ProblemReview:
+      additionalProperties: false
+      properties:
+        assigned_at:
+          format: date-time
+          nullable: true
+          type: string
+        assigned_by:
+          description: The IIC coordinator who assigned them
+          nullable: true
+          type: string
+        close_reason:
+          description: Why IIC closed it, once closed
+          nullable: true
+          type: string
+        closed_at:
+          format: date-time
+          nullable: true
+          type: string
+        description:
+          type: string
+        desired_outcome:
+          nullable: true
+          type: string
+        guidance_preferences:
+          nullable: true
+          type: string
+        id:
+          example: 3
+          type: integer
+        mentor:
+          description: The assigned mentor's name, if any
+          nullable: true
+          type: string
+        reassign_reason:
+          description: Why it needs a new mentor
+          nullable: true
+          type: string
+        respond_by:
+          description: When the mentor's time to accept ends, while they have not
+            answered
+          format: date-time
+          nullable: true
+          type: string
+        status:
+          description: submitted, under_review, awaiting_mentor, reassignment_needed,
+            closed, ...
+          type: string
+        student:
+          $ref: '#/components/schemas/ReviewStudent'
+        submitted_at:
+          format: date-time
+          type: string
+        tags:
+          example:
+          - Computer vision
+          items:
+            type: string
+          type: array
+        title:
+          type: string
+      required:
+      - description
+      - id
+      - status
+      - student
+      - submitted_at
+      - tags
+      - title
+      type: object
     ProblemWrite:
       additionalProperties: false
       properties:
@@ -1297,6 +1389,16 @@ components:
       - desired_outcome
       - tags
       type: object
+    Queue:
+      additionalProperties: false
+      properties:
+        problems:
+          items:
+            $ref: '#/components/schemas/ProblemReview'
+          type: array
+      required:
+      - problems
+      type: object
     RemoveReason:
       additionalProperties: false
       properties:
@@ -1309,6 +1411,38 @@ components:
           type: string
       required:
       - reason
+      type: object
+    ReviewStudent:
+      additionalProperties: false
+      properties:
+        career_interest:
+          nullable: true
+          type: string
+        cgpa:
+          description: Visible to IIC only
+          example: 8.75
+          nullable: true
+          type: number
+        courses:
+          description: Completed courses, comma separated
+          nullable: true
+          type: string
+        email:
+          type: string
+        level:
+          example: BS
+          nullable: true
+          type: string
+        name:
+          example: Rahul Sundaram
+          type: string
+        roll:
+          example: 21F1000001
+          type: string
+      required:
+      - email
+      - name
+      - roll
       type: object
     Roster:
       additionalProperties: false
@@ -1862,7 +1996,14 @@ info:
 
     Every endpoint lists the user stories it implements in `x-user-stories`, and every
     error uses the shared `Error` schema. Endpoints that need a login take a bearer
-    token in the `Authorization` header.'
+    token in the `Authorization` header.
+
+
+    **External and GenAI APIs.** The API calls no external or GenAI service yet. Emails
+    (verification and activation links, notices) are sent over SMTP with Flask-Mail
+    to the provider chosen with hosting; in development they go to Mailpit or the
+    log. The AI features (problem coach, mentor-fit notes, mentorship summary) come
+    in Sprint 2.'
   title: IITM BS Mentoring API
   version: 0.1.0
 openapi: 3.0.3
@@ -3185,6 +3326,10 @@ paths:
       - US-09
   /api/notifications/read-all:
     post:
+      description: 'Marks every unread notice of the logged-in user as read, for the
+        bell''s "Mark all as read".
+
+        Other users'' notices are never touched.'
       responses:
         '204':
           description: No Content
@@ -3308,7 +3453,72 @@ paths:
       - student
       x-user-stories:
       - US-03
+  /api/problems/queue:
+    get:
+      description: 'Problems waiting for IIC: *Reassignment needed* first, then the
+        oldest first. Each comes with
+
+        the student''s profile and, while a mentor is being asked, who was asked and
+        by when they must
+
+        answer.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Queue'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: List IIC's problem queue
+      tags:
+      - problems
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-16
   /api/problems/{problem_id}:
+    get:
+      description: 'The problem, its topic tags and guidance preferences, and the
+        student''s profile. Opening a
+
+        *Submitted* problem moves it to *Under review*, which the student sees. Recommended
+        mentors come
+
+        from `GET /api/matching/problems/{id}/recommendations`.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemReview'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Open a problem for review
+      tags:
+      - problems
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-16
+      - US-05
+      - US-20
     parameters:
     - in: path
       name: problem_id
@@ -3355,6 +3565,114 @@ paths:
       - student
       x-user-stories:
       - US-03
+  /api/problems/{problem_id}/assign:
+    parameters:
+    - in: path
+      name: problem_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'Creates a pending mentorship and asks the mentor to accept within
+        the response window (72 hours
+
+        by default). The problem moves to *Awaiting mentor*, the mentor''s load rises
+        by one, and both the
+
+        mentor and the student are notified.
+
+
+        409 when the problem is not waiting for a mentor, the student already has
+        a mentor or a pending
+
+        assignment, the mentor is not active or not available, or the mentor is at
+        capacity. A mentor at
+
+        capacity can be assigned once they agree to take an extra student (US-10).'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Assign'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemReview'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Assign a mentor
+      tags:
+      - problems
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-16
+      - US-09
+  /api/problems/{problem_id}/close:
+    parameters:
+    - in: path
+      name: problem_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'For example when it is outside what the programme covers. The
+        reason is required, kept in the
+
+        audit log and sent to the student. 409 unless the problem is waiting for a
+        mentor.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseProblem'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemReview'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Close a problem without a mentor
+      tags:
+      - problems
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-16
   /api/problems/{problem_id}/withdraw:
     parameters:
     - in: path

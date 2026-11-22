@@ -1,8 +1,16 @@
 from ..auth.access import get_current_user
 from ..openapi import ApiBlueprint
 from ..students.services import get_student
-from . import services
-from .schemas import ProblemSchema, ProblemWriteSchema, SubmitStatusSchema
+from . import queue, services
+from .schemas import (
+    AssignSchema,
+    CloseProblemSchema,
+    ProblemReviewSchema,
+    ProblemSchema,
+    ProblemWriteSchema,
+    QueueSchema,
+    SubmitStatusSchema,
+)
 
 blp = ApiBlueprint(
     "problems",
@@ -10,6 +18,73 @@ blp = ApiBlueprint(
     url_prefix="/api/problems",
     description=("C5 Problem intake: Students' problems, their status and IIC's queue (US-03, US-05, US-16, US-20)."),
 )
+
+
+# IIC's queue, review, assignment and closure (US-16)
+
+
+@blp.route("/queue")
+@blp.stories("US-16")
+@blp.auth("iic")
+@blp.response(200, QueueSchema)
+def get_queue():
+    """List IIC's problem queue
+
+    Problems waiting for IIC: *Reassignment needed* first, then the oldest first. Each comes with
+    the student's profile and, while a mentor is being asked, who was asked and by when they must
+    answer.
+    """
+    return {"problems": [queue.serialize(problem) for problem in queue.queue()]}
+
+
+@blp.route("/<int:problem_id>")
+@blp.stories("US-16", "US-05", "US-20")
+@blp.auth("iic")
+@blp.errors(404)
+@blp.response(200, ProblemReviewSchema)
+def review_problem(problem_id):
+    """Open a problem for review
+
+    The problem, its topic tags and guidance preferences, and the student's profile. Opening a
+    *Submitted* problem moves it to *Under review*, which the student sees. Recommended mentors come
+    from `GET /api/matching/problems/{id}/recommendations`.
+    """
+    return queue.serialize(queue.open_for_review(problem_id, actor=get_current_user()))
+
+
+@blp.route("/<int:problem_id>/assign", methods=["POST"])
+@blp.stories("US-16", "US-09")
+@blp.auth("iic")
+@blp.errors(404, 409)
+@blp.arguments(AssignSchema)
+@blp.response(200, ProblemReviewSchema)
+def assign_mentor(values, problem_id):
+    """Assign a mentor
+
+    Creates a pending mentorship and asks the mentor to accept within the response window (72 hours
+    by default). The problem moves to *Awaiting mentor*, the mentor's load rises by one, and both the
+    mentor and the student are notified.
+
+    409 when the problem is not waiting for a mentor, the student already has a mentor or a pending
+    assignment, the mentor is not active or not available, or the mentor is at capacity. A mentor at
+    capacity can be assigned once they agree to take an extra student (US-10).
+    """
+    return queue.serialize(queue.assign_mentor(problem_id, values["mentor_id"], actor=get_current_user()))
+
+
+@blp.route("/<int:problem_id>/close", methods=["POST"])
+@blp.stories("US-16")
+@blp.auth("iic")
+@blp.errors(404, 409)
+@blp.arguments(CloseProblemSchema)
+@blp.response(200, ProblemReviewSchema)
+def close_problem(values, problem_id):
+    """Close a problem without a mentor
+
+    For example when it is outside what the programme covers. The reason is required, kept in the
+    audit log and sent to the student. 409 unless the problem is waiting for a mentor.
+    """
+    return queue.serialize(queue.close_problem(problem_id, values["reason"], actor=get_current_user()))
 
 
 @blp.route("/me/status")

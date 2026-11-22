@@ -40,6 +40,17 @@ TEMPLATES: dict[str, Template] = {
         subject="New student problem assigned to you",
         body="Hello {mentor_name}, a student has been assigned to you. Please review and respond within 72 hours.",
     ),
+    "mentor_requested": Template(
+        subject="IIC has asked a mentor to take your request",
+        body=(
+            'Hello {student_name}, IIC has reviewed your request "{title}" and asked a mentor to take it. '
+            "You will hear from us as soon as they accept."
+        ),
+    ),
+    "problem_closed": Template(
+        subject="Your mentoring request has been closed",
+        body='Hello {student_name}, IIC has closed your request "{title}". Reason: {reason}',
+    ),
     "acceptance_notice": Template(
         subject="Your mentor has accepted your request",
         body="Hello {student_name}, {mentor_name} has accepted your request. Here are their preferred contact details.",
