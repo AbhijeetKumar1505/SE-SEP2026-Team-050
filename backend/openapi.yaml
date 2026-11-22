@@ -230,6 +230,105 @@ components:
       - entity_type
       - id
       type: object
+    CandidateMentor:
+      additionalProperties: false
+      properties:
+        availability:
+          example: &id001
+          - Saturday 10:00-12:00
+          items:
+            type: string
+          type: array
+        available:
+          type: boolean
+        capacity:
+          example: 1
+          type: integer
+        capacity_requested:
+          description: IIC has asked for one more student
+          type: boolean
+        channel:
+          example: Google Meet
+          nullable: true
+          type: string
+        contact:
+          nullable: true
+          type: string
+        email:
+          example: rahul.menon@example.com
+          type: string
+        experience:
+          example: &id002
+          - Internship at TCS (3 months)
+          items:
+            type: string
+          type: array
+        expertise:
+          example: &id003
+          - SQL and database design
+          items:
+            type: string
+          type: array
+        headline:
+          example: Data scientist at Flipkart
+          nullable: true
+          type: string
+        id:
+          example: 4
+          type: integer
+        load:
+          description: Pending and active mentorships
+          example: 1
+          type: integer
+        name:
+          example: Rahul Menon
+          type: string
+        shared_tags:
+          description: The problem's topic tags this mentor has
+          example:
+          - Computer vision
+          items:
+            type: string
+          type: array
+        shared_tags_count:
+          example: 1
+          type: integer
+        status:
+          description: pending_verification, verified (not activated yet), active
+            or removed
+          enum:
+          - pending_verification
+          - verified
+          - active
+          - removed
+          type: string
+        timezone:
+          example: Asia/Kolkata
+          nullable: true
+          type: string
+        verified_at:
+          format: date-time
+          nullable: true
+          type: string
+        verified_by:
+          description: The IIC coordinator who verified them
+          nullable: true
+          type: string
+      required:
+      - availability
+      - available
+      - capacity
+      - capacity_requested
+      - email
+      - experience
+      - expertise
+      - id
+      - load
+      - name
+      - shared_tags
+      - shared_tags_count
+      - status
+      type: object
     CapacityRequestAnswer:
       additionalProperties: false
       properties:
@@ -1038,8 +1137,7 @@ components:
       additionalProperties: false
       properties:
         availability:
-          example:
-          - Saturday 10:00-12:00
+          example: *id001
           items:
             type: string
           type: array
@@ -1062,14 +1160,12 @@ components:
           example: rahul.menon@example.com
           type: string
         experience:
-          example:
-          - Internship at TCS (3 months)
+          example: *id002
           items:
             type: string
           type: array
         expertise:
-          example:
-          - SQL and database design
+          example: *id003
           items:
             type: string
           type: array
@@ -2149,6 +2245,105 @@ paths:
       summary: Report that the API is running
       tags:
       - system
+  /api/matching/problems/{problem_id}/eligible-mentors:
+    get:
+      description: 'All verified, activated and available mentors below their capacity,
+        ranked like the
+
+        recommendations, including those who share no tag with the problem. For when
+        IIC wants to look
+
+        beyond the recommendations.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CandidateMentor'
+                type: array
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: List every mentor who could take the problem
+      tags:
+      - matching
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-04
+      - US-16
+    parameters:
+    - in: path
+      name: problem_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+  /api/matching/problems/{problem_id}/recommendations:
+    get:
+      description: 'Up to 4 mentors who share at least one topic tag with the problem,
+        best match first: most shared
+
+        tags, then fewest active mentees, then the lowest mentor ID. Only mentors
+        who could take the
+
+        student now are included: verified and activated, available, and below their
+        capacity.
+
+
+        Each mentor shows the shared tags, their availability and their load against
+        capacity. When no
+
+        eligible mentor shares a tag, the list is empty: browse the eligible mentors
+        instead. 409 if the
+
+        problem is no longer waiting for a mentor.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CandidateMentor'
+                type: array
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Recommend mentors for a problem
+      tags:
+      - matching
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-04
+    parameters:
+    - in: path
+      name: problem_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
   /api/mentors:
     get:
       description: 'Every mentor IIC has added, by name, with their status (`pending_verification`,
