@@ -100,6 +100,36 @@ components:
       description: One or more fields are invalid. `errors` names each field and what
         is wrong with it.
   schemas:
+    Activate:
+      additionalProperties: false
+      properties:
+        password:
+          description: At least 8 characters
+          example: a-strong-password
+          maxLength: 128
+          minLength: 8
+          type: string
+          writeOnly: true
+      required:
+      - password
+      type: object
+    ActivationInfo:
+      additionalProperties: false
+      properties:
+        name:
+          example: Rahul Menon
+          type: string
+        valid:
+          example: true
+          type: boolean
+        verified_by:
+          description: Who in IIC verified the mentor
+          type: string
+      required:
+      - name
+      - valid
+      - verified_by
+      type: object
     Actor:
       additionalProperties: false
       properties:
@@ -540,6 +570,78 @@ components:
       - email
       - password
       type: object
+    MentorAdd:
+      additionalProperties: false
+      properties:
+        email:
+          example: rahul.menon@example.com
+          format: email
+          maxLength: 254
+          type: string
+        headline:
+          default: null
+          example: Data scientist
+          maxLength: 200
+          nullable: true
+          type: string
+        name:
+          example: Rahul Menon
+          maxLength: 128
+          minLength: 1
+          type: string
+      required:
+      - email
+      - name
+      type: object
+    MentorImport:
+      additionalProperties: false
+      properties:
+        file:
+          example: mentors.csv
+          maxLength: 255
+          minLength: 1
+          type: string
+        rows:
+          description: The CSV's rows after the header, in order; at most 2000
+          items:
+            $ref: '#/components/schemas/MentorRow'
+          maxItems: 2000
+          minItems: 1
+          type: array
+      required:
+      - file
+      - rows
+      type: object
+    MentorImportResult:
+      additionalProperties: false
+      properties:
+        added:
+          example: 12
+          type: integer
+        errors:
+          items:
+            $ref: '#/components/schemas/RowError'
+          type: array
+        file:
+          example: mentors.csv
+          type: string
+        imported_at:
+          format: date-time
+          type: string
+        imported_by:
+          example: deepa.iic@ds.study.iitm.ac.in
+          type: string
+        updated:
+          example: 1
+          type: integer
+      required:
+      - added
+      - errors
+      - file
+      - imported_at
+      - imported_by
+      - updated
+      type: object
     MentorProfile:
       additionalProperties: false
       properties:
@@ -618,6 +720,31 @@ components:
         timezone:
           example: Asia/Kolkata
           maxLength: 64
+          type: string
+      type: object
+    MentorRow:
+      properties:
+        email:
+          default: ''
+          example: rahul.menon@example.com
+          nullable: true
+          type: string
+        experience:
+          default: ''
+          description: Entries separated by semicolons
+          example: Internship at TCS (3 months)
+          nullable: true
+          type: string
+        expertise_tags:
+          default: ''
+          description: Topic tag names separated by semicolons
+          example: SQL and database design
+          nullable: true
+          type: string
+        name:
+          default: ''
+          example: Rahul Menon
+          nullable: true
           type: string
       type: object
     MentorSummary:
@@ -906,6 +1033,93 @@ components:
         total_pages:
           description: Total number of pages.
           type: integer
+      type: object
+    PoolMentor:
+      additionalProperties: false
+      properties:
+        availability:
+          example:
+          - Saturday 10:00-12:00
+          items:
+            type: string
+          type: array
+        available:
+          type: boolean
+        capacity:
+          example: 1
+          type: integer
+        capacity_requested:
+          description: IIC has asked for one more student
+          type: boolean
+        channel:
+          example: Google Meet
+          nullable: true
+          type: string
+        contact:
+          nullable: true
+          type: string
+        email:
+          example: rahul.menon@example.com
+          type: string
+        experience:
+          example:
+          - Internship at TCS (3 months)
+          items:
+            type: string
+          type: array
+        expertise:
+          example:
+          - SQL and database design
+          items:
+            type: string
+          type: array
+        headline:
+          example: Data scientist at Flipkart
+          nullable: true
+          type: string
+        id:
+          example: 4
+          type: integer
+        load:
+          description: Pending and active mentorships
+          example: 1
+          type: integer
+        name:
+          example: Rahul Menon
+          type: string
+        status:
+          description: pending_verification, verified (not activated yet), active
+            or removed
+          enum:
+          - pending_verification
+          - verified
+          - active
+          - removed
+          type: string
+        timezone:
+          example: Asia/Kolkata
+          nullable: true
+          type: string
+        verified_at:
+          format: date-time
+          nullable: true
+          type: string
+        verified_by:
+          description: The IIC coordinator who verified them
+          nullable: true
+          type: string
+      required:
+      - availability
+      - available
+      - capacity
+      - capacity_requested
+      - email
+      - experience
+      - expertise
+      - id
+      - load
+      - name
+      - status
       type: object
     Problem:
       additionalProperties: false
@@ -1519,6 +1733,23 @@ components:
       required:
       - token
       type: object
+    VerifyMentor:
+      additionalProperties: false
+      properties:
+        expertise:
+          description: 'The mentor''s expertise: one to ten topic tag names'
+          example:
+          - Data engineering
+          items:
+            maxLength: 100
+            minLength: 1
+            type: string
+          maxItems: 10
+          minItems: 1
+          type: array
+      required:
+      - expertise
+      type: object
   securitySchemes:
     bearerAuth:
       bearerFormat: JWT
@@ -1918,6 +2149,143 @@ paths:
       summary: Report that the API is running
       tags:
       - system
+  /api/mentors:
+    get:
+      description: 'Every mentor IIC has added, by name, with their status (`pending_verification`,
+        `verified`
+
+        while they have not activated yet, `active` or `removed`), expertise, availability
+        and load.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PoolMentor'
+                type: array
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: List the mentor pool
+      tags:
+      - mentors
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-14
+    post:
+      description: 'The mentor starts as *Pending verification*: they cannot log in,
+        be recommended or be
+
+        assigned until IIC verifies them and they activate their account. 409 if the
+        email already
+
+        has an account.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentorAdd'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PoolMentor'
+          description: Created
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Add one mentor
+      tags:
+      - mentors
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-14
+  /api/mentors/activation/{token}:
+    get:
+      description: 'No login needed: the mentor opens the link from their email. Returns
+        their name and who in IIC
+
+        verified them. 404 for an unknown or replaced link; 410 for a link that is
+        used or older than
+
+        7 days.'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivationInfo'
+          description: OK
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '410':
+          $ref: '#/components/responses/GONE'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      summary: Check an activation link
+      tags:
+      - mentors
+      x-user-stories:
+      - US-14
+    parameters:
+    - in: path
+      name: token
+      required: true
+      schema:
+        minLength: 1
+        type: string
+    post:
+      description: 'Sets the mentor''s password and makes their account active, then
+        logs them in (the same response
+
+        as login). Next they set their availability (US-10); only then can they be
+        recommended.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Activate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+          description: OK
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '410':
+          $ref: '#/components/responses/GONE'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      summary: Activate a mentor account
+      tags:
+      - mentors
+      x-user-stories:
+      - US-14
   /api/mentors/capacity-requests/{request_id}/answer:
     parameters:
     - in: path
@@ -1965,6 +2333,57 @@ paths:
       - mentor
       x-user-stories:
       - US-18
+  /api/mentors/import:
+    post:
+      description: 'The CSV template has four columns: `name`, `email`, `expertise
+        tags` and `experience`; the last
+
+        two list several values separated by semicolons. The web app reads the file
+        and sends its rows
+
+        here as `name`, `email`, `expertise_tags` and `experience`.
+
+
+        Valid rows become mentors in *Pending verification*. A mentor whose email
+        is already in the pool
+
+        is updated, not duplicated. Each row is saved whole or not at all: refused
+        rows are returned in
+
+        `errors` with their CSV row number (the header is row 1) and the reason, for
+        example a missing
+
+        name, an invalid email or an unknown topic tag.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentorImport'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorImportResult'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Import mentors from a CSV file
+      tags:
+      - mentors
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-14
   /api/mentors/me:
     get:
       description: 'Availability, contact details, capacity and expertise. Capacity
@@ -2181,6 +2600,93 @@ paths:
       x-user-stories:
       - US-05
       - US-09
+  /api/mentors/{mentor_id}/resend-activation:
+    parameters:
+    - in: path
+      name: mentor_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: For a verified mentor who has not activated their account yet.
+        Older links stop working.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PoolMentor'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Send a new activation link
+      tags:
+      - mentors
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-14
+  /api/mentors/{mentor_id}/verify:
+    parameters:
+    - in: path
+      name: mentor_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'For a mentor in *Pending verification*: sets their expertise tags,
+        records who verified them
+
+        and when, and emails them an activation link that works for 7 days. 409 if
+        the mentor is not
+
+        pending verification; 422 for an unknown tag.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyMentor'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PoolMentor'
+          description: OK
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Verify a mentor
+      tags:
+      - mentors
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-14
   /api/mentorships/me:
     get:
       description: 'The student''s active mentorship, with the mentor''s contact details,
