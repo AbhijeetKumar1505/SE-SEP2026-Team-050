@@ -51,5 +51,9 @@ def mark_read(notification_id):
 @blp.auth()
 @blp.response(204)
 def mark_all_read():
-    """Mark all my notices as read"""
+    """Mark all my notices as read
+
+    Marks every unread notice of the logged-in user as read, for the bell's "Mark all as read".
+    Other users' notices are never touched.
+    """
     services.mark_all_read(get_current_user())

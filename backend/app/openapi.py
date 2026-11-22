@@ -58,7 +58,11 @@ SPEC_OPTIONS = {
             "project, September 2026, Team 050).\n\n"
             "Every endpoint lists the user stories it implements in `x-user-stories`, and every error uses "
             "the shared `Error` schema. Endpoints that need a login take a bearer token in the "
-            "`Authorization` header."
+            "`Authorization` header.\n\n"
+            "**External and GenAI APIs.** The API calls no external or GenAI service yet. Emails "
+            "(verification and activation links, notices) are sent over SMTP with Flask-Mail to the "
+            "provider chosen with hosting; in development they go to Mailpit or the log. The AI features "
+            "(problem coach, mentor-fit notes, mentorship summary) come in Sprint 2."
         ),
         "contact": {"name": "Team 050, IITM BS Software Engineering"},
     },

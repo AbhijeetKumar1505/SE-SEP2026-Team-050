@@ -134,6 +134,19 @@ IIC sees up to four mentors for each problem that is still waiting for one: `GET
 
 Each mentor comes back with `shared_tags`, their availability, and their `load` against `capacity`. When nobody shares a tag, the list is empty. `GET /api/matching/problems/<id>/eligible-mentors` lists every mentor who could take the problem, in the same order, so IIC can look further. Both endpoints are IIC only, and they return 409 for a problem that is assigned, closed or withdrawn. Recommendations are worked out on each request; the `recommendation` table from the Milestone 2 design isn't used.
 
+### IIC's problem queue and assignment (US-16)
+
+All IIC only:
+
+| Endpoint | What it does |
+|---|---|
+| `GET /api/problems/queue` | Problems waiting for IIC: *Reassignment needed* first, then the oldest first |
+| `GET /api/problems/<id>` | The problem with the student's profile. Opening a *Submitted* problem moves it to *Under review* |
+| `POST /api/problems/<id>/assign` | Takes `{mentor_id}` and creates a pending mentorship. The problem moves to *Awaiting mentor*, the mentor has the response window (72 hours by default) to accept, and both sides are notified |
+| `POST /api/problems/<id>/close` | Takes `{reason}` and closes a problem without a mentor. The reason is required and sent to the student |
+
+Assigning returns 409 in these cases: the problem isn't waiting for a mentor; the student already has a mentor or a pending assignment; the mentor isn't in `assignable_mentors()`; or the mentor is at capacity. Each mentorship records who assigned it (`assigned_by_user_id`).
+
 ### Protecting endpoints
 
 Protect an endpoint with `@blp.auth(...)`. It refuses the request and also documents the rule in the YAML:

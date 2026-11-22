@@ -72,7 +72,7 @@ def get_dashboard(mentor: Mentor) -> dict:
     if open_request is not None:
         capacity_request = {
             "id": open_request.id,
-            "by": open_request.by_user.name,
+            "by": display_name(open_request.by_user),
             "from": open_request.mentor.capacity,
             "to": open_request.mentor.capacity + 1,
         }
@@ -97,7 +97,7 @@ def serialize_assignment(mentorship) -> dict:
     deadline = assigned_at + timedelta(hours=timing_hours("assignment_response", 72))
     return {
         "id": mentorship.id,
-        "assigned_by": mentorship.problem.student.user.email.split("@")[0],
+        "assigned_by": display_name(mentorship.assigned_by) or "IIC",
         "assigned_at": assigned_at,
         "tags": [tag.name for tag in problem.tags],
         "problem": problem.description,
