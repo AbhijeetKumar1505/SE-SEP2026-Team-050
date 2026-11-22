@@ -56,6 +56,9 @@ class Config:
     MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER", "IITM BS Mentoring <no-reply@localhost>")
     # Emails are only printed to the log until a provider is configured (decided with hosting).
     MAIL_SUPPRESS_SEND = os.environ.get("MAIL_SUPPRESS_SEND", "true").lower() == "true"
+    # Flask-Mail would otherwise follow DEBUG and print every SMTP exchange, email body and links
+    # included, to the log. Mailpit shows the emails; set MAIL_DEBUG=true to see the exchange.
+    MAIL_DEBUG = os.environ.get("MAIL_DEBUG", "false").lower() == "true"
 
     LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 
