@@ -3,6 +3,11 @@
 from ..extensions import db
 from ..models import utcnow
 
+# A mentor's status (US-14). IIC adds a mentor as pending, verifies them (an activation link is
+# emailed), and the mentor activates their account. Only active mentors can be recommended or assigned.
+PENDING, VERIFIED, ACTIVE, REMOVED = "pending_verification", "verified", "active", "removed"
+MENTOR_STATUSES = (PENDING, VERIFIED, ACTIVE, REMOVED)
+
 mentor_tag = db.Table(
     "mentor_tag",
     db.Column("mentor_id", db.Integer, db.ForeignKey("mentor.id", ondelete="CASCADE"), primary_key=True),
@@ -18,14 +23,15 @@ class Mentor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, unique=True)
     name = db.Column(db.String(128), nullable=False)
+    headline = db.Column(db.String(200))  # e.g. "Data scientist at Flipkart", shown in IIC's mentor pool
+    experience = db.Column(db.JSON)  # entries from IIC's import, e.g. ["Internship at TCS (3 months)"]
     biography = db.Column(db.Text)
     organisation = db.Column(db.String(128))
     mentoring_style = db.Column(db.Text)
     preferred_channel = db.Column(db.String(64), default="Google Meet")
     time_zone = db.Column(db.String(64), default="Asia/Kolkata")
     contact = db.Column(db.String(254))  # email or phone for students to reach the mentor
-    # pending, verified, active, removed
-    verification_status = db.Column(db.String(32), nullable=False, default="pending")
+    verification_status = db.Column(db.String(32), nullable=False, default=PENDING)  # one of MENTOR_STATUSES
     verified_at = db.Column(db.DateTime(timezone=True))
     verified_by_user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     capacity = db.Column(db.Integer, nullable=False, default=1)

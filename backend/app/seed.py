@@ -21,6 +21,7 @@ from .auth.models import IIC, LEADERSHIP, MENTOR, STUDENT, User
 from .extensions import db
 from .feedback.models import Feedback
 from .matching.models import Recommendation
+from .mentors.models import PENDING as PENDING_VERIFICATION
 from .mentors.models import Availability, Mentor
 from .mentorships.models import Mentorship
 from .notifications.services import ensure_templates
@@ -243,6 +244,21 @@ def seed_database() -> dict[str, int]:
                     )
                 )
         mentor_records.append(mentor)
+
+    # 4b. A mentor IIC has added but not verified yet, to try verification and activation (US-14)
+    if not User.query.filter_by(email="kavya.iyer@example.com").first():
+        pending_user = User(email="kavya.iyer@example.com", roles=auth_services.get_roles([MENTOR]))
+        db.session.add(
+            Mentor(
+                user=pending_user,
+                name="Kavya Iyer",
+                headline="Product manager at Zoho",
+                experience=["Product internship at Freshworks (6 months)"],
+                verification_status=PENDING_VERIFICATION,
+                available=False,
+            )
+        )
+        db.session.flush()
 
     # 5. Students
     students_spec = [

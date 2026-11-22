@@ -1,18 +1,23 @@
-"""C3 business rules for mentors: dashboard, assignments, capacity and profile (US-10, US-14, US-18)."""
+"""C3 business rules for mentors: the pool, dashboard, assignments, capacity and profile (US-10, US-14, US-18)."""
 
+import re
 from datetime import timedelta
 
 from flask_smorest import abort
+from sqlalchemy import func
 
 from ..audit import services as audit
+from ..auth.models import MENTOR, User
+from ..auth.services import display_name, get_roles, normalize_email, send_activation_link
 from ..extensions import db
 from ..mentorships.models import Mentorship
 from ..mentorships.services import checkpoint_due, load_steps
 from ..models import utcnow
 from ..notifications import services as notifications
 from ..sessions.services import serialize_session
+from ..settings.models import TopicTag
 from ..settings.services import timing_hours
-from .models import CapacityRequest, Mentor
+from .models import ACTIVE, PENDING, VERIFIED, CapacityRequest, Mentor
 
 PENDING_STATUSES = {"pending"}
 ACTIVE_STATUSES = {"active"}
@@ -285,3 +290,207 @@ def get_mentorship_detail(mentorship_id: int, mentor: Mentor) -> dict:
         },
         "sessions": [serialize_session(session) for session in mentorship.sessions],
     }
+
+
+# IIC's mentor pool (US-14): add or import mentors, verify them, and send their activation links.
+
+EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+MAX_TEXT = 200
+
+
+def assignable_mentors():
+    """Mentors who may be recommended or assigned: active, available, with a verified account (US-14).
+
+    Pending and verified-but-not-activated mentors never appear. Recommendations (US-04) and
+    assignment (US-16) must start from this query.
+    """
+    return (
+        db.session.query(Mentor)
+        .join(User, User.id == Mentor.user_id)
+        .filter(Mentor.verification_status == ACTIVE, Mentor.available.is_(True), User.email_verified_at.isnot(None))
+    )
+
+
+def mentor_pool() -> list[Mentor]:
+    return db.session.query(Mentor).order_by(Mentor.name, Mentor.id).all()
+
+
+def pool_loads() -> tuple[dict[int, int], set[int]]:
+    """Each mentor's load (pending and active mentorships) and who has an open capacity request."""
+    loads = dict(
+        db.session.query(Mentorship.mentor_id, func.count(Mentorship.id))
+        .filter(Mentorship.status.in_(PENDING_STATUSES | ACTIVE_STATUSES))
+        .group_by(Mentorship.mentor_id)
+        .all()
+    )
+    asked = {mentor_id for (mentor_id,) in db.session.query(CapacityRequest.mentor_id).filter_by(status="pending")}
+    return loads, asked
+
+
+def serialize_pool_mentor(mentor: Mentor, loads: dict[int, int], asked: set[int]) -> dict:
+    return {
+        "id": mentor.id,
+        "name": mentor.name,
+        "email": mentor.user.email,
+        "headline": mentor.headline,
+        "status": mentor.verification_status,
+        "available": mentor.available,
+        "capacity": mentor.capacity,
+        "load": loads.get(mentor.id, 0),
+        "expertise": sorted(tag.name for tag in mentor.tags),
+        "experience": mentor.experience or [],
+        "channel": mentor.preferred_channel,
+        "contact": mentor.contact,
+        "timezone": mentor.time_zone,
+        "availability": [f"{a.day_of_week} {a.start_time}-{a.end_time}" for a in mentor.availabilities],
+        "capacity_requested": mentor.id in asked,
+        "verified_by": display_name(mentor.verified_by),
+        "verified_at": mentor.verified_at,
+    }
+
+
+def serialize_one(mentor: Mentor) -> dict:
+    loads, asked = pool_loads()
+    return serialize_pool_mentor(mentor, loads, asked)
+
+
+def get_pool_mentor(mentor_id: int) -> Mentor:
+    mentor = db.session.get(Mentor, mentor_id)
+    if mentor is None:
+        abort(404, message=f"No mentor with ID {mentor_id}.")
+    return mentor
+
+
+def _split(text) -> list[str]:
+    """CSV cells list several values separated by semicolons: "SQL and database design; Data engineering"."""
+    return [part.strip() for part in (text or "").split(";") if part.strip()]
+
+
+def _tags_by_name() -> dict[str, TopicTag]:
+    return {tag.name.lower(): tag for tag in db.session.query(TopicTag).filter_by(retired=False)}
+
+
+def _pick_tags(names: list[str], tags: dict[str, TopicTag]) -> list[TopicTag]:
+    """The tags named, each once: names match whatever their capitalisation."""
+    return list({name.strip().lower(): tags[name.strip().lower()] for name in names}.values())
+
+
+def _new_mentor(name: str, email: str, *, headline=None) -> Mentor:
+    user = User(email=email, roles=get_roles([MENTOR]))  # no password until the mentor activates
+    mentor = Mentor(user=user, name=name, headline=headline, verification_status=PENDING, available=False)
+    db.session.add(mentor)
+    return mentor
+
+
+def add_mentor(name: str, email: str, headline: str | None, *, actor: User) -> Mentor:
+    """Add one mentor as pending verification. 409 if the email already has an account."""
+    email = normalize_email(email)
+    if db.session.query(User.id).filter_by(email=email).first() is not None:
+        abort(409, message="A mentor or another account with this email already exists.")
+    mentor = _new_mentor(" ".join(name.split()), email, headline=(headline or "").strip() or None)
+    db.session.flush()
+    audit.record("add_mentor", "mentor", mentor.id, actor=actor, details=f"Added {email}.")
+    db.session.commit()
+    return mentor
+
+
+def _mentor_row_problem(name, email, expertise, experience, unknown, user, seen) -> str | None:
+    if not name:
+        return "Name is missing."
+    if len(name) > 128:
+        return "Name is longer than 128 characters."
+    if not EMAIL.match(email) or len(email) > 254:
+        return "Email is not valid."
+    if email in seen:
+        return f"Email {email} is already in row {seen[email]} of this file."
+    if unknown:
+        return f"Unknown topic tag: {unknown[0]}."
+    if any(len(entry) > MAX_TEXT for entry in experience):
+        return f"An experience entry is longer than {MAX_TEXT} characters."
+    if user is not None and user.mentor_profile is None:
+        return f"Email {email} belongs to an account that is not a mentor."
+    return None
+
+
+def import_mentors(file_name: str, rows: list[dict], *, actor: User) -> dict:
+    """US-14: add mentors from CSV rows as pending verification, or update those already added.
+
+    A row is saved whole or not at all. A refused row is reported with its CSV row number (the
+    header is row 1) and the reason. An email already used by a student or staff account is refused.
+    """
+    tags = _tags_by_name()
+    emails = [normalize_email(row.get("email") or "") for row in rows]
+    users = {user.email: user for user in db.session.query(User).filter(User.email.in_(emails))}
+    seen: dict[str, int] = {}
+    added = updated = 0
+    errors = []
+
+    for row_number, (row, email) in enumerate(zip(rows, emails, strict=True), start=2):
+        name = " ".join((row.get("name") or "").split())
+        expertise = _split(row.get("expertise_tags"))
+        experience = _split(row.get("experience"))
+        unknown = [tag for tag in expertise if tag.lower() not in tags]
+        user = users.get(email)
+        reason = _mentor_row_problem(name, email, expertise, experience, unknown, user, seen)
+        if reason is not None:
+            errors.append({"row": row_number, "reason": reason})
+            continue
+
+        seen[email] = row_number
+        if user is None:
+            mentor = _new_mentor(name, email)
+            users[email] = mentor.user
+            added += 1
+        else:
+            mentor = user.mentor_profile
+            mentor.name = name
+            updated += 1
+        mentor.tags = _pick_tags(expertise, tags)
+        mentor.experience = experience
+
+    audit.record(
+        "import_mentors",
+        "mentor",
+        None,
+        actor=actor,
+        details=f"{file_name}: {added} added, {updated} updated, {len(errors)} rows refused.",
+    )
+    db.session.commit()
+    return {
+        "file": file_name,
+        "imported_by": actor.email,
+        "imported_at": utcnow(),
+        "added": added,
+        "updated": updated,
+        "errors": errors,
+    }
+
+
+def verify_mentor(mentor_id: int, expertise: list[str], *, actor: User) -> Mentor:
+    """IIC verifies a pending mentor: records who and when, sets their expertise, emails the activation link."""
+    mentor = get_pool_mentor(mentor_id)
+    if mentor.verification_status != PENDING:
+        abort(409, message=f"{mentor.name} is not pending verification.")
+    tags = _tags_by_name()
+    unknown = [tag for tag in expertise if tag.strip().lower() not in tags]
+    if unknown:
+        abort(422, message=f"Unknown topic tag: {unknown[0]}.")
+    mentor.tags = _pick_tags(expertise, tags)
+    mentor.verification_status = VERIFIED
+    mentor.verified_at = utcnow()
+    mentor.verified_by = actor
+    send_activation_link(mentor)
+    audit.record("verify_mentor", "mentor", mentor.id, actor=actor, details="Verified; activation link sent.")
+    db.session.commit()
+    return mentor
+
+
+def resend_activation(mentor_id: int, *, actor: User) -> Mentor:
+    """Send a verified mentor a new activation link. Their older links stop working."""
+    mentor = get_pool_mentor(mentor_id)
+    if mentor.verification_status != VERIFIED:
+        abort(409, message=f"{mentor.name} is not waiting to activate their account.")
+    send_activation_link(mentor)
+    audit.record("resend_activation", "mentor", mentor.id, actor=actor, details="Activation link sent again.")
+    db.session.commit()
+    return mentor
