@@ -62,6 +62,60 @@ def test_profile_update_validates_its_fields(student_client, sample_student):
     assert set(response.get_json()["errors"]["json"]) >= {"programme", "cgpa", "completed_courses", "career_interest"}
 
 
+def test_profile_update_boundary_cgpa(student_client, sample_student):
+    # Boundary: 0.0 and 10.0 are valid
+    res_0 = student_client.put(
+        ME,
+        json={"programme": "BS", "cgpa": 0.0, "completed_courses": "Intro CS", "career_interest": "Research"},
+    )
+    assert res_0.status_code == 200
+    assert res_0.get_json()["cgpa"] == 0.0
+
+    res_10 = student_client.put(
+        ME,
+        json={"programme": "BS", "cgpa": 10.0, "completed_courses": "Intro CS", "career_interest": "Research"},
+    )
+    assert res_10.status_code == 200
+    assert res_10.get_json()["cgpa"] == 10.0
+
+    # Negative CGPA is invalid
+    res_neg = student_client.put(
+        ME,
+        json={"programme": "BS", "cgpa": -0.5, "completed_courses": "Intro CS", "career_interest": "Research"},
+    )
+    assert res_neg.status_code == 422
+    assert "cgpa" in res_neg.get_json()["errors"]["json"]
+
+
+def test_a_student_cannot_change_their_name_or_roll_number(student_client, sample_student):
+    # Name and roll number come from IIC's roster (US-02): the update refuses them as unknown fields.
+    original = (sample_student.name, sample_student.student_number)
+    response = student_client.put(
+        ME,
+        json={
+            "programme": "BS",
+            "cgpa": 8.0,
+            "completed_courses": "Intro CS",
+            "career_interest": "Software",
+            "name": "Hacked Name",
+            "student_number": "99F9999999",
+        },
+    )
+    assert response.status_code == 422
+    assert set(response.get_json()["errors"]["json"]) == {"name", "student_number"}
+    db.session.refresh(sample_student)
+    assert (sample_student.name, sample_student.student_number) == original
+
+
+def test_profile_update_refuses_a_cgpa_above_10(student_client, sample_student):
+    response = student_client.put(
+        ME,
+        json={"programme": "BS", "cgpa": 10.01, "completed_courses": "Intro CS", "career_interest": "Research"},
+    )
+    assert response.status_code == 422
+    assert "cgpa" in response.get_json()["errors"]["json"]
+
+
 def test_a_mentor_has_no_student_profile(mentor_client):
     assert mentor_client.get(ME).status_code == 403
 

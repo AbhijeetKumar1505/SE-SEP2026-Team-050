@@ -2132,6 +2132,7 @@ paths:
       - mentor
       x-user-stories:
       - US-05
+      - US-09
   /api/mentors/mentorships/{mentorship_id}/decline:
     parameters:
     - in: path
@@ -2179,6 +2180,7 @@ paths:
       - mentor
       x-user-stories:
       - US-05
+      - US-09
   /api/mentorships/me:
     get:
       description: 'The student''s active mentorship, with the mentor''s contact details,

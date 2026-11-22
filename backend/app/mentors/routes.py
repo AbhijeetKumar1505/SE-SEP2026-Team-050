@@ -78,7 +78,7 @@ def answer_capacity_request(values, request_id):
 
 
 @blp.route("/mentorships/<int:mentorship_id>/accept", methods=["POST"])
-@blp.stories("US-05")
+@blp.stories("US-05", "US-09")
 @blp.auth("mentor")
 @blp.errors(403, 404, 409)
 @blp.response(200, MentorshipSummarySchema)
@@ -92,7 +92,7 @@ def accept_assignment(mentorship_id):
 
 
 @blp.route("/mentorships/<int:mentorship_id>/decline", methods=["POST"])
-@blp.stories("US-05")
+@blp.stories("US-05", "US-09")
 @blp.auth("mentor")
 @blp.errors(403, 404, 409, 422)
 @blp.arguments(DeclineAssignmentSchema)
