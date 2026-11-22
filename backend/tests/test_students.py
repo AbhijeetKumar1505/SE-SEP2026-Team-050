@@ -87,9 +87,9 @@ def test_profile_update_boundary_cgpa(student_client, sample_student):
     assert "cgpa" in res_neg.get_json()["errors"]["json"]
 
 
-def test_profile_update_ignores_immutable_fields(student_client, sample_student):
-    original_name = sample_student.name
-    original_number = sample_student.student_number
+def test_a_student_cannot_change_their_name_or_roll_number(student_client, sample_student):
+    # Name and roll number come from IIC's roster (US-02): the update refuses them as unknown fields.
+    original = (sample_student.name, sample_student.student_number)
     response = student_client.put(
         ME,
         json={
@@ -101,10 +101,19 @@ def test_profile_update_ignores_immutable_fields(student_client, sample_student)
             "student_number": "99F9999999",
         },
     )
-    assert response.status_code == 200
-    body = response.get_json()
-    assert body["name"] == original_name
-    assert body["student_number"] == original_number
+    assert response.status_code == 422
+    assert set(response.get_json()["errors"]["json"]) == {"name", "student_number"}
+    db.session.refresh(sample_student)
+    assert (sample_student.name, sample_student.student_number) == original
+
+
+def test_profile_update_refuses_a_cgpa_above_10(student_client, sample_student):
+    response = student_client.put(
+        ME,
+        json={"programme": "BS", "cgpa": 10.01, "completed_courses": "Intro CS", "career_interest": "Research"},
+    )
+    assert response.status_code == 422
+    assert "cgpa" in response.get_json()["errors"]["json"]
 
 
 def test_a_mentor_has_no_student_profile(mentor_client):
