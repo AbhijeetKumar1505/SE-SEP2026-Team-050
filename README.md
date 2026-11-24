@@ -18,7 +18,7 @@ Milestones 1 and 2 are submitted. Milestone 3 (Sprint 1) is in progress.
   - a pytest suite that CI runs on every pull request.
 
   The endpoints for each user story are built in Sprints 1 and 2.
-- **Frontend** ([frontend](frontend/README.md)): a React prototype with the pages for all four roles, including the three AI features. It runs on an in-memory mock for now. In Milestone 3, each function in `frontend/src/api/` is switched to call the API.
+- **Frontend** ([frontend](frontend/README.md)): a React app with the pages for all four roles. The student, mentor and IIC pages of Sprint 1 call the API. Sign-up, password reset and the Sprint 2 features (monitoring, cases, settings, insights and the AI features) still use an in-memory mock until their endpoints are built.
 
 ## Team
 
@@ -63,7 +63,7 @@ npm install
 npm run dev
 ```
 
-The app runs at http://localhost:5173. Login and the notification bell call the backend (Vite proxies `/api` to port 5000, so keep Flask running); the other pages still use the mock. Its README lists the demo accounts and how to reach every page.
+The app runs at http://localhost:5173. Most pages call the backend (Vite proxies `/api` to port 5000, so keep Flask running); the frontend README lists the ones that still use the mock. Its README lists the demo accounts and how to reach every page.
 
 **Running in WSL (optional, on Windows).** WSL runs the project on Linux, as CI does, and adds [Mailpit](https://mailpit.axllent.org) to catch the emails the backend sends. From the repository folder inside WSL:
 

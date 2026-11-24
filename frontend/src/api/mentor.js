@@ -6,6 +6,11 @@ import { ApiError, request, setToken } from './client'
 import { me } from './auth'
 import { PROGRESS_FEEDBACK, SESSION_STATUS } from './student'
 
+// Sprint 2 (issue #8): ending a mentorship has no backend endpoint yet. The API version further
+// down (endMentorshipFromApi) is ready; export it as endMentorship once the endpoint is built.
+export const endMentorship = () =>
+  Promise.reject(new Error('Ending a mentorship from the web app comes in Sprint 2. Ask IIC to end it for now.'))
+
 const sessionStatusLabel = (status) => SESSION_STATUS[status] ?? status
 
 const mapSession = (s) => ({
@@ -116,7 +121,7 @@ export async function submitProgress(id, progress, comment) {
 
 // TODO(backend): route not built yet. Proposed: POST /api/mentors/mentorships/<id>/end
 // Moves the problem back to IIC's queue (status "reassignment_needed"), audit-logs it, notifies IIC.
-export async function endMentorship(id, reason, note) {
+export async function endMentorshipFromApi(id, reason, note) {
   return request(`/api/mentors/mentorships/${id}/end`, { method: 'POST', body: { reason, note: note || null } })
 }
 

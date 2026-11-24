@@ -9,6 +9,22 @@ import { camelize, snakeify } from './casing'
 import { request } from './client'
 import { CASE_TYPE, PROBLEM_STATUS, PROGRESS_FEEDBACK, SESSION_STATUS } from './student'
 
+// Sprint 2 (issue #8): monitoring, cases and the domain and timing settings have no backend endpoints yet, so these pages keep the in-memory mock.
+// The API versions further down are ready, named ...FromApi: once an endpoint is built, export that
+// version under the page-facing name instead of the mock one.
+export {
+  addDomain,
+  decideCase,
+  getCase,
+  getMentorshipReview,
+  getMonitoring,
+  getSettings,
+  removeDomain,
+  resolveWellbeingFlag,
+  saveMentorResponse,
+  updateSettings,
+} from './mock/iicMock'
+
 // ---- Label maps (backend value -> what the pages compare against and render) ----
 
 const reverse = (map) => Object.fromEntries(Object.entries(map).map(([label, value]) => [value, label]))
@@ -248,7 +264,7 @@ export async function removeStudent(id, reason) {
 
 // Flags are computed on the server from the live timing windows (I7).
 // TODO(backend): GET /api/monitoring -> { rows, cases, settings, daily_checks }, flagged rows first.
-export async function getMonitoring() {
+export async function getMonitoringFromApi() {
   const d = await request('/api/monitoring')
   return {
     rows: d.rows.map(mapRow),
@@ -262,7 +278,7 @@ export async function getMonitoring() {
 
 // Dates and durations only: IIC never sees what was discussed.
 // TODO(backend): GET /api/monitoring/mentorships/<id>/review
-export async function getMentorshipReview(id) {
+export async function getMentorshipReviewFromApi(id) {
   const m = await request(`/api/monitoring/mentorships/${id}/review`)
   return {
     id: m.id,
@@ -292,7 +308,7 @@ export async function getMentorshipReview(id) {
 // IIC's answer to the flag: 'reviewed' (will follow up) or 'dismissed' (not a concern).
 // The AI never contacts anyone or changes the mentorship.
 // TODO(backend): POST /api/monitoring/mentorships/<id>/wellbeing-flag/resolve
-export async function resolveWellbeingFlag(id, outcome) {
+export async function resolveWellbeingFlagFromApi(id, outcome) {
   return request(`/api/monitoring/mentorships/${id}/wellbeing-flag/resolve`, { method: 'POST', body: { outcome } })
 }
 
@@ -300,26 +316,26 @@ export async function resolveWellbeingFlag(id, outcome) {
 
 // The server has POST /api/cases only; reading and deciding a case are not built yet.
 // TODO(backend): GET /api/cases/<id> (adds mentor_response, history and a mentorship summary).
-export async function getCase(id) {
+export async function getCaseFromApi(id) {
   return mapCase(await request(`/api/cases/${id}`))
 }
 
 // TODO(backend): PUT /api/cases/<id>/mentor-response
-export async function saveMentorResponse(id, text) {
+export async function saveMentorResponseFromApi(id, text) {
   return request(`/api/cases/${id}/mentor-response`, { method: 'PUT', body: { text } })
 }
 
 // decision is 'close', 'reassign' or 'remove'. The server applies the consequences
 // (return to queue, remove the mentor and end their mentorships) and writes the audit entry.
 // TODO(backend): POST /api/cases/<id>/decide
-export async function decideCase(id, { decision, reason }) {
+export async function decideCaseFromApi(id, { decision, reason }) {
   return request(`/api/cases/${id}/decide`, { method: 'POST', body: { decision, reason } })
 }
 
 // ---- I7: settings ----
 
 // TODO(backend): GET /api/settings/timing and /api/settings/domains. The audit log route exists.
-export async function getSettings() {
+export async function getSettingsFromApi() {
   const [values, domains, audit] = await Promise.all([
     request('/api/settings/timing'),
     request('/api/settings/domains'),
@@ -329,16 +345,16 @@ export async function getSettings() {
 }
 
 // TODO(backend): PUT /api/settings/timing
-export async function updateSettings(values) {
+export async function updateSettingsFromApi(values) {
   return request('/api/settings/timing', { method: 'PUT', body: snakeify(values) })
 }
 
 // TODO(backend): POST /api/settings/domains
-export async function addDomain(domain) {
+export async function addDomainFromApi(domain) {
   return request('/api/settings/domains', { method: 'POST', body: { domain } })
 }
 
 // TODO(backend): DELETE /api/settings/domains/<domain>
-export async function removeDomain(domain) {
+export async function removeDomainFromApi(domain) {
   return request(`/api/settings/domains/${encodeURIComponent(domain)}`, { method: 'DELETE' })
 }
