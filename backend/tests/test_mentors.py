@@ -244,3 +244,33 @@ def test_another_mentor_cannot_accept_assignment(client, sample_mentor, sample_p
         headers=login_as("mentor", user=other_user),
     )
     assert response.status_code == 403
+
+
+# ---------- Mentorship detail ----------
+
+
+def test_mentor_sees_the_detail_of_their_mentorship(mentor_client, sample_mentorship, sample_student):
+    response = mentor_client.get(f"/api/mentors/mentorships/{sample_mentorship.id}")
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["id"] == sample_mentorship.id
+    assert body["status"] == "active"
+    assert body["goal"] == sample_mentorship.goal
+    assert body["student"]["name"] == sample_student.name
+    assert body["mentor"]["name"] == "Sample Mentor"
+    assert body["sessions"] == []
+
+
+def test_mentor_cannot_open_another_mentors_mentorship(client, login_as, make_user, sample_mentorship):
+    from app.mentors.models import Mentor
+
+    other = make_user("mentor", email="other.mentor@example.com")
+    db.session.add(Mentor(user_id=other.id, name="Other Mentor", verification_status="active", capacity=1))
+    db.session.commit()
+
+    response = client.get(f"/api/mentors/mentorships/{sample_mentorship.id}", headers=login_as(user=other))
+    assert response.status_code == 403
+
+
+def test_mentorship_detail_of_a_missing_mentorship_is_404(mentor_client, sample_mentor):
+    assert mentor_client.get("/api/mentors/mentorships/999").status_code == 404
