@@ -97,6 +97,18 @@ class CapacityRequestAnswerSchema(Schema):
     accept = fields.Boolean(required=True, metadata={"example": True})
 
 
+class CapacityRequestCreatedSchema(Schema):
+    id = fields.Integer(required=True, metadata={"example": 3})
+    mentor_id = fields.Integer(required=True, metadata={"example": 4})
+    status = fields.String(required=True, metadata={"example": "pending"})
+    by = fields.String(required=True, metadata={"description": "The IIC coordinator who asked"})
+    from_ = fields.Integer(
+        required=True, attribute="from", data_key="from", metadata={"description": "Capacity now", "example": 1}
+    )
+    to = fields.Integer(required=True, metadata={"description": "Capacity if the mentor accepts", "example": 2})
+    created_at = fields.DateTime(required=True)
+
+
 class CapacityRequestResponseSchema(Schema):
     id = fields.Integer(required=True, metadata={"example": 1})
     status = fields.String(required=True, metadata={"example": "accepted"})

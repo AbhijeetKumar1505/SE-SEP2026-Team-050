@@ -347,6 +347,41 @@ components:
       required:
       - accept
       type: object
+    CapacityRequestCreated:
+      additionalProperties: false
+      properties:
+        by:
+          description: The IIC coordinator who asked
+          type: string
+        created_at:
+          format: date-time
+          type: string
+        from:
+          description: Capacity now
+          example: 1
+          type: integer
+        id:
+          example: 3
+          type: integer
+        mentor_id:
+          example: 4
+          type: integer
+        status:
+          example: pending
+          type: string
+        to:
+          description: Capacity if the mentor accepts
+          example: 2
+          type: integer
+      required:
+      - by
+      - created_at
+      - from
+      - id
+      - mentor_id
+      - status
+      - to
+      type: object
     CapacityRequestResponse:
       additionalProperties: false
       properties:
@@ -2936,6 +2971,52 @@ paths:
       x-user-stories:
       - US-05
       - US-09
+  /api/mentors/{mentor_id}/capacity-requests:
+    parameters:
+    - in: path
+      name: mentor_id
+      required: true
+      schema:
+        minimum: 0
+        type: integer
+    post:
+      description: 'For a mentor at capacity whom IIC would like to assign (US-16).
+        The mentor is notified and
+
+        answers from their dashboard (`POST /api/mentors/capacity-requests/{id}/answer`).
+        Their
+
+        capacity rises by one only if they accept. 409 if the mentor is not active
+        and available, or
+
+        already has a request waiting for an answer.'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapacityRequestCreated'
+          description: Created
+        '401':
+          $ref: '#/components/responses/UNAUTHORIZED'
+        '403':
+          $ref: '#/components/responses/FORBIDDEN'
+        '404':
+          $ref: '#/components/responses/NOT_FOUND'
+        '409':
+          $ref: '#/components/responses/CONFLICT'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      security:
+      - bearerAuth: []
+      summary: Ask a mentor to take one more student
+      tags:
+      - mentors
+      x-roles:
+      - iic
+      x-user-stories:
+      - US-18
+      - US-10
   /api/mentors/{mentor_id}/resend-activation:
     parameters:
     - in: path
