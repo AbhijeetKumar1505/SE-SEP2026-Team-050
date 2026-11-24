@@ -4,7 +4,17 @@ Team 050, IITM BS Software Engineering project (September 2026 term), problem st
 
 This folder is the web client for Milestone 2. It is a React single-page app with the pages for all four roles: students, mentors, IIC coordinators and programme leadership. The pages are connected and the routing between them works.
 
-Login, logout, "who am I" and the notification bell now call the backend. Every other page still gets its data through the in-memory mock in `src/api/mock/`, so work in one role shows up in the others while you click through, and that data resets when you reload. In Milestone 3 the remaining functions in `src/api/` become calls to the Flask REST API with the same signature, and `src/api/mock/` is deleted.
+Pages get their data through `src/api/`, which calls the Flask REST API for everything built so far:
+
+| Calls the API | Still uses the in-memory mock (`src/api/mock/`) |
+|---|---|
+| Login, logout and the notification bell | Sign-up, email verification and password reset |
+| Student profile, problem, status, mentorship workspace | Monitoring, mentorship review and cases (IIC) |
+| Mentor dashboard, assignments, profile and availability, activation | Domain and timing settings (IIC) |
+| IIC problem queue, review, recommendations, assignment and closing | Leadership insights |
+| IIC mentor pool, verification, capacity requests, roster | The AI problem coach and mentorship summary |
+
+The mock pages work as before, with sample data that resets when you reload. Two actions say they come in Sprint 2 instead: the AI fit notes on the assignment page and ending a mentorship. When a Sprint 2 endpoint is built, its function in `src/api/` switches from the mock to the `...FromApi` version next to it.
 
 `src/api/client.js` holds the shared API code: the base URL, the login token in `localStorage`, and error handling. In development Vite proxies `/api` to `http://127.0.0.1:5000`, so start the backend too (see [backend/README.md](../backend/README.md)). To call a different origin, copy `.env.example` to `.env` and set `VITE_API_URL`.
 
@@ -55,7 +65,7 @@ These are the accounts `flask seed-data` creates in the backend. All use the pas
 | IIC | deepa.iic@ds.study.iitm.ac.in |
 | Leadership | leadership@ds.study.iitm.ac.in |
 
-The sign-up and password-reset flows still use the mock, so accounts created there do not exist in the backend yet.
+The sign-up and password-reset pages still use the mock, so accounts created there do not exist in the backend yet. The backend's sign-up works through Swagger UI and Mailpit (see the backend README).
 
 ### Pages
 
@@ -88,7 +98,7 @@ Addresses with an id (`p1`, `r6`, `r2`, `C-014`) are sample records. Since a ref
 
 ### AI features
 
-The three AI calls are in `src/api/ai.js`. Until the API calls a model, rule-based stand-ins in `src/api/mock/ai.js` answer them. In every feature, the user decides what to do with the suggestion.
+The three AI calls are in `src/api/ai.js`. Until the API calls a model (Sprint 2), rule-based stand-ins in `src/api/mock/ai.js` answer the problem coach and the summary, and the fit notes say they come in Sprint 2. In every feature, the user decides what to do with the suggestion.
 
 - **Problem coach** (Student → **Submit a new problem**): write a description of at least 30 characters and press **Check my problem**. It suggests topic tags from IIC's list, which you can add with one click, and points out missing detail. The demo student already has an open problem, so withdraw it on **My problem** first.
 - **Mentor fit notes** (IIC → **Problem queue** → **Open**): press **Explain fit with AI** to see why each recommended mentor fits. The ranking itself never changes.
@@ -108,7 +118,7 @@ frontend/
     ├── main.jsx          Entry point: router, sign-in context, global styles
     ├── App.jsx           Top-level routes
     ├── theme.css         Design tokens, applied as Bootstrap overrides
-    ├── api/              All calls to the backend (ai.js holds the three AI features); mock/ answers them until Milestone 3
+    ├── api/              All calls to the backend (ai.js holds the three AI features); mock/ answers the Sprint 2 ones for now
     ├── routes/           Routes for each role (account, student, mentor, IIC, leadership)
     ├── pages/            One component per screen; auth/, student/, mentor/, iic/ and leadership/ hold those roles' pages
     ├── components/       Shared layout and UI pieces (layouts, tables, modals, badges)

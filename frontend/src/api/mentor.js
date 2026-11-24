@@ -1,127 +1,150 @@
-import { db, loadOf, returnToQueue } from './mock/db'
-import { signIn } from './auth'
-import { day, delay, found, joinReason, uid } from './mock/mockUtils'
-import { session } from './mock/session'
+// Mentor-side API. Each call goes through the shared request() wrapper in client.js.
+// The backend stays snake_case; this layer maps responses to the camelCase shapes the
+// mentor pages expect, and request bodies to the backend's snake_case fields.
+// Same function names, arguments and return shapes as the old mock, so no page changes.
+import { ApiError, request, setToken } from './client'
+import { me } from './auth'
+import { PROGRESS_FEEDBACK, SESSION_STATUS } from './student'
 
-// Mock implementation. In M3 each function becomes a fetch() call with the same
-// signature and return shape, so no page changes.
+// Sprint 2 (issue #8): ending a mentorship has no backend endpoint yet. The API version further
+// down (endMentorshipFromApi) is ready; export it as endMentorship once the endpoint is built.
+export const endMentorship = () =>
+  Promise.reject(new Error('Ending a mentorship from the web app comes in Sprint 2. Ask IIC to end it for now.'))
 
-const me = () => db.mentors.find((m) => m.id === session.mentorId)
-const mine = () => db.mentorships.filter((m) => m.mentor === me().name)
-const find = (id) => db.mentorships.find((m) => m.id === id)
-const held = (m) => m.sessions.filter((s) => s.status === 'Held')
-const byDate = (a, b) => `${a.date}${a.time ?? ''}`.localeCompare(`${b.date}${b.time ?? ''}`)
-const waiting = () => db.problems.filter((p) => p.status === 'Awaiting mentor' && p.mentor === me().name)
+const sessionStatusLabel = (status) => SESSION_STATUS[status] ?? status
 
-export function getDashboard() {
-  const active = mine()
-  const thisMonth = active.flatMap(held).filter((s) => s.date.startsWith(day(0).slice(0, 7)))
-  const nextDue = active.toSorted((a, b) => a.checkpointDue.localeCompare(b.checkpointDue))[0]
-  const request = db.capacityRequests.find((r) => r.mentorId === me().id && r.status === 'Pending')
-  return delay({
-    capacity: me().capacity,
-    capacityRequest: request && { id: request.id, by: request.by, from: me().capacity, to: me().capacity + 1 },
-    load: loadOf(me()),
-    sessionsThisMonth: thisMonth.length,
-    confirmed: thisMonth.filter((s) => s.confirmed).length,
-    nextCheckpoint: nextDue && { date: nextDue.checkpointDue, student: nextDue.student.name },
-    assignments: waiting().map(({ id, assignedBy, assignedAt, tags, problem, goal, student: s }) => ({
-      id,
-      assignedBy,
-      assignedAt,
-      tags,
-      problem,
-      goal,
-      student: { name: s.name, level: s.level, careerInterest: s.careerInterest, courses: s.courses }, // never CGPA or guidance preferences
-      deadline: new Date(new Date(assignedAt).getTime() + db.settings.acceptHours * 36e5).toISOString(),
+const mapSession = (s) => ({
+  id: s.id,
+  date: s.date,
+  time: s.time,
+  duration: s.duration,
+  topic: s.topic,
+  channel: s.channel,
+  link: s.link,
+  status: sessionStatusLabel(s.status),
+  confirmed: s.confirmed,
+  loggedBy: s.logged_by,
+})
+
+// ---- Dashboard ----
+
+export async function getDashboard() {
+  const d = await request('/api/mentors/me/dashboard')
+  return {
+    capacity: d.capacity,
+    capacityRequest: d.capacity_request ?? null, // { id, by, from, to }
+    load: d.load,
+    sessionsThisMonth: d.sessions_this_month,
+    confirmed: d.confirmed,
+    nextCheckpoint: d.next_checkpoint
+      ? {
+          date: d.next_checkpoint.date,
+          // The pages show the student's name; accept either a name or { name }.
+          student: d.next_checkpoint.student?.name ?? d.next_checkpoint.student,
+        }
+      : null,
+    assignments: d.assignments.map((a) => ({
+      id: a.id, // the mentorship id: accept and decline use it
+      assignedBy: a.assigned_by,
+      assignedAt: a.assigned_at,
+      tags: a.tags,
+      problem: a.problem,
+      goal: a.goal,
+      student: a.student, // already { name, level, careerInterest, courses }; never CGPA or guidance
+      deadline: a.deadline,
     })),
-    mentorships: active.map((m) => ({
+    mentorships: d.mentorships.map((m) => ({
       id: m.id,
       student: m.student,
-      startedAt: m.startedAt,
-      held: held(m).length,
-      nextSession: m.sessions.filter((s) => s.status === 'Planned').toSorted(byDate)[0],
+      startedAt: m.started_at,
+      held: m.held,
+      nextSession: m.next_session ? mapSession(m.next_session) : null,
     })),
+  }
+}
+
+export async function acceptAssignment(id) {
+  return request(`/api/mentors/mentorships/${id}/accept`, { method: 'POST' })
+}
+
+export async function declineAssignment(id, reason, note) {
+  return request(`/api/mentors/mentorships/${id}/decline`, {
+    method: 'POST',
+    body: { reason, note: note || null },
   })
 }
 
-export function acceptAssignment(id) {
-  const p = db.problems.find((x) => x.id === id)
-  const { name, roll, email, level, careerInterest, courses } = p.student // email is revealed only now
-  p.status = 'Mentor assigned'
-  db.mentorships.push({
-    id: uid(),
-    problemId: id,
-    mentor: me().name,
-    student: { name, roll, email, level, careerInterest, courses },
-    problem: p.problem,
-    goal: p.goal,
-    startedAt: day(0),
-    checkpointDue: day(db.settings.feedbackDays),
-    steps: [],
-    sessions: [],
-    progress: null,
-    caseId: null,
-    feedback: [],
-    wellbeingFlag: null,
-    history: [],
-    reachedOutAt: null,
-    studentCheckpointDue: day(db.settings.feedbackDays),
+export async function answerCapacityRequest(id, accept) {
+  return request(`/api/mentors/capacity-requests/${id}/answer`, { method: 'POST', body: { accept } })
+}
+
+// ---- Profile ----
+
+// The backend already uses the page's field names here.
+export const getProfile = () => request('/api/mentors/me')
+
+export async function updateProfile({ available, channel, contact, availability, timezone }) {
+  return request('/api/mentors/me', {
+    method: 'PUT',
+    body: { available, channel, contact, availability, timezone }, // capacity & expertise are read-only
   })
-  return delay()
 }
 
-export function answerCapacityRequest(id, accept) {
-  const r = db.capacityRequests.find((x) => x.id === id)
-  r.status = accept ? 'Accepted' : 'Declined'
-  if (accept) me().capacity += 1
-  db.audit.unshift({
-    at: new Date().toISOString(),
-    text: `${me().name} ${accept ? 'accepted' : 'declined'} the request to increase capacity`,
+// ---- Mentorship ----
+
+export async function getMentorship(id) {
+  const m = await request(`/api/mentors/mentorships/${id}`)
+  return {
+    id: m.id,
+    status: m.status,
+    goal: m.goal,
+    steps: m.steps,
+    startedAt: m.answered_at ?? m.assigned_at,
+    assignedAt: m.assigned_at,
+    reachedOutAt: m.reached_out_at,
+    checkpointDue: m.checkpoint_due,
+    topics: m.topics,
+    problem: m.problem,
+    student: m.student,
+    mentor: m.mentor,
+    sessions: m.sessions.map(mapSession),
+  }
+}
+
+// Same endpoint the student uses: the server reads the role from the token.
+export async function submitProgress(id, progress, comment) {
+  return request('/api/feedback', {
+    method: 'POST',
+    body: { mentorship_id: id, progress_status: PROGRESS_FEEDBACK[progress] ?? progress, comment },
   })
-  return delay()
 }
 
-export function declineAssignment(id, reason, note) {
-  const p = db.problems.find((x) => x.id === id)
-  Object.assign(p, { status: 'Reassignment needed', reassignReason: `${me().name} declined: ${joinReason(reason, note)}` }) // back to IIC's queue
-  delete p.mentor
-  return delay()
-}
-
-export const getProfile = () => delay(me())
-
-export function updateProfile({ available, channel, contact, availability, timezone }) {
-  Object.assign(me(), { available, channel, contact, availability, timezone }) // capacity & expertise are read-only
-  return delay()
-}
-
-export const getMentorship = (id) => found(find(id), 'Mentorship')
-
-export function submitProgress(id, progress, comment) {
-  const m = find(id)
-  m.progress = progress // visible to IIC only
-  m.progressComment = comment
-  m.feedback.unshift({ id: uid(), date: day(0), from: 'Mentor', progress, comment }) // IIC reads it in the mentorship review (I8)
-  m.checkpointDue = day(db.settings.feedbackDays)
-  return delay()
-}
-
-export function endMentorship(id, reason, note) {
-  const m = find(id)
-  returnToQueue(m, `${m.mentor} ended the mentorship: ${joinReason(reason, note)}`) // backend: status "Ended by mentor", audit log, notifications
-  return delay()
+// TODO(backend): route not built yet. Proposed: POST /api/mentors/mentorships/<id>/end
+// Moves the problem back to IIC's queue (status "reassignment_needed"), audit-logs it, notifies IIC.
+export async function endMentorshipFromApi(id, reason, note) {
+  return request(`/api/mentors/mentorships/${id}/end`, { method: 'POST', body: { reason, note: note || null } })
 }
 
 // ---- A4: account activation (public page) ----
-export function getActivation(token) {
-  const m = db.mentors.find((x) => x.activationToken === token && x.status === 'Verified – not activated')
-  return delay(m ? { valid: true, name: m.name, verifiedBy: m.verifiedBy } : { valid: false })
+
+// TODO(backend): routes not built yet. Proposed: GET and POST /api/mentors/activation/<token> (no auth).
+export async function getActivation(token) {
+  try {
+    const d = await request(`/api/mentors/activation/${encodeURIComponent(token)}`, { auth: false })
+    return d.valid ? { valid: true, name: d.name, verifiedBy: d.verified_by } : { valid: false }
+  } catch (err) {
+    if (err instanceof ApiError && [404, 410].includes(err.status)) return { valid: false }
+    throw err
+  }
 }
 
-export function activateAccount(token, password) {
-  const m = db.mentors.find((x) => x.activationToken === token)
-  Object.assign(m, { status: 'Active', available: true, password })
-  delete m.activationToken
-  return delay(signIn({ role: 'mentor', record: m }))
+// Sets the password, activates the account and signs the mentor in (same response as login).
+export async function activateAccount(token, password) {
+  const { access_token: accessToken } = await request(`/api/mentors/activation/${encodeURIComponent(token)}`, {
+    method: 'POST',
+    body: { password },
+    auth: false,
+  })
+  setToken(accessToken)
+  return me()
 }

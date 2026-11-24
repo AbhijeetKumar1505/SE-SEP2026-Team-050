@@ -1,341 +1,360 @@
-import { daysSince } from '../utils/format'
-import { ACTOR, db, loadOf, returnToQueue } from './mock/db'
-import { delay, found, uid } from './mock/mockUtils'
-import { tags } from './mock/tagData'
+// IIC-side API. Each call goes through the shared request() wrapper in client.js.
+// The backend stays snake_case; this layer maps responses to the camelCase shapes the IIC
+// pages expect, and request bodies to the backend's snake_case fields.
+// Same function names, arguments and return shapes as the old mock, so no page changes.
+//
+// The server now owns: mentor ranking, monitoring flags, "who did it" (taken from the JWT) and
+// audit logging. Routes marked TODO(backend) are not built yet: see BACKEND_CONTRACT.md.
+import { camelize, snakeify } from './casing'
+import { request } from './client'
+import { CASE_TYPE, PROBLEM_STATUS, PROGRESS_FEEDBACK, SESSION_STATUS } from './student'
 
-// Mock implementation. In M3 each function becomes a fetch() with the same signature and return shape.
+// Sprint 2 (issue #8): monitoring, cases and the domain and timing settings have no backend endpoints yet, so these pages keep the in-memory mock.
+// The API versions further down are ready, named ...FromApi: once an endpoint is built, export that
+// version under the page-facing name instead of the mock one.
+export {
+  addDomain,
+  decideCase,
+  getCase,
+  getMentorshipReview,
+  getMonitoring,
+  getSettings,
+  removeDomain,
+  resolveWellbeingFlag,
+  saveMentorResponse,
+  updateSettings,
+} from './mock/iicMock'
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const ROLL = /^\d{2}f\d{7}$/i
-const OPEN = ['Reassignment needed', 'Submitted', 'Under review', 'Awaiting mentor']
-const byId = (list, id) => list.find((x) => x.id === id)
-const split = (s = '') =>
-  s
-    .split(';')
-    .map((x) => x.trim())
-    .filter(Boolean)
-const log = (list, text) => list.unshift({ at: new Date().toISOString(), text })
+// ---- Label maps (backend value -> what the pages compare against and render) ----
+
+const reverse = (map) => Object.fromEntries(Object.entries(map).map(([label, value]) => [value, label]))
+const PROGRESS_LABEL = reverse(PROGRESS_FEEDBACK)
+const CASE_TYPE_LABEL = reverse(CASE_TYPE)
+
+const MENTOR_STATUS = {
+  pending_verification: 'Pending verification',
+  verified: 'Verified – not activated',
+  active: 'Active',
+  removed: 'Removed',
+}
+
+const CASE_STATUS = {
+  open: 'Open',
+  under_review: 'Open',
+  decided: 'Decided',
+  resolved: 'Decided',
+}
+
+// Backend flag_type -> the flag keys the monitoring page uses.
+const FLAG = {
+  reassignment_needed: 'reassign',
+  first_session_overdue: 'firstSession',
+  inactive: 'inactive',
+  feedback_overdue: 'feedback',
+  wellbeing: 'wellbeing',
+}
+
+const progressLabel = (value) => PROGRESS_LABEL[value] ?? value ?? null
+
+// ---- Mappers ----
+
+const mapProblem = (p) => ({
+  id: p.id,
+  status: PROBLEM_STATUS[p.status] ?? p.status,
+  submittedAt: p.submitted_at,
+  problem: p.description,
+  tags: p.tags,
+  goal: p.desired_outcome,
+  guidance: p.guidance_preferences ?? '',
+  closeReason: p.close_reason,
+  student: camelize(p.student), // { name, roll, email, level, cgpa, careerInterest, courses }
+  mentor: p.mentor, // the assigned mentor's name, if any
+  assignedBy: p.assigned_by,
+  assignedAt: p.assigned_at,
+  reassignReason: p.reassign_reason,
+  respondBy: p.respond_by,
+})
+
+const mapMentor = (m) => ({
+  id: m.id,
+  name: m.name,
+  email: m.email,
+  headline: m.headline ?? '',
+  status: MENTOR_STATUS[m.status] ?? m.status,
+  available: m.available,
+  capacity: m.capacity,
+  load: m.load,
+  shared: m.shared_tags_count ?? 0, // tags shared with the problem (recommendations only)
+  expertise: m.expertise ?? [],
+  experience: m.experience ?? [],
+  channel: m.channel,
+  contact: m.contact,
+  availability: m.availability,
+  timezone: m.timezone ?? m.time_zone,
+  capacityRequested: !!m.capacity_requested,
+  verifiedBy: m.verified_by,
+  verifiedAt: m.verified_at,
+})
+
+const mapImport = (r) =>
+  r && {
+    file: r.file,
+    by: r.imported_by,
+    at: r.imported_at,
+    added: r.added,
+    updated: r.updated,
+    errors: r.errors ?? [], // [{ row, reason }]
+  }
+
+const mapRow = (r) => ({
+  id: r.id,
+  student: r.student,
+  mentor: r.mentor,
+  startedAt: r.started_at,
+  logged: r.logged,
+  confirmed: r.confirmed,
+  lastSession: r.last_session ?? null,
+  progress: progressLabel(r.progress),
+  comment: r.comment,
+  flags: (r.flags ?? []).map((f) => FLAG[f] ?? f),
+  caseId: r.case_id ?? null,
+})
+
+const mapCase = (c) => ({
+  ...camelize(c),
+  type: CASE_TYPE_LABEL[c.case_type] ?? c.case_type,
+  status: CASE_STATUS[c.status] ?? c.status,
+  mentorship: c.mentorship ? mapRow(c.mentorship) : null,
+})
+
+const mapAudit = (e) => ({
+  id: e.id,
+  at: e.created_at,
+  text: `${e.actor?.email ?? 'System'} ${e.action.replace(/_/g, ' ')}${e.details ? `: ${e.details}` : ''}`,
+})
 
 // ---- I1 / I2: problem queue and assignment ----
-export const getQueue = () =>
-  delay({
-    problems: db.problems
-      .filter((p) => OPEN.includes(p.status))
-      .toSorted(
-        (a, b) => (b.status === 'Reassignment needed') - (a.status === 'Reassignment needed') || a.submittedAt.localeCompare(b.submittedAt),
-      ),
-  })
 
-export function getProblem(id) {
-  const p = byId(db.problems, id)
-  if (p?.status === 'Submitted') p.status = 'Under review' // opening a problem starts the review
-  const respondBy = p?.assignedAt && new Date(new Date(p.assignedAt).getTime() + db.settings.acceptHours * 36e5).toISOString()
-  return found(p && { ...p, respondBy }, 'Problem')
+// TODO(backend): GET /api/problems/queue -> { problems: [...] }, reassignments first, then oldest first.
+export async function getQueue() {
+  const d = await request('/api/problems/queue')
+  return { problems: d.problems.map(mapProblem) }
 }
 
-// Deterministic ranking: shared tags (more first), active mentees (fewer first), mentor id.
-const rank = (id) => {
-  const p = byId(db.problems, id)
-  return db.mentors
-    .map((m) => ({ ...m, load: loadOf(m), shared: m.expertise.filter((t) => p.tags.includes(t)).length }))
-    .filter((m) => m.status === 'Active' && m.available && m.load < m.capacity)
-    .sort((a, b) => b.shared - a.shared || a.load - b.load || a.id.localeCompare(b.id))
-}
-export const getRecommendations = (id) =>
-  delay(
-    rank(id)
-      .filter((m) => m.shared > 0)
-      .slice(0, 4),
-  )
-export const getEligibleMentors = (id) => delay(rank(id))
-
-export function assignMentor(id, mentorId) {
-  const m = byId(db.mentors, mentorId)
-  const p = byId(db.problems, id)
-  // A student has one mentor at a time.
-  if (['Awaiting mentor', 'Mentor assigned'].includes(p.status)) return Promise.reject(new Error('This problem already has a mentor.'))
-  if (db.mentorships.some((x) => x.student.roll === p.student.roll && x.problemId !== id))
-    return Promise.reject(new Error(`${p.student.name} already has a mentor.`))
-  if (loadOf(m) >= m.capacity) return Promise.reject(new Error(`${m.name} is at capacity and can’t be assigned another student.`))
-  db.mentorships = db.mentorships.filter((x) => x.problemId !== id) // reassigning replaces the previous mentor
-  Object.assign(p, { status: 'Awaiting mentor', mentor: m.name, assignedBy: ACTOR, assignedAt: new Date().toISOString() })
-  delete p.reassignReason
-  log(db.audit, `${ACTOR} assigned ${p.student.name}’s problem to ${m.name}`)
-  return delay()
+// TODO(backend): GET /api/problems/<id>. Opening a "submitted" problem moves it to "under_review".
+export async function getProblem(id) {
+  return mapProblem(await request(`/api/problems/${id}`))
 }
 
-export function closeProblem(id, reason) {
-  Object.assign(byId(db.problems, id), { status: 'Closed by IIC', closeReason: reason })
-  log(db.audit, `${ACTOR} closed a problem: ${reason}`)
-  return delay()
+// TODO(backend): GET /api/matching/problems/<id>/recommendations -> up to 4 ranked mentors.
+export async function getRecommendations(id) {
+  const mentors = await request(`/api/matching/problems/${id}/recommendations`)
+  return mentors.map(mapMentor)
+}
+
+// TODO(backend): GET /api/matching/problems/<id>/eligible-mentors -> every assignable mentor, ranked.
+export async function getEligibleMentors(id) {
+  const mentors = await request(`/api/matching/problems/${id}/eligible-mentors`)
+  return mentors.map(mapMentor)
+}
+
+// The server enforces one mentor per student and the mentor's capacity (409 with a message).
+// TODO(backend): POST /api/problems/<id>/assign
+export async function assignMentor(id, mentorId) {
+  return request(`/api/problems/${id}/assign`, { method: 'POST', body: { mentor_id: mentorId } })
+}
+
+// TODO(backend): POST /api/problems/<id>/close
+export async function closeProblem(id, reason) {
+  return request(`/api/problems/${id}/close`, { method: 'POST', body: { reason } })
 }
 
 // ---- I3: mentor pool ----
-const pendingRequest = (mentorId) => db.capacityRequests.some((r) => r.mentorId === mentorId && r.status === 'Pending')
 
-export const getMentors = () => delay(db.mentors.map((m) => ({ ...m, load: loadOf(m), capacityRequested: pendingRequest(m.id) })))
+// TODO(backend): GET /api/mentors -> every mentor, with load and capacity_requested.
+export async function getMentors() {
+  const mentors = await request('/api/mentors')
+  return mentors.map(mapMentor)
+}
 
 // Asks an available mentor to take one more student; they answer from their dashboard.
-export function requestCapacity(mentorId) {
-  const m = byId(db.mentors, mentorId)
-  if (m.status !== 'Active' || !m.available) return Promise.reject(new Error(`${m.name} isn’t available.`))
-  if (pendingRequest(mentorId)) return Promise.reject(new Error(`${m.name} already has a pending request.`))
-  db.capacityRequests.push({ id: uid(), mentorId, by: ACTOR, at: new Date().toISOString(), status: 'Pending' })
-  log(db.audit, `${ACTOR} asked ${m.name} to increase their capacity`)
-  return delay()
+// TODO(backend): POST /api/mentors/<id>/capacity-requests
+export async function requestCapacity(mentorId) {
+  return request(`/api/mentors/${mentorId}/capacity-requests`, { method: 'POST' })
 }
 
-// "Sends" the 7-day activation email; the link is returned so the prototype can open it.
-const sendActivation = (m) => {
-  m.activationToken = uid()
-  return { link: `/activate/${m.activationToken}` }
+// The server emails the 7-day activation link. In development it may also return it as
+// `activation_link`, so the prototype can still open it.
+// TODO(backend): POST /api/mentors/<id>/verify
+export async function verifyMentor(id, expertise) {
+  const d = await request(`/api/mentors/${id}/verify`, { method: 'POST', body: { expertise } })
+  return { link: d?.activation_link }
 }
 
-export function verifyMentor(id, expertise) {
-  const m = byId(db.mentors, id)
-  Object.assign(m, { status: 'Verified – not activated', expertise, verifiedBy: ACTOR, verifiedAt: new Date().toISOString() })
-  log(db.audit, `${ACTOR} verified ${m.name}`)
-  return delay(sendActivation(m))
+// TODO(backend): POST /api/mentors/<id>/resend-activation. The previous link stops working.
+export async function resendActivation(id) {
+  const d = await request(`/api/mentors/${id}/resend-activation`, { method: 'POST' })
+  return { link: d?.activation_link }
 }
 
-export function resendActivation(id) {
-  const m = byId(db.mentors, id)
-  log(db.audit, `${ACTOR} resent the activation link to ${m.name}`)
-  return delay(sendActivation(m)) // the previous link stops working
+// TODO(backend): POST /api/mentors
+export async function addMentor({ name, email, headline }) {
+  return request('/api/mentors', { method: 'POST', body: { name, email, headline } })
 }
 
-export function addMentor({ name, email, headline }) {
-  if (db.mentors.some((m) => m.email === email)) return Promise.reject(new Error('A mentor with this email already exists.'))
-  db.mentors.push({
-    id: uid(),
-    name,
-    email,
-    headline,
-    status: 'Pending verification',
-    available: false,
-    capacity: db.settings.defaultCapacity,
-    expertise: [],
-    experience: [],
-  })
-  return delay()
-}
-
-// Validates each row, saves the good ones, reports the rest with row number and reason.
-function importRows(rows, file, validate, save) {
-  const result = { file, by: ACTOR, at: new Date().toISOString(), added: 0, updated: 0, errors: [] }
-  rows.forEach((r, i) => {
-    const reason = validate(r)
-    if (reason)
-      result.errors.push({ row: i + 2, reason }) // row 1 is the header
-    else result[save(r) ? 'updated' : 'added'] += 1 // save() returns true when it updated an existing record
-  })
-  log(db.audit, `${ACTOR} imported ${file}`)
-  return result
-}
-
-export function importMentors(rows, file) {
-  const known = tags.map((t) => t.name)
-  const result = importRows(
-    rows,
-    file,
-    (r) => {
-      if (!r.name) return 'Name is missing.'
-      if (!EMAIL.test(r.email)) return 'Email is not valid.'
-      const unknown = split(r['expertise tags']).find((t) => !known.includes(t))
-      if (unknown) return `Unknown topic tag: ${unknown}.`
+// The page parses the CSV; the rows are sent as JSON and the server validates each one.
+// TODO(backend): POST /api/mentors/import
+export async function importMentors(rows, file) {
+  const d = await request('/api/mentors/import', {
+    method: 'POST',
+    body: {
+      file,
+      rows: rows.map((r) => ({
+        name: r.name,
+        email: r.email,
+        expertise_tags: r['expertise tags'],
+        experience: r.experience,
+      })),
     },
-    (r) => {
-      const data = { name: r.name, email: r.email, expertise: split(r['expertise tags']), experience: split(r.experience) }
-      const existing = db.mentors.find((m) => m.email === r.email)
-      if (existing) Object.assign(existing, data)
-      else
-        db.mentors.push({
-          id: uid(),
-          status: 'Pending verification',
-          headline: '',
-          available: false,
-          capacity: db.settings.defaultCapacity,
-          ...data,
-        })
-      return !!existing
-    },
-  )
-  return delay(result)
+  })
+  return mapImport(d)
 }
 
 // ---- I4: roster ----
-export const getRoster = () =>
-  delay({
-    students: db.students.map(({ id, name, roll, email, signedUp, profile }) => ({
-      id,
-      name,
-      roll,
-      email,
-      signedUp,
-      profileComplete: !!profile,
-    })),
-    lastImport: db.lastImport,
-  })
 
-export function importRoster(rows, file) {
-  const result = importRows(
-    rows,
-    file,
-    (r) => {
-      if (!r.name) return 'Name is missing.'
-      if (!ROLL.test(r['roll number'])) return 'Roll number is not valid.'
-      if (!db.settings.domains.includes(r['institute email']?.split('@')[1])) return 'Email is not on an approved domain.'
-    },
-    (r) => {
-      const existing = byId(db.students, r['roll number'])
-      if (existing) Object.assign(existing, { name: r.name, email: r['institute email'] })
-      else
-        db.students.push({
-          id: r['roll number'],
-          name: r.name,
-          roll: r['roll number'],
-          email: r['institute email'],
-          signedUp: false,
-          verified: false,
-          profile: null,
-        })
-      return !!existing
-    },
-  )
-  db.lastImport = result
-  return delay(result)
+// TODO(backend): GET /api/students/roster
+export async function getRoster() {
+  const d = await request('/api/students/roster')
+  return {
+    students: d.students.map((s) => ({
+      id: s.id,
+      name: s.name,
+      roll: s.roll,
+      email: s.email,
+      signedUp: s.signed_up,
+      profileComplete: s.profile_complete,
+    })),
+    lastImport: mapImport(d.last_import),
+  }
 }
 
-export function removeStudent(id, reason) {
-  db.students = db.students.filter((s) => s.id !== id) // backend: blocks sign-up and new problems
-  log(db.audit, `${ACTOR} removed ${id} from the roster: ${reason}`)
-  return delay()
+// TODO(backend): POST /api/students/roster/import
+export async function importRoster(rows, file) {
+  const d = await request('/api/students/roster/import', {
+    method: 'POST',
+    body: {
+      file,
+      rows: rows.map((r) => ({
+        name: r.name,
+        roll_number: r['roll number'],
+        institute_email: r['institute email'],
+      })),
+    },
+  })
+  return mapImport(d)
+}
+
+// Blocks sign-up and new problems for that student.
+// TODO(backend): POST /api/students/roster/<id>/remove
+export async function removeStudent(id, reason) {
+  return request(`/api/students/roster/${encodeURIComponent(id)}/remove`, { method: 'POST', body: { reason } })
 }
 
 // ---- I5: monitoring ----
-// Flags come from the live settings (I7), so changing a window changes the flags.
-function summary(m) {
-  const { settings } = db
-  const heldSessions = m.sessions.filter((s) => s.status === 'Held')
-  const last =
-    heldSessions
-      .map((s) => s.date)
-      .sort()
-      .at(-1) ?? null
-  const flags = [
-    db.problems.find((p) => p.id === m.problemId)?.status === 'Reassignment needed' && 'reassign',
-    !heldSessions.length && daysSince(m.startedAt) >= settings.firstSessionDays && 'firstSession',
-    daysSince(last ?? m.startedAt) >= settings.inactiveDays && 'inactive',
-    daysSince(m.checkpointDue) >= settings.feedbackOverdueDays && 'feedback',
-    m.wellbeingFlag?.status === 'open' && 'wellbeing',
-  ].filter(Boolean)
+
+// Flags are computed on the server from the live timing windows (I7).
+// TODO(backend): GET /api/monitoring -> { rows, cases, settings, daily_checks }, flagged rows first.
+export async function getMonitoringFromApi() {
+  const d = await request('/api/monitoring')
   return {
-    id: m.id,
-    student: m.student.name,
-    mentor: m.mentor,
-    startedAt: m.startedAt,
-    logged: heldSessions.length,
-    confirmed: heldSessions.filter((s) => s.confirmed).length,
-    lastSession: last,
-    progress: m.progress,
-    comment: m.progressComment,
-    flags,
-    caseId: m.caseId,
+    rows: d.rows.map(mapRow),
+    cases: d.cases.map(mapCase),
+    settings: camelize(d.settings),
+    dailyChecks: camelize(d.daily_checks),
   }
 }
 
-export const getMonitoring = () =>
-  delay({
-    rows: db.mentorships.map(summary).sort((a, b) => b.flags.length - a.flags.length), // flagged first
-    cases: db.cases.filter((c) => c.status === 'Open'),
-    settings: db.settings,
-    dailyChecks: db.dailyChecks,
-  })
-
 // ---- I8: one mentorship's feedback from both sides, with the AI wellbeing flag ----
-export function getMentorshipReview(id) {
-  const m = byId(db.mentorships, id)
-  return found(
-    m && {
-      id: m.id,
-      student: m.student.name,
-      mentor: m.mentor,
-      startedAt: m.startedAt,
-      caseId: m.caseId,
-      // Dates and durations only: IIC never sees what was discussed.
-      sessions: m.sessions
-        .map(({ id: sessionId, date, duration, status, confirmed }) => ({ id: sessionId, date, duration, status, confirmed }))
-        .toSorted((a, b) => b.date.localeCompare(a.date)),
-      feedback: m.feedback,
-      flag: m.wellbeingFlag,
-      history: m.history,
-    },
-    'Mentorship',
-  )
+
+// Dates and durations only: IIC never sees what was discussed.
+// TODO(backend): GET /api/monitoring/mentorships/<id>/review
+export async function getMentorshipReviewFromApi(id) {
+  const m = await request(`/api/monitoring/mentorships/${id}/review`)
+  return {
+    id: m.id,
+    student: m.student,
+    mentor: m.mentor,
+    startedAt: m.started_at,
+    caseId: m.case_id ?? null,
+    sessions: m.sessions.map((s) => ({
+      id: s.id,
+      date: s.date,
+      duration: s.duration,
+      status: SESSION_STATUS[s.status] ?? s.status,
+      confirmed: s.confirmed,
+    })),
+    feedback: m.feedback.map((f) => ({
+      id: f.id,
+      date: f.date,
+      from: f.from,
+      progress: progressLabel(f.progress),
+      comment: f.comment,
+    })),
+    flag: camelize(m.flag) ?? null,
+    history: camelize(m.history),
+  }
 }
 
-// IIC's answer to the flag: 'reviewed' (will follow up) or 'dismissed' (not a concern). Recorded in the history.
+// IIC's answer to the flag: 'reviewed' (will follow up) or 'dismissed' (not a concern).
 // The AI never contacts anyone or changes the mentorship.
-export function resolveWellbeingFlag(id, outcome) {
-  const m = byId(db.mentorships, id)
-  m.wellbeingFlag.status = outcome
-  const text =
-    outcome === 'reviewed' ? 'reviewed the AI wellbeing flag and will follow up' : 'marked the AI wellbeing flag as not a concern'
-  log(m.history, `${ACTOR} ${text}`)
-  log(db.audit, `${ACTOR} ${text} for ${m.student.name}`)
-  return delay()
+// TODO(backend): POST /api/monitoring/mentorships/<id>/wellbeing-flag/resolve
+export async function resolveWellbeingFlagFromApi(id, outcome) {
+  return request(`/api/monitoring/mentorships/${id}/wellbeing-flag/resolve`, { method: 'POST', body: { outcome } })
 }
 
 // ---- I6: cases ----
-export function getCase(id) {
-  const m = db.mentorships.find((x) => x.caseId === id)
-  const c = byId(db.cases, id)
-  return found(c && { ...c, mentorship: m && summary(m) }, 'Case')
+
+// The server has POST /api/cases only; reading and deciding a case are not built yet.
+// TODO(backend): GET /api/cases/<id> (adds mentor_response, history and a mentorship summary).
+export async function getCaseFromApi(id) {
+  return mapCase(await request(`/api/cases/${id}`))
 }
 
-export function saveMentorResponse(id, text) {
-  const c = byId(db.cases, id)
-  c.mentorResponse = text
-  log(c.history, `${ACTOR} recorded the mentor’s response`)
-  return delay()
+// TODO(backend): PUT /api/cases/<id>/mentor-response
+export async function saveMentorResponseFromApi(id, text) {
+  return request(`/api/cases/${id}/mentor-response`, { method: 'PUT', body: { text } })
 }
 
-export function decideCase(id, { decision, reason }) {
-  const c = byId(db.cases, id)
-  const m = db.mentorships.find((x) => x.caseId === id)
-  c.status = 'Decided'
-  log(c.history, `${ACTOR} decided “${decision}”: ${reason}`)
-  log(db.audit, `${ACTOR} decided case ${id} (${decision})`)
-  if (m && decision === 'close') m.caseId = null
-  if (m && decision === 'reassign') returnToQueue(m, `case ${id}: ${reason}`)
-  if (m && decision === 'remove') {
-    // Removing a mentor ends all of their mentorships.
-    db.mentorships.filter((x) => x.mentor === m.mentor).forEach((x) => returnToQueue(x, `${m.mentor} was removed: ${reason}`))
-    db.mentors.find((x) => x.name === m.mentor).status = 'Removed'
-  }
-  return delay()
+// decision is 'close', 'reassign' or 'remove'. The server applies the consequences
+// (return to queue, remove the mentor and end their mentorships) and writes the audit entry.
+// TODO(backend): POST /api/cases/<id>/decide
+export async function decideCaseFromApi(id, { decision, reason }) {
+  return request(`/api/cases/${id}/decide`, { method: 'POST', body: { decision, reason } })
 }
 
 // ---- I7: settings ----
-export function getSettings() {
-  const { domains, ...values } = db.settings
-  return delay({ values, domains, audit: db.audit })
+
+// TODO(backend): GET /api/settings/timing and /api/settings/domains. The audit log route exists.
+export async function getSettingsFromApi() {
+  const [values, domains, audit] = await Promise.all([
+    request('/api/settings/timing'),
+    request('/api/settings/domains'),
+    request('/api/audit?page_size=50'),
+  ])
+  return { values: camelize(values), domains, audit: audit.map(mapAudit) }
 }
 
-export function updateSettings(values) {
-  Object.assign(db.settings, values)
-  log(db.audit, `${ACTOR} updated timing windows and capacity`)
-  return delay()
+// TODO(backend): PUT /api/settings/timing
+export async function updateSettingsFromApi(values) {
+  return request('/api/settings/timing', { method: 'PUT', body: snakeify(values) })
 }
 
-export function addDomain(domain) {
-  if (!db.settings.domains.includes(domain)) db.settings.domains.push(domain)
-  log(db.audit, `${ACTOR} approved the domain ${domain}`)
-  return delay()
+// TODO(backend): POST /api/settings/domains
+export async function addDomainFromApi(domain) {
+  return request('/api/settings/domains', { method: 'POST', body: { domain } })
 }
 
-export function removeDomain(domain) {
-  db.settings.domains = db.settings.domains.filter((d) => d !== domain)
-  log(db.audit, `${ACTOR} removed the domain ${domain}`)
-  return delay()
+// TODO(backend): DELETE /api/settings/domains/<domain>
+export async function removeDomainFromApi(domain) {
+  return request(`/api/settings/domains/${encodeURIComponent(domain)}`, { method: 'DELETE' })
 }
