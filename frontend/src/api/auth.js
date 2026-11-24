@@ -89,7 +89,23 @@ export function resendVerification(email) {
   return delay({ link: `/verify-email/${s.verifyToken}` })
 }
 
+// A verification link works once. In development React's StrictMode runs the page's effect twice,
+// so every call for the same token shares one verification and gets the same answer (issue #10).
+// A failure is forgotten, so the page can try again.
+const verifications = new Map()
+
 export function verifyEmail(token) {
+  if (!verifications.has(token)) {
+    const verification = verifyOnce(token).catch((error) => {
+      verifications.delete(token)
+      throw error
+    })
+    verifications.set(token, verification)
+  }
+  return verifications.get(token)
+}
+
+function verifyOnce(token) {
   const s = db.students.find((x) => x.verifyToken === token)
   if (s) {
     Object.assign(s, { verified: true })

@@ -8,6 +8,7 @@ from .schemas import (
     ActivateSchema,
     ActivationInfoSchema,
     CapacityRequestAnswerSchema,
+    CapacityRequestCreatedSchema,
     CapacityRequestResponseSchema,
     DashboardSchema,
     DeclineAssignmentSchema,
@@ -113,6 +114,23 @@ def resend_activation(mentor_id):
     For a verified mentor who has not activated their account yet. Older links stop working.
     """
     return services.serialize_one(services.resend_activation(mentor_id, actor=get_current_user()))
+
+
+@blp.route("/<int:mentor_id>/capacity-requests", methods=["POST"])
+@blp.stories("US-18", "US-10")
+@blp.auth("iic")
+@blp.errors(404, 409)
+@blp.response(201, CapacityRequestCreatedSchema)
+def request_capacity(mentor_id):
+    """Ask a mentor to take one more student
+
+    For a mentor at capacity whom IIC would like to assign (US-16). The mentor is notified and
+    answers from their dashboard (`POST /api/mentors/capacity-requests/{id}/answer`). Their
+    capacity rises by one only if they accept. 409 if the mentor is not active and available, or
+    already has a request waiting for an answer.
+    """
+    request = services.request_capacity(mentor_id, actor=get_current_user())
+    return services.serialize_capacity_request(request)
 
 
 @blp.route("/activation/<string:token>")

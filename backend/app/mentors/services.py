@@ -220,6 +220,56 @@ def answer_capacity_request(request_id: int, accept: bool, mentor: Mentor) -> di
     return {"id": request.id, "status": request.status, "capacity": mentor.capacity}
 
 
+def request_capacity(mentor_id: int, *, actor: User) -> CapacityRequest:
+    """IIC asks a mentor to take one more student (US-18). Their capacity rises only if they accept.
+
+    404 for an unknown mentor; 409 if the mentor is not active and available, or already has a
+    request waiting for an answer.
+    """
+    mentor = db.session.get(Mentor, mentor_id)
+    if mentor is None:
+        abort(404, message=f"No mentor with ID {mentor_id}.")
+    if mentor.verification_status != ACTIVE or not mentor.available:
+        abort(409, message=f"{mentor.name} isn't available.")
+    pending = db.session.query(CapacityRequest.id).filter_by(mentor_id=mentor.id, status="pending").first()
+    if pending is not None:
+        abort(409, message=f"{mentor.name} already has a pending request.")
+
+    request = CapacityRequest(mentor=mentor, by_user=actor, status="pending")
+    db.session.add(request)
+    db.session.flush()
+    audit.record(
+        "request_capacity",
+        "capacity_request",
+        request.id,
+        actor=actor,
+        details=f"Asked {mentor.name} to go from {mentor.capacity} to {mentor.capacity + 1} students.",
+    )
+    notifications.notify(
+        mentor.user,
+        "capacity_request",
+        link="/mentor",
+        mentor_name=mentor.name,
+        asked_by=display_name(actor),
+        current=mentor.capacity,
+        proposed=mentor.capacity + 1,
+    )
+    db.session.commit()
+    return request
+
+
+def serialize_capacity_request(request: CapacityRequest) -> dict:
+    return {
+        "id": request.id,
+        "mentor_id": request.mentor_id,
+        "status": request.status,
+        "by": display_name(request.by_user),
+        "from": request.mentor.capacity,
+        "to": request.mentor.capacity + 1,
+        "created_at": request.created_at,
+    }
+
+
 def get_mentor_profile(mentor: Mentor) -> dict:
     """The mentor's profile: availability, contact, capacity and expertise."""
     return {

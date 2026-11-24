@@ -119,6 +119,7 @@ pending_verification --IIC verifies--> verified --mentor uses the link--> active
 | `POST /api/mentors/import` | IIC | Imports CSV rows: `name`, `email`, `expertise tags` and `experience`, with several values separated by semicolons. A known email is updated, not duplicated. Invalid rows come back with their row number and reason |
 | `POST /api/mentors/<id>/verify` | IIC | Sets the expertise tags, records who verified the mentor and when, and emails an activation link that works for 7 days |
 | `POST /api/mentors/<id>/resend-activation` | IIC | Sends a new link; older ones stop working |
+| `POST /api/mentors/<id>/capacity-requests` | IIC | Asks an active, available mentor to take one more student, for example one at capacity (US-18). The mentor is notified and answers with `POST /api/mentors/capacity-requests/<id>/answer`. Their capacity rises by one only if they accept. One request at a time |
 | `GET /api/mentors/activation/<token>` | anyone | Checks a link (404 unknown or replaced, 410 used or expired) |
 | `POST /api/mentors/activation/<token>` | anyone | Sets the mentor's password and activates the account, then logs them in |
 
