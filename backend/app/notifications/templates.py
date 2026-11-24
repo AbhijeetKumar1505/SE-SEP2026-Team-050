@@ -51,6 +51,13 @@ TEMPLATES: dict[str, Template] = {
         subject="Your mentoring request has been closed",
         body='Hello {student_name}, IIC has closed your request "{title}". Reason: {reason}',
     ),
+    "capacity_request": Template(
+        subject="Could you take one more student?",
+        body=(
+            "Hello {mentor_name}, {asked_by} from IIC asks whether you could mentor one more student, which "
+            "would raise your capacity from {current} to {proposed}. Please accept or decline from your dashboard."
+        ),
+    ),
     "acceptance_notice": Template(
         subject="Your mentor has accepted your request",
         body="Hello {student_name}, {mentor_name} has accepted your request. Here are their preferred contact details.",
