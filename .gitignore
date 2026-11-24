@@ -23,3 +23,6 @@ docs/*/recordings/
 
 # Built submission archives: rebuild with python submission/build_zips.py
 submission/
+
+# Personal editor and AI-tool settings (issue #12)
+opencode.json
