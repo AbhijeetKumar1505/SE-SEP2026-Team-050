@@ -9,16 +9,22 @@ import Pill from '../../components/Pill'
 import Section from '../../components/Section'
 import { INTERESTS, LEVELS } from '../../constants/student'
 import useFetch from '../../hooks/useFetch'
+import { showApiErrors } from '../../utils/apiErrors'
 import { required } from '../../utils/rules'
+
+// The API's field names, and the form fields they belong to.
+const API_FIELDS = { programme: 'level', cgpa: 'cgpa', completed_courses: 'courses', career_interest: 'careerInterest' }
 
 // S1: first-time setup (profile incomplete) and later edits.
 export default function StudentProfile() {
   const navigate = useNavigate()
   const [profile, reload] = useFetch(getProfile)
   const [saved, setSaved] = useState(false)
+  const [formError, setFormError] = useState('')
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isDirty, isSubmitting },
   } = useForm({
     values: profile && {
@@ -31,8 +37,15 @@ export default function StudentProfile() {
   if (!profile) return <Loading />
 
   const onboarding = !profile.complete
+  // A refusal from the API is shown on the form: field errors under their fields, anything else above.
   const save = async (values) => {
-    await saveProfile(values)
+    setFormError('')
+    try {
+      await saveProfile(values)
+    } catch (error) {
+      setFormError(showApiErrors(error, setError, API_FIELDS))
+      return
+    }
     if (onboarding) return navigate('/student')
     await reload()
     setSaved(true)
@@ -102,6 +115,7 @@ export default function StudentProfile() {
             {...register('careerInterest', { required: 'Select your career interest.' })}
           />
           <p className="small text-muted">Your CGPA is visible only to IIC.</p>
+          {formError && <Alert variant="danger">{formError}</Alert>}
           {saved && !isDirty && <Alert variant="success">Profile saved.</Alert>}
           <div className="d-flex justify-content-end">
             <Button type="submit" disabled={isSubmitting || (!onboarding && !isDirty)}>

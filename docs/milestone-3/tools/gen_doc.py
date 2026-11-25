@@ -26,6 +26,7 @@ GROUPS = [
     ("test_roster.py", "US-15 IIC's student roster"),
     ("test_problem_queue.py", "US-16 IIC's problem queue and assignment"),
     ("test_capacity_requests.py", "US-10 and US-18 Mentor capacity requests"),
+    ("test_student_journey.py", "The Sprint 1 journey across roles: limits, visibility and notices"),
     ("test_auth.py", "Login, logout and role checks"),
     ("test_notifications.py", "Notifications"),
     ("test_audit.py", "Audit log"),
@@ -138,6 +139,10 @@ add(f"| Tests in the suite | {total_tests} |")
 add(f"| API test cases (tests that call an endpoint) | {api_tests} |")
 add(f"| HTTP requests made by those test cases | {total_calls} |")
 add(f"| Service, model and migration tests (no HTTP request) | {unit_only} |")
+add(
+    "| Platform tests that call the API but test no story (the OpenAPI document, test fixtures) | "
+    f"{total_tests - api_tests - unit_only} |"
+)
 add(f"| Result | **{passed} of {api_tests} API test cases succeed; all {total_tests} tests pass** |")
 add("| Run | `pytest` in `backend/`, Python 3.12, on the `main` branch of 24 Nov 2026 |\n")
 

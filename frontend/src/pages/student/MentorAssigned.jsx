@@ -17,6 +17,7 @@ export default function MentorAssigned({ m, reload }) {
   const { user } = useAuth()
   const { mentor } = m
   const [copied, setCopied] = useState(false)
+  const [reachError, setReachError] = useState('')
   const {
     register,
     handleSubmit,
@@ -85,11 +86,18 @@ export default function MentorAssigned({ m, reload }) {
           <Section title="Your first message">
             <Form
               onSubmit={handleSubmit(async () => {
-                await markReachedOut(m.id)
+                setReachError('')
+                try {
+                  await markReachedOut(m.id)
+                } catch (error) {
+                  setReachError(error.message)
+                  return
+                }
                 reload()
               })}
               noValidate
             >
+              {reachError && <Alert variant="danger">{reachError}</Alert>}
               <p className="text-muted">Edit it, copy it and send it yourself.</p>
               <Field
                 label="Message"

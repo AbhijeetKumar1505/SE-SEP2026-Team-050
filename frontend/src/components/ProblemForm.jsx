@@ -1,12 +1,16 @@
-import { Button, Form } from 'react-bootstrap'
+import { useState } from 'react'
+import { Alert, Button, Form } from 'react-bootstrap'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { PROBLEM_LIMITS as L } from '../constants/student'
+import { showApiErrors } from '../utils/apiErrors'
 import { optional, required } from '../utils/rules'
 import Field from './Field'
 import ProblemCoach from './ProblemCoach'
 import TagPicker from './TagPicker'
 
 const EMPTY = { problem: '', tags: [], goal: '', guidance: '' }
+// The API's field names, and the form fields they belong to.
+const API_FIELDS = { description: 'problem', tags: 'tags', desired_outcome: 'goal', guidance_preferences: 'guidance' }
 
 // The problem form, for submitting a new problem and for editing one. coach shows the AI problem coach (S2).
 export default function ProblemForm({ defaultValues = EMPTY, submitLabel, onSubmit, onCancel, coach = false }) {
@@ -15,8 +19,20 @@ export default function ProblemForm({ defaultValues = EMPTY, submitLabel, onSubm
     handleSubmit,
     control,
     setValue,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({ defaultValues })
+  const [formError, setFormError] = useState('')
+  // A refusal from the API is shown on the form: field errors under their fields, anything else
+  // (such as "You already have an open problem.") above them.
+  const submit = async (values) => {
+    setFormError('')
+    try {
+      await onSubmit(values)
+    } catch (error) {
+      setFormError(showApiErrors(error, setError, API_FIELDS))
+    }
+  }
   const problem = useWatch({ control, name: 'problem' })
   const tags = useWatch({ control, name: 'tags' })
   const length = problem.length
@@ -24,7 +40,8 @@ export default function ProblemForm({ defaultValues = EMPTY, submitLabel, onSubm
   const addTags = (names) =>
     setValue('tags', [...tags, ...names.filter((n) => !tags.includes(n))].slice(0, L.tagsMax), { shouldValidate: true })
   return (
-    <Form onSubmit={handleSubmit(onSubmit)} noValidate>
+    <Form onSubmit={handleSubmit(submit)} noValidate>
+      {formError && <Alert variant="danger">{formError}</Alert>}
       <Field
         label="Describe your problem"
         as="textarea"

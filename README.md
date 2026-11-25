@@ -18,7 +18,7 @@ Milestones 1 and 2 are submitted. Milestone 3 (Sprint 1) is in progress.
   - a pytest suite that CI runs on every pull request.
 
   The endpoints for each user story are built in Sprints 1 and 2.
-- **Frontend** ([frontend](frontend/README.md)): a React app with the pages for all four roles. The student, mentor and IIC pages of Sprint 1 call the API. Sign-up, password reset and the Sprint 2 features (monitoring, cases, settings, insights and the AI features) still use an in-memory mock until their endpoints are built.
+- **Frontend** ([frontend](frontend/README.md)): a React app with the pages for all four roles. The student, mentor and IIC pages of Sprint 1 call the API, including sign-up and email verification. Password reset and the Sprint 2 features (monitoring, cases, settings, insights and the AI features) still use an in-memory mock until their endpoints are built.
 
 ## Team
 

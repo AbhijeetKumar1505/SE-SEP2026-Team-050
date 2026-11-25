@@ -50,6 +50,11 @@ export function VerifyPending() {
             Prototype shortcut: <Link to={link}>open the verification link</Link>
           </p>
         )}
+        {import.meta.env.DEV && (
+          <p className="small text-muted mt-3 mb-0">
+            Running locally? The email is in Mailpit at <a href="http://localhost:8025">localhost:8025</a>, or in the Flask log.
+          </p>
+        )}
       </div>
     </AuthLayout>
   )
@@ -62,11 +67,6 @@ export function VerifyResult() {
   const navigate = useNavigate()
   const [result] = useFetch(verifyEmail, token)
   if (!result) return <Loading />
-
-  const resend = async () => {
-    const { link } = await resendVerification(result.email)
-    navigate('/verify-email', { state: { email: result.email, link } })
-  }
 
   return (
     <AuthLayout action={loginLink}>
@@ -91,9 +91,11 @@ export function VerifyResult() {
           <>
             <Icon name="bi-exclamation-circle" tone="warning" />
             <h1 className="h3 mt-3">Verification link expired</h1>
-            <p className="text-muted">This link is no longer valid. Request a new verification email.</p>
-            <Button className="w-100" onClick={resend}>
-              Request a new link
+            <p className="text-muted">
+              This link is more than 24 hours old. Sign up again with the same details and we’ll email you a new link.
+            </p>
+            <Button as={Link} to="/signup" className="w-100">
+              Get a new link
             </Button>
           </>
         )}
@@ -101,7 +103,7 @@ export function VerifyResult() {
           <>
             <Icon name="bi-exclamation-circle" tone="warning" />
             <h1 className="h3 mt-3">Unable to verify email</h1>
-            <p className="text-muted">This link is invalid or has already been used.</p>
+            <p className="text-muted">{result.message || 'This link is invalid or has already been used.'}</p>
             <Button as={Link} to="/login" className="w-100">
               Back to log in
             </Button>

@@ -8,7 +8,7 @@ Pages get their data through `src/api/`, which calls the Flask REST API for ever
 
 | Calls the API | Still uses the in-memory mock (`src/api/mock/`) |
 |---|---|
-| Login, logout and the notification bell | Sign-up, email verification and password reset |
+| Login, logout, sign-up, email verification and the notification bell | Password reset |
 | Student profile, problem, status, mentorship workspace | Monitoring, mentorship review and cases (IIC) |
 | Mentor dashboard, assignments, profile and availability, activation | Domain and timing settings (IIC) |
 | IIC problem queue, review, recommendations, assignment and closing | Leadership insights |
@@ -51,7 +51,7 @@ These steps are the same on Windows, macOS and Linux. `npm install` downloads th
 Login calls the backend. Run `flask db upgrade` and `flask seed-data` in `backend/` first, then log in with a demo account below or use the shortcuts on the login page. The token is kept in `localStorage`, so a refresh keeps you signed in until you log out or the token expires.
 
 - **Switch role** at any time with the drop-down in the header (Student, Mentor, IIC, Leadership). It signs you in as that role's demo account. It is a prototype aid and goes away with the demo accounts in Milestone 3.
-- **Try the sign-up flow** at http://localhost:5173: *Get Started* → sign-up → *Verify your email*. The **open the verification link** shortcut on the verify page stands in for the link in the email. It signs in a new student, who then completes their profile and submits a problem.
+- **Try the sign-up flow** at http://localhost:5173: *Get Started* → sign-up → *Check your inbox*. Use a roll number on IIC's roster that has no account yet; `flask seed-data` adds three, such as `23F1002346` with `23f1002346@ds.study.iitm.ac.in`. The verification email arrives in Mailpit at http://localhost:8025 (or the Flask log). Its link signs in the new student, who then completes their profile and submits a problem.
 - **Mentor activation:** as IIC, open **Mentor pool** and verify a mentor who is *Pending verification*. The confirmation has an **open the link** shortcut to the page the mentor would open from their email. http://localhost:5173/activate/expired shows an expired link.
 
 ## Demo accounts
@@ -65,7 +65,7 @@ These are the accounts `flask seed-data` creates in the backend. All use the pas
 | IIC | deepa.iic@ds.study.iitm.ac.in |
 | Leadership | leadership@ds.study.iitm.ac.in |
 
-The sign-up and password-reset pages still use the mock, so accounts created there do not exist in the backend yet. The backend's sign-up works through Swagger UI and Mailpit (see the backend README).
+Sign-up creates a real account in the backend. The password-reset pages still use the mock until their endpoint exists (SCRUM-172), so a reset there does not change the backend account.
 
 ### Pages
 
