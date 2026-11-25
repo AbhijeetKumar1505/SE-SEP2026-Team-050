@@ -4,8 +4,8 @@ import { db } from './mock/db'
 import { delay, uid } from './mock/mockUtils'
 import { session } from './mock/session'
 
-// Login, logout and "who am I" call the Flask API. Sign-up, verification and password reset
-// stay on the in-memory mock until the backend endpoints exist (a later Sprint 1 story).
+// Login, logout, "who am I", sign-up and email verification call the Flask API. Password reset
+// stays on the in-memory mock until its backend endpoint exists (Sprint 2).
 
 const same = (a, b) => a.toLowerCase() === b.toLowerCase()
 const fail = (message) => Promise.reject(new Error(message))
@@ -58,12 +58,6 @@ export function switchDemoRole(role) {
 
 // ---- Mock: endpoint not built on the backend yet ----
 
-export function signIn({ role, record }) {
-  if (role === 'mentor') session.mentorId = record.id
-  if (role === 'student') session.studentId = record.id
-  return { id: record.id, role, name: record.name, roll: record.roll }
-}
-
 // Every account as { role, record }, so password changes land on the stored record.
 const accounts = () => [
   ...db.students.filter((s) => s.signedUp).map((record) => ({ role: 'student', record })),
@@ -71,22 +65,23 @@ const accounts = () => [
   ...db.staff.map((record) => ({ role: record.role, record })),
 ]
 
-// Students must be on IIC's roster, with the roster's email.
-export function signup({ rollNumber, email, password }) {
-  const s = db.students.find((x) => same(x.roll, rollNumber))
-  if (!s) return fail('This roll number isn’t registered with IIC.')
-  if (!same(s.email, email)) return fail('Use the institute email registered for this roll number.')
-  if (s.signedUp) return fail('An account already exists for this roll number. Log in instead.')
-  Object.assign(s, { signedUp: true, verified: false, password, verifyToken: uid() })
-  return delay({ email: s.email, link: `/verify-email/${s.verifyToken}` })
+// ---- Sign-up and email verification (US-01) ----
+// The API checks the email domain and IIC's roster and emails the link; in development the email
+// arrives in Mailpit (http://localhost:8025). The link is never returned to the browser.
+
+export async function signup({ rollNumber, email, password }) {
+  const d = await request('/api/auth/signup', {
+    method: 'POST',
+    body: { email, roll_number: rollNumber, password },
+    auth: false,
+  })
+  return { email: d.email }
 }
 
-export function resendVerification(email) {
-  const s = db.students.find((x) => same(x.email, email) && x.signedUp && !x.verified)
-  if (!s) return fail('There is nothing to verify for this email.')
-  db.expiredTokens[s.verifyToken] = s.email // the old link stops working
-  s.verifyToken = uid()
-  return delay({ link: `/verify-email/${s.verifyToken}` })
+// Always succeeds, so nobody can probe who has signed up. Older links stop working.
+export async function resendVerification(email) {
+  await request('/api/auth/resend-verification', { method: 'POST', body: { email }, auth: false })
+  return {}
 }
 
 // A verification link works once. In development React's StrictMode runs the page's effect twice,
@@ -105,16 +100,27 @@ export function verifyEmail(token) {
   return verifications.get(token)
 }
 
-function verifyOnce(token) {
-  const s = db.students.find((x) => x.verifyToken === token)
-  if (s) {
-    Object.assign(s, { verified: true })
-    delete s.verifyToken
-    return delay({ status: 'verified', user: signIn({ role: 'student', record: s }) })
+// Verifying logs the student in. 410: the link is over 24 hours old. 404: unknown or replaced by a
+// newer link. 409: already used, so the account is verified and the student can log in.
+async function verifyOnce(token) {
+  try {
+    const { access_token: accessToken, user: account } = await request('/api/auth/verify-email', {
+      method: 'POST',
+      body: { token },
+      auth: false,
+    })
+    setToken(accessToken)
+    const user = toUser(account)
+    setMockRecord(user.role)
+    return { status: 'verified', user }
+  } catch (error) {
+    if (error.status === 410) return { status: 'expired' }
+    if (error.status === 404 || error.status === 409) return { status: 'invalid', message: error.message }
+    throw error
   }
-  const email = db.expiredTokens[token]
-  return delay(email ? { status: 'expired', email } : { status: 'invalid' })
 }
+
+// ---- Password reset: still the mock, the backend has no endpoint yet ----
 
 // Always succeeds, so nobody can probe which emails have accounts.
 export function requestPasswordReset(email) {
