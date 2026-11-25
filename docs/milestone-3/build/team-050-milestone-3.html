@@ -108,23 +108,27 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 </thead>
 <tbody><tr>
 <td>Tests in the suite</td>
-<td>361</td>
+<td>373</td>
 </tr>
 <tr>
 <td>API test cases (tests that call an endpoint)</td>
-<td>293</td>
+<td>305</td>
 </tr>
 <tr>
 <td>HTTP requests made by those test cases</td>
-<td>484</td>
+<td>509</td>
 </tr>
 <tr>
 <td>Service, model and migration tests (no HTTP request)</td>
 <td>58</td>
 </tr>
 <tr>
+<td>Platform tests that call the API but test no story (the OpenAPI document, test fixtures)</td>
+<td>10</td>
+</tr>
+<tr>
 <td>Result</td>
-<td><strong>293 of 293 API test cases succeed; all 361 tests pass</strong></td>
+<td><strong>305 of 305 API test cases succeed; all 373 tests pass</strong></td>
 </tr>
 <tr>
 <td>Run</td>
@@ -286,28 +290,28 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <tr>
 <td><code>GET /api/mentors/me/dashboard</code></td>
 <td>My mentor dashboard</td>
-<td>7</td>
+<td>9</td>
 <td>200, 403</td>
 <td>Success</td>
 </tr>
 <tr>
 <td><code>GET /api/mentors/mentorships/{mentorship_id}</code></td>
 <td>Get a mentorship&#39;s detail</td>
-<td>3</td>
+<td>4</td>
 <td>200, 403, 404</td>
 <td>Success</td>
 </tr>
 <tr>
 <td><code>POST /api/mentors/mentorships/{mentorship_id}/accept</code></td>
 <td>Accept a pending assignment</td>
-<td>3</td>
+<td>5</td>
 <td>200, 403</td>
 <td>Success</td>
 </tr>
 <tr>
 <td><code>POST /api/mentors/mentorships/{mentorship_id}/decline</code></td>
 <td>Decline a pending assignment</td>
-<td>1</td>
+<td>2</td>
 <td>200</td>
 <td>Success</td>
 </tr>
@@ -335,7 +339,7 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <tr>
 <td><code>GET /api/mentorships/me</code></td>
 <td>Get my mentorship</td>
-<td>7</td>
+<td>8</td>
 <td>200, 403</td>
 <td>Success</td>
 </tr>
@@ -398,7 +402,7 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <tr>
 <td><code>POST /api/problems</code></td>
 <td>Submit a problem</td>
-<td>10</td>
+<td>16</td>
 <td>201, 403, 409, 422</td>
 <td>Success</td>
 </tr>
@@ -412,14 +416,14 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <tr>
 <td><code>GET /api/problems/queue</code></td>
 <td>List IIC&#39;s problem queue</td>
-<td>4</td>
+<td>6</td>
 <td>200, 401, 403</td>
 <td>Success</td>
 </tr>
 <tr>
 <td><code>GET /api/problems/{problem_id}</code></td>
 <td>Open a problem for review</td>
-<td>5</td>
+<td>6</td>
 <td>200, 401, 403, 404</td>
 <td>Success</td>
 </tr>
@@ -433,14 +437,14 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <tr>
 <td><code>POST /api/problems/{problem_id}/assign</code></td>
 <td>Assign a mentor</td>
-<td>12</td>
+<td>17</td>
 <td>200, 401, 403, 404, 409</td>
 <td>Success</td>
 </tr>
 <tr>
 <td><code>POST /api/problems/{problem_id}/close</code></td>
 <td>Close a problem without a mentor</td>
-<td>5</td>
+<td>6</td>
 <td>200, 401, 403, 409, 422</td>
 <td>Success</td>
 </tr>
@@ -517,7 +521,7 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <tr>
 <td><code>GET /api/students/me/home</code></td>
 <td>My student home</td>
-<td>5</td>
+<td>6</td>
 <td>200, 401</td>
 <td>Success</td>
 </tr>
@@ -634,7 +638,7 @@ thead tr:has(> th:empty + th:empty:last-child) { display: none; }
 <td>9 tests failed or errored: <code>AttributeError</code> in the fixtures, and 404 from a non-existent <code>/api/auth/whoami</code></td>
 <td>Role constants were imported from the wrong module, and the tests called the wrong path.</td>
 <td>The constants are imported from <code>app.auth.models</code>, and the tests call <code>GET /api/auth/me</code>. <a href="https://github.com/AbhijeetKumar1505/SE-SEP2026-Team-050/issues/16">Issue #16</a>, PR #4</td>
-<td>TC-208 (<code>test_login_returns_a_token_that_identifies_the_user</code>) (also <code>tests/test_fixtures.py</code>)</td>
+<td>TC-220 (<code>test_login_returns_a_token_that_identifies_the_user</code>) (also <code>tests/test_fixtures.py</code>)</td>
 </tr>
 <tr>
 <td>D-8</td>
@@ -1183,7 +1187,7 @@ pytest -v
 <td><code>POST /api/problems/1/withdraw</code></td>
 <td>none</td>
 <td>Student withdraws their problem.<br>200 OK</td>
-<td>200: {&quot;close_reason&quot;: &quot;Withdrawn by the student.&quot;, &quot;closed_at&quot;: &quot;2026-11-24T15:49:17.049775&quot;, &quot;description&quot;: &quot;Need guidance…</td>
+<td>200: {&quot;close_reason&quot;: &quot;Withdrawn by the student.&quot;, &quot;closed_at&quot;: &quot;2026-11-24T16:12:35.734786&quot;, &quot;description&quot;: &quot;Need guidance…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -1438,7 +1442,7 @@ pytest -v
 <td><code>GET /api/mentorships/me</code></td>
 <td>none</td>
 <td>The student sees the mentor goal and legacy steps.<br>200 OK</td>
-<td>200: {&quot;mentorship&quot;: {&quot;answered_at&quot;: &quot;2026-11-23T15:47:46.654015&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T15:47:46.654015&quot;, &quot;case_open&quot;:…</td>
+<td>200: {&quot;mentorship&quot;: {&quot;answered_at&quot;: &quot;2026-11-23T16:11:52.245671&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T16:11:52.245644&quot;, &quot;case_open&quot;:…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -1474,7 +1478,7 @@ pytest -v
 <td><code>PUT /api/mentorships/1</code></td>
 <td>{&quot;goal&quot;: &quot;Land a data internship.&quot;}</td>
 <td>Either participant can rewrite the goal.<br>200 OK</td>
-<td>200: {&quot;answered_at&quot;: &quot;2026-11-23T15:47:51.570886&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T15:47:51.570886&quot;, &quot;case_open&quot;: false, &quot;checkpo…</td>
+<td>200: {&quot;answered_at&quot;: &quot;2026-11-23T16:11:55.447904&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T16:11:55.447897&quot;, &quot;case_open&quot;: false, &quot;checkpo…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -1483,7 +1487,7 @@ pytest -v
 <td><code>PUT /api/mentorships/1</code></td>
 <td>{&quot;goal&quot;: &quot;Ship a benchmark report.&quot;}</td>
 <td>The mentor can rewrite the goal.<br>200 OK</td>
-<td>200: {&quot;answered_at&quot;: &quot;2026-11-23T15:47:52.926539&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T15:47:52.926539&quot;, &quot;case_open&quot;: false, &quot;checkpo…</td>
+<td>200: {&quot;answered_at&quot;: &quot;2026-11-23T16:11:56.044841&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T16:11:56.044835&quot;, &quot;case_open&quot;: false, &quot;checkpo…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -1528,7 +1532,7 @@ pytest -v
 <td>1. <code>GET /api/mentorships/me</code><br>2. <code>POST /api/mentorships/1/steps/step-1/toggle</code><br>3. <code>POST /api/mentorships/1/steps/step-1/toggle</code></td>
 <td>1. none<br>2. none<br>3. none</td>
 <td>A step can be toggled done and back.<br>1. 200 OK<br>2. 200 OK<br>3. 200 OK</td>
-<td>1. 200: {&quot;mentorship&quot;: {&quot;answered_at&quot;: &quot;2026-11-23T15:48:00.620179&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T15:48:00.620179&quot;, &quot;case_open&quot;:…<br>2. 200: [{&quot;done&quot;: true, &quot;id&quot;: &quot;step-1&quot;, &quot;text&quot;: &quot;Train baseline model,&quot;}, {&quot;done&quot;: false, &quot;id&quot;: &quot;step-2&quot;, &quot;text&quot;: &quot;Review code…<br>3. 200: [{&quot;done&quot;: false, &quot;id&quot;: &quot;step-1&quot;, &quot;text&quot;: &quot;Train baseline model,&quot;}, {&quot;done&quot;: false, &quot;id&quot;: &quot;step-2&quot;, &quot;text&quot;: &quot;Review code…</td>
+<td>1. 200: {&quot;mentorship&quot;: {&quot;answered_at&quot;: &quot;2026-11-23T16:11:59.362531&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T16:11:59.362525&quot;, &quot;case_open&quot;:…<br>2. 200: [{&quot;done&quot;: true, &quot;id&quot;: &quot;step-1&quot;, &quot;text&quot;: &quot;Train baseline model,&quot;}, {&quot;done&quot;: false, &quot;id&quot;: &quot;step-2&quot;, &quot;text&quot;: &quot;Review code…<br>3. 200: [{&quot;done&quot;: false, &quot;id&quot;: &quot;step-1&quot;, &quot;text&quot;: &quot;Train baseline model,&quot;}, {&quot;done&quot;: false, &quot;id&quot;: &quot;step-2&quot;, &quot;text&quot;: &quot;Review code…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -1537,7 +1541,7 @@ pytest -v
 <td>1. <code>GET /api/mentorships/me</code><br>2. <code>DELETE /api/mentorships/1/steps/step-2</code></td>
 <td>1. none<br>2. none</td>
 <td>A step can be deleted.<br>1. 200 OK<br>2. 200 OK</td>
-<td>1. 200: {&quot;mentorship&quot;: {&quot;answered_at&quot;: &quot;2026-11-23T15:48:02.309495&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T15:48:02.309495&quot;, &quot;case_open&quot;:…<br>2. 200: [{&quot;done&quot;: false, &quot;id&quot;: &quot;step-1&quot;, &quot;text&quot;: &quot;Train baseline model,&quot;}]</td>
+<td>1. 200: {&quot;mentorship&quot;: {&quot;answered_at&quot;: &quot;2026-11-23T16:11:59.906696&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T16:11:59.906691&quot;, &quot;case_open&quot;:…<br>2. 200: [{&quot;done&quot;: false, &quot;id&quot;: &quot;step-1&quot;, &quot;text&quot;: &quot;Train baseline model,&quot;}]</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -1588,7 +1592,7 @@ pytest -v
 <td><code>GET /api/mentors/me/dashboard</code></td>
 <td>none</td>
 <td>Dashboard shows pending assignment.<br>200 OK</td>
-<td>200: {&quot;assignments&quot;: [{&quot;assigned_at&quot;: &quot;2026-11-24T15:47:27.648026&quot;, &quot;assigned_by&quot;: &quot;IIC&quot;, &quot;deadline&quot;: &quot;2026-11-27T15:47:27.6…</td>
+<td>200: {&quot;assignments&quot;: [{&quot;assigned_at&quot;: &quot;2026-11-24T16:11:43.482946&quot;, &quot;assigned_by&quot;: &quot;IIC&quot;, &quot;deadline&quot;: &quot;2026-11-27T16:11:43.4…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -1678,7 +1682,7 @@ pytest -v
 <td><code>POST /api/mentors/mentorships/1/accept</code></td>
 <td>none</td>
 <td>Mentor accepts assignment.<br>200 OK</td>
-<td>200: {&quot;held&quot;: 0, &quot;id&quot;: 1, &quot;next_session&quot;: null, &quot;started_at&quot;: &quot;2026-11-24T15:47:37.511330&quot;, &quot;student&quot;: {&quot;name&quot;: &quot;Sample Stud…</td>
+<td>200: {&quot;held&quot;: 0, &quot;id&quot;: 1, &quot;next_session&quot;: null, &quot;started_at&quot;: &quot;2026-11-24T16:11:47.925137&quot;, &quot;student&quot;: {&quot;name&quot;: &quot;Sample Stud…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -1705,7 +1709,7 @@ pytest -v
 <td><code>GET /api/mentors/mentorships/1</code></td>
 <td>none</td>
 <td>Mentor sees the detail of their mentorship.<br>200 OK</td>
-<td>200: {&quot;answered_at&quot;: &quot;2026-11-23T15:47:42.153580&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T15:47:42.153580&quot;, &quot;checkpoint_due&quot;: &quot;2026-12-0…</td>
+<td>200: {&quot;answered_at&quot;: &quot;2026-11-23T16:11:49.978220&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T16:11:49.978212&quot;, &quot;checkpoint_due&quot;: &quot;2026-12-0…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -1774,7 +1778,7 @@ pytest -v
 <td>1. <code>POST /api/mentors/import</code><br>2. <code>POST /api/mentors/import</code></td>
 <td>1. {&quot;file&quot;: &quot;a.csv&quot;, &quot;rows&quot;: [{&quot;name&quot;: &quot;Rahul Menon&quot;, &quot;email&quot;: &quot;<a href="mailto:rahul.menon@example.com">rahul.menon@example.com</a>&quot;, &quot;expertise_tags&quot;: &quot;Com…<br>2. {&quot;file&quot;: &quot;b.csv&quot;, &quot;rows&quot;: [{&quot;name&quot;: &quot;Rahul K Menon&quot;, &quot;email&quot;: &quot;<a href="mailto:rahul.menon@example.com">rahul.menon@example.com</a>&quot;, &quot;expertise_tags&quot;: &quot;C…</td>
 <td>Importing a mentor again updates them instead of duplicating.<br>1. 200 OK<br>2. 200 OK</td>
-<td>1. 200: {&quot;added&quot;: 1, &quot;errors&quot;: [], &quot;file&quot;: &quot;a.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T15:47:00.865763+00:00&quot;, &quot;imported_by&quot;: &quot;user157@…<br>2. 200: {&quot;added&quot;: 0, &quot;errors&quot;: [], &quot;file&quot;: &quot;b.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T15:47:00.897347+00:00&quot;, &quot;imported_by&quot;: &quot;user157@…</td>
+<td>1. 200: {&quot;added&quot;: 1, &quot;errors&quot;: [], &quot;file&quot;: &quot;a.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T16:11:30.741937+00:00&quot;, &quot;imported_by&quot;: &quot;user157@…<br>2. 200: {&quot;added&quot;: 0, &quot;errors&quot;: [], &quot;file&quot;: &quot;b.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T16:11:30.767640+00:00&quot;, &quot;imported_by&quot;: &quot;user157@…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2068,7 +2072,7 @@ pytest -v
 <td>1. <code>POST /api/students/roster/import</code><br>2. <code>POST /api/students/roster/import</code></td>
 <td>1. {&quot;file&quot;: &quot;roster.csv&quot;, &quot;rows&quot;: [{&quot;name&quot;: &quot;Sneha P&quot;, &quot;roll_number&quot;: &quot;23f1002345&quot;, &quot;institute_email&quot;: &quot;23f10023…<br>2. {&quot;file&quot;: &quot;roster.csv&quot;, &quot;rows&quot;: [{&quot;name&quot;: &quot;Sneha Pillai&quot;, &quot;roll_number&quot;: &quot;23F1002345&quot;, &quot;institute_email&quot;: &quot;sne…</td>
 <td>Importing a roll number again updates it instead of duplicating it.<br>1. 200 OK<br>2. 200 OK</td>
-<td>1. 200: {&quot;added&quot;: 1, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T15:49:50.036819&quot;, &quot;imported_by&quot;: &quot;user553@d…<br>2. 200: {&quot;added&quot;: 1, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T15:49:50.053420&quot;, &quot;imported_by&quot;: &quot;user553@d…</td>
+<td>1. 200: {&quot;added&quot;: 1, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T16:12:50.709330&quot;, &quot;imported_by&quot;: &quot;user553@d…<br>2. 200: {&quot;added&quot;: 1, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T16:12:50.720887&quot;, &quot;imported_by&quot;: &quot;user553@d…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2077,7 +2081,7 @@ pytest -v
 <td>1. <code>POST /api/students/roster/import</code><br>2. <code>POST /api/students/roster/import</code></td>
 <td>1. {&quot;file&quot;: &quot;roster.csv&quot;, &quot;rows&quot;: [{&quot;name&quot;: &quot;Student 23f1002345&quot;, &quot;roll_number&quot;: &quot;23f1002345&quot;, &quot;institute_email&quot;…<br>2. {&quot;file&quot;: &quot;roster.csv&quot;, &quot;rows&quot;: [{&quot;name&quot;: &quot;Student 23f1002346&quot;, &quot;roll_number&quot;: &quot;23f1002346&quot;, &quot;institute_email&quot;…</td>
 <td>An email registered for another roll number is refused.<br>1. 200 OK<br>2. 200 OK</td>
-<td>1. 200: {&quot;added&quot;: 1, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T15:49:50.654215&quot;, &quot;imported_by&quot;: &quot;user554@d…<br>2. 200: {&quot;added&quot;: 0, &quot;errors&quot;: [{&quot;reason&quot;: &quot;Institute email <a href="mailto:23f1002345@ds.study.iitm.ac.in">23f1002345@ds.study.iitm.ac.in</a> is already registered for roll numbe…</td>
+<td>1. 200: {&quot;added&quot;: 1, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T16:12:51.021300&quot;, &quot;imported_by&quot;: &quot;user554@d…<br>2. 200: {&quot;added&quot;: 0, &quot;errors&quot;: [{&quot;reason&quot;: &quot;Institute email <a href="mailto:23f1002345@ds.study.iitm.ac.in">23f1002345@ds.study.iitm.ac.in</a> is already registered for roll numbe…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2086,7 +2090,7 @@ pytest -v
 <td>1. <code>POST /api/students/roster/import</code><br>2. <code>POST /api/students/roster/1/remove</code><br>3. <code>POST /api/students/roster/import</code></td>
 <td>1. {&quot;file&quot;: &quot;roster.csv&quot;, &quot;rows&quot;: [{&quot;name&quot;: &quot;Student 23f1002345&quot;, &quot;roll_number&quot;: &quot;23f1002345&quot;, &quot;institute_email&quot;…<br>2. {&quot;reason&quot;: &quot;Left.&quot;}<br>3. {&quot;file&quot;: &quot;roster.csv&quot;, &quot;rows&quot;: [{&quot;name&quot;: &quot;Student 23f1002345&quot;, &quot;roll_number&quot;: &quot;23f1002345&quot;, &quot;institute_email&quot;…</td>
 <td>Importing puts a removed student back.<br>1. 200 OK<br>2. 204 No Content<br>3. 200 OK</td>
-<td>1. 200: {&quot;added&quot;: 1, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T15:49:51.283332&quot;, &quot;imported_by&quot;: &quot;user555@d…<br>2. 204: empty body<br>3. 200: {&quot;added&quot;: 0, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T15:49:51.303268&quot;, &quot;imported_by&quot;: &quot;user555@d…</td>
+<td>1. 200: {&quot;added&quot;: 1, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T16:12:51.348968&quot;, &quot;imported_by&quot;: &quot;user555@d…<br>2. 204: empty body<br>3. 200: {&quot;added&quot;: 0, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T16:12:51.365498&quot;, &quot;imported_by&quot;: &quot;user555@d…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2095,7 +2099,7 @@ pytest -v
 <td><code>POST /api/students/roster/import</code></td>
 <td>{&quot;file&quot;: &quot;roster.csv&quot;, &quot;rows&quot;: [{&quot;name&quot;: &quot;Renamed Student&quot;, &quot;roll_number&quot;: &quot;22F0000558&quot;, &quot;institute_email&quot;: &quot;…</td>
 <td>A signed up student takes the new name.<br>200 OK</td>
-<td>200: {&quot;added&quot;: 0, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T15:49:52.261251&quot;, &quot;imported_by&quot;: &quot;user556@d…</td>
+<td>200: {&quot;added&quot;: 0, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T16:12:51.767209&quot;, &quot;imported_by&quot;: &quot;user556@d…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2140,7 +2144,7 @@ pytest -v
 <td>1. <code>POST /api/students/roster/import</code><br>2. <code>GET /api/students/roster</code></td>
 <td>1. {&quot;file&quot;: &quot;roster.csv&quot;, &quot;rows&quot;: [{&quot;name&quot;: &quot;Aarav Shah&quot;, &quot;roll_number&quot;: &quot;23f1002345&quot;, &quot;institute_email&quot;: &quot;23f10…<br>2. none</td>
 <td>The roster shows who has signed up and the last import.<br>1. 200 OK<br>2. 200 OK</td>
-<td>1. 200: {&quot;added&quot;: 2, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T15:49:56.398051&quot;, &quot;imported_by&quot;: &quot;user564@d…<br>2. 200: {&quot;last_import&quot;: {&quot;added&quot;: 2, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T15:49:56.398051&quot;, &quot;imported…</td>
+<td>1. 200: {&quot;added&quot;: 2, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T16:12:53.435019&quot;, &quot;imported_by&quot;: &quot;user564@d…<br>2. 200: {&quot;last_import&quot;: {&quot;added&quot;: 2, &quot;errors&quot;: [], &quot;file&quot;: &quot;roster.csv&quot;, &quot;imported_at&quot;: &quot;2026-11-24T16:12:53.435019&quot;, &quot;imported…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2362,7 +2366,7 @@ pytest -v
 <td>1. <code>POST /api/problems/1/assign</code><br>2. <code>GET /api/mentors</code></td>
 <td>1. {&quot;mentor_id&quot;: 1}<br>2. none</td>
 <td>Assigning asks the mentor and tells the student.<br>1. 200 OK<br>2. 200 OK</td>
-<td>1. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T15:48:34.459715+00:00&quot;, &quot;assigned_by&quot;: &quot;user343&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…<br>2. 200: [{&quot;availability&quot;: [&quot;Saturday 10:00-11:30&quot;], &quot;available&quot;: true, &quot;capacity&quot;: 2, &quot;capacity_requested&quot;: false, &quot;channel&quot;: &quot;…</td>
+<td>1. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T16:12:17.578701+00:00&quot;, &quot;assigned_by&quot;: &quot;user343&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…<br>2. 200: [{&quot;availability&quot;: [&quot;Saturday 10:00-11:30&quot;], &quot;available&quot;: true, &quot;capacity&quot;: 2, &quot;capacity_requested&quot;: false, &quot;channel&quot;: &quot;…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2371,7 +2375,7 @@ pytest -v
 <td>1. <code>POST /api/problems/1/assign</code><br>2. <code>GET /api/mentors/me/dashboard</code><br>3. <code>POST /api/mentors/mentorships/1/accept</code></td>
 <td>1. {&quot;mentor_id&quot;: 1}<br>2. none<br>3. none</td>
 <td>The mentor sees the assignment and can accept it.<br>1. 200 OK<br>2. 200 OK<br>3. 200 OK</td>
-<td>1. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T15:48:36.516578+00:00&quot;, &quot;assigned_by&quot;: &quot;user348&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…<br>2. 200: {&quot;assignments&quot;: [{&quot;assigned_at&quot;: &quot;2026-11-24T15:48:36.516578&quot;, &quot;assigned_by&quot;: &quot;user348&quot;, &quot;deadline&quot;: &quot;2026-11-27T15:48:…<br>3. 200: {&quot;held&quot;: 0, &quot;id&quot;: 1, &quot;next_session&quot;: null, &quot;started_at&quot;: &quot;2026-11-24T15:48:36.516578&quot;, &quot;student&quot;: {&quot;name&quot;: &quot;Sample Stud…</td>
+<td>1. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T16:12:18.472964+00:00&quot;, &quot;assigned_by&quot;: &quot;user348&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…<br>2. 200: {&quot;assignments&quot;: [{&quot;assigned_at&quot;: &quot;2026-11-24T16:12:18.472964&quot;, &quot;assigned_by&quot;: &quot;user348&quot;, &quot;deadline&quot;: &quot;2026-11-27T16:12:…<br>3. 200: {&quot;held&quot;: 0, &quot;id&quot;: 1, &quot;next_session&quot;: null, &quot;started_at&quot;: &quot;2026-11-24T16:12:18.472964&quot;, &quot;student&quot;: {&quot;name&quot;: &quot;Sample Stud…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2380,7 +2384,7 @@ pytest -v
 <td>1. <code>POST /api/problems/1/assign</code><br>2. <code>POST /api/problems/2/assign</code><br>3. <code>POST /api/problems/2/assign</code></td>
 <td>1. {&quot;mentor_id&quot;: 1}<br>2. {&quot;mentor_id&quot;: 1}<br>3. {&quot;mentor_id&quot;: 1}</td>
 <td>A mentor at capacity cannot be assigned.<br>1. 200 OK<br>2. 409 Conflict<br>3. 200 OK</td>
-<td>1. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T15:48:39.294753+00:00&quot;, &quot;assigned_by&quot;: &quot;user353&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…<br>2. 409: {&quot;code&quot;: 409, &quot;message&quot;: &quot;Sample Mentor is at capacity (1 of 1). Ask them to take an extra student first.&quot;, &quot;status&quot;: &quot;…<br>3. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T15:48:39.390607+00:00&quot;, &quot;assigned_by&quot;: &quot;user353&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…</td>
+<td>1. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T16:12:19.289031+00:00&quot;, &quot;assigned_by&quot;: &quot;user353&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…<br>2. 409: {&quot;code&quot;: 409, &quot;message&quot;: &quot;Sample Mentor is at capacity (1 of 1). Ask them to take an extra student first.&quot;, &quot;status&quot;: &quot;…<br>3. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T16:12:19.332309+00:00&quot;, &quot;assigned_by&quot;: &quot;user353&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2584,7 +2588,7 @@ pytest -v
 <td>1. <code>POST /api/mentors/1/capacity-requests</code><br>2. <code>GET /api/mentors</code><br>3. <code>GET /api/mentors/me/dashboard</code></td>
 <td>1. none<br>2. none<br>3. none</td>
 <td>Iic asks a mentor and the mentor is told.<br>1. 201 Created<br>2. 200 OK<br>3. 200 OK</td>
-<td>1. 201: {&quot;by&quot;: &quot;user53&quot;, &quot;created_at&quot;: &quot;2026-11-24T15:46:15.640384&quot;, &quot;from&quot;: 2, &quot;id&quot;: 1, &quot;mentor_id&quot;: 1, &quot;status&quot;: &quot;pending&quot;, &quot;…<br>2. 200: [{&quot;availability&quot;: [&quot;Saturday 10:00-11:30&quot;], &quot;available&quot;: true, &quot;capacity&quot;: 2, &quot;capacity_requested&quot;: true, &quot;channel&quot;: &quot;G…<br>3. 200: {&quot;assignments&quot;: [], &quot;capacity&quot;: 2, &quot;capacity_request&quot;: {&quot;by&quot;: &quot;user53&quot;, &quot;from&quot;: 2, &quot;id&quot;: 1, &quot;to&quot;: 3}, &quot;confirmed&quot;: 0, &quot;…</td>
+<td>1. 201: {&quot;by&quot;: &quot;user53&quot;, &quot;created_at&quot;: &quot;2026-11-24T16:11:10.953563&quot;, &quot;from&quot;: 2, &quot;id&quot;: 1, &quot;mentor_id&quot;: 1, &quot;status&quot;: &quot;pending&quot;, &quot;…<br>2. 200: [{&quot;availability&quot;: [&quot;Saturday 10:00-11:30&quot;], &quot;available&quot;: true, &quot;capacity&quot;: 2, &quot;capacity_requested&quot;: true, &quot;channel&quot;: &quot;G…<br>3. 200: {&quot;assignments&quot;: [], &quot;capacity&quot;: 2, &quot;capacity_request&quot;: {&quot;by&quot;: &quot;user53&quot;, &quot;from&quot;: 2, &quot;id&quot;: 1, &quot;to&quot;: 3}, &quot;confirmed&quot;: 0, &quot;…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2593,7 +2597,7 @@ pytest -v
 <td>1. <code>POST /api/mentors/1/capacity-requests</code><br>2. <code>POST /api/mentors/capacity-requests/1/answer</code><br>3. <code>POST /api/mentors/1/capacity-requests</code><br>4. <code>POST /api/mentors/capacity-requests/2/answer</code></td>
 <td>1. none<br>2. {&quot;accept&quot;: false}<br>3. none<br>4. {&quot;accept&quot;: true}</td>
 <td>Capacity rises only when the mentor accepts.<br>1. 201 Created<br>2. 200 OK<br>3. 201 Created<br>4. 200 OK</td>
-<td>1. 201: {&quot;by&quot;: &quot;user56&quot;, &quot;created_at&quot;: &quot;2026-11-24T15:46:17.259934&quot;, &quot;from&quot;: 2, &quot;id&quot;: 1, &quot;mentor_id&quot;: 1, &quot;status&quot;: &quot;pending&quot;, &quot;…<br>2. 200: {&quot;capacity&quot;: 2, &quot;id&quot;: 1, &quot;status&quot;: &quot;declined&quot;}<br>3. 201: {&quot;by&quot;: &quot;user56&quot;, &quot;created_at&quot;: &quot;2026-11-24T15:46:17.301915&quot;, &quot;from&quot;: 2, &quot;id&quot;: 2, &quot;mentor_id&quot;: 1, &quot;status&quot;: &quot;pending&quot;, &quot;…<br>4. 200: {&quot;capacity&quot;: 3, &quot;id&quot;: 2, &quot;status&quot;: &quot;accepted&quot;}</td>
+<td>1. 201: {&quot;by&quot;: &quot;user56&quot;, &quot;created_at&quot;: &quot;2026-11-24T16:11:11.511511&quot;, &quot;from&quot;: 2, &quot;id&quot;: 1, &quot;mentor_id&quot;: 1, &quot;status&quot;: &quot;pending&quot;, &quot;…<br>2. 200: {&quot;capacity&quot;: 2, &quot;id&quot;: 1, &quot;status&quot;: &quot;declined&quot;}<br>3. 201: {&quot;by&quot;: &quot;user56&quot;, &quot;created_at&quot;: &quot;2026-11-24T16:11:11.547361&quot;, &quot;from&quot;: 2, &quot;id&quot;: 2, &quot;mentor_id&quot;: 1, &quot;status&quot;: &quot;pending&quot;, &quot;…<br>4. 200: {&quot;capacity&quot;: 3, &quot;id&quot;: 2, &quot;status&quot;: &quot;accepted&quot;}</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2602,7 +2606,7 @@ pytest -v
 <td>1. <code>POST /api/problems/1/assign</code><br>2. <code>POST /api/problems/2/assign</code><br>3. <code>POST /api/mentors/1/capacity-requests</code><br>4. <code>POST /api/mentors/capacity-requests/1/answer</code><br>5. <code>POST /api/problems/2/assign</code></td>
 <td>1. {&quot;mentor_id&quot;: 1}<br>2. {&quot;mentor_id&quot;: 1}<br>3. none<br>4. {&quot;accept&quot;: true}<br>5. {&quot;mentor_id&quot;: 1}</td>
 <td>A mentor at capacity is assigned after agreeing to one more.<br>1. 200 OK<br>2. 409 Conflict<br>3. 201 Created<br>4. 200 OK<br>5. 200 OK</td>
-<td>1. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T15:46:19.365405+00:00&quot;, &quot;assigned_by&quot;: &quot;user59&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null, &quot;…<br>2. 409: {&quot;code&quot;: 409, &quot;message&quot;: &quot;Sample Mentor is at capacity (1 of 1). Ask them to take an extra student first.&quot;, &quot;status&quot;: &quot;…<br>3. 201: {&quot;by&quot;: &quot;user59&quot;, &quot;created_at&quot;: &quot;2026-11-24T15:46:19.440306&quot;, &quot;from&quot;: 1, &quot;id&quot;: 1, &quot;mentor_id&quot;: 1, &quot;status&quot;: &quot;pending&quot;, &quot;…<br>4. 200: {&quot;capacity&quot;: 2, &quot;id&quot;: 1, &quot;status&quot;: &quot;accepted&quot;}<br>5. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T15:46:19.489675+00:00&quot;, &quot;assigned_by&quot;: &quot;user59&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null, &quot;…</td>
+<td>1. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T16:11:12.327821+00:00&quot;, &quot;assigned_by&quot;: &quot;user59&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null, &quot;…<br>2. 409: {&quot;code&quot;: 409, &quot;message&quot;: &quot;Sample Mentor is at capacity (1 of 1). Ask them to take an extra student first.&quot;, &quot;status&quot;: &quot;…<br>3. 201: {&quot;by&quot;: &quot;user59&quot;, &quot;created_at&quot;: &quot;2026-11-24T16:11:12.368825&quot;, &quot;from&quot;: 1, &quot;id&quot;: 1, &quot;mentor_id&quot;: 1, &quot;status&quot;: &quot;pending&quot;, &quot;…<br>4. 200: {&quot;capacity&quot;: 2, &quot;id&quot;: 1, &quot;status&quot;: &quot;accepted&quot;}<br>5. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T16:11:12.400953+00:00&quot;, &quot;assigned_by&quot;: &quot;user59&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null, &quot;…</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2611,7 +2615,7 @@ pytest -v
 <td>1. <code>POST /api/mentors/1/capacity-requests</code><br>2. <code>POST /api/mentors/1/capacity-requests</code></td>
 <td>1. none<br>2. none</td>
 <td>Only one request at a time.<br>1. 201 Created<br>2. 409 Conflict</td>
-<td>1. 201: {&quot;by&quot;: &quot;user64&quot;, &quot;created_at&quot;: &quot;2026-11-24T15:46:20.833568&quot;, &quot;from&quot;: 2, &quot;id&quot;: 1, &quot;mentor_id&quot;: 1, &quot;status&quot;: &quot;pending&quot;, &quot;…<br>2. 409: {&quot;code&quot;: 409, &quot;message&quot;: &quot;Sample Mentor already has a pending request.&quot;, &quot;status&quot;: &quot;Conflict&quot;}</td>
+<td>1. 201: {&quot;by&quot;: &quot;user64&quot;, &quot;created_at&quot;: &quot;2026-11-24T16:11:12.936331&quot;, &quot;from&quot;: 2, &quot;id&quot;: 1, &quot;mentor_id&quot;: 1, &quot;status&quot;: &quot;pending&quot;, &quot;…<br>2. 409: {&quot;code&quot;: 409, &quot;message&quot;: &quot;Sample Mentor already has a pending request.&quot;, &quot;status&quot;: &quot;Conflict&quot;}</td>
 <td>Success</td>
 </tr>
 <tr>
@@ -2678,6 +2682,129 @@ pytest -v
 <td>Success</td>
 </tr>
 </tbody></table>
+<h4>The Sprint 1 journey across roles: limits, visibility and notices</h4>
+<p>Test file: <a href="../../backend/tests/test_student_journey.py"><code>backend/tests/test_student_journey.py</code></a>. The Sprint 1 journey across roles: limits, who sees a problem, and what the student is told.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Test case</th>
+<th>API</th>
+<th>Inputs</th>
+<th>Expected output</th>
+<th>Actual output</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TC-208</td>
+<td><code>test_a_problem_outside_the_limits_is_refused[description-too-short]</code></td>
+<td><code>POST /api/problems</code></td>
+<td>{&quot;description&quot;: &quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;, &quot;tags&quot;: [&quot;Computer vision&quot;], &quot;desired_outcome&quot;: &quot;A shortlist…</td>
+<td>A problem outside the limits is refused[description-too-short].<br>422 Unprocessable Entity</td>
+<td>422: {&quot;code&quot;: 422, &quot;errors&quot;: {&quot;json&quot;: {&quot;description&quot;: [&quot;Length must be between 30 and 1000.&quot;]}}, &quot;message&quot;: &quot;Some fields are…</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>TC-209</td>
+<td><code>test_a_problem_outside_the_limits_is_refused[description-too-long]</code></td>
+<td><code>POST /api/problems</code></td>
+<td>{&quot;description&quot;: &quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx…</td>
+<td>A problem outside the limits is refused[description-too-long].<br>422 Unprocessable Entity</td>
+<td>422: {&quot;code&quot;: 422, &quot;errors&quot;: {&quot;json&quot;: {&quot;description&quot;: [&quot;Length must be between 30 and 1000.&quot;]}}, &quot;message&quot;: &quot;Some fields are…</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>TC-210</td>
+<td><code>test_a_problem_outside_the_limits_is_refused[no-tags]</code></td>
+<td><code>POST /api/problems</code></td>
+<td>{&quot;description&quot;: &quot;I want advice on choosing between two Computer Vision electives and planning a project.&quot;, &quot;t…</td>
+<td>A problem outside the limits is refused[no-tags].<br>422 Unprocessable Entity</td>
+<td>422: {&quot;code&quot;: 422, &quot;errors&quot;: {&quot;json&quot;: {&quot;tags&quot;: [&quot;Length must be between 1 and 5.&quot;]}}, &quot;message&quot;: &quot;Some fields are invalid.&quot;,…</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>TC-211</td>
+<td><code>test_a_problem_outside_the_limits_is_refused[six-tags]</code></td>
+<td><code>POST /api/problems</code></td>
+<td>{&quot;description&quot;: &quot;I want advice on choosing between two Computer Vision electives and planning a project.&quot;, &quot;t…</td>
+<td>A problem outside the limits is refused[six-tags].<br>422 Unprocessable Entity</td>
+<td>422: {&quot;code&quot;: 422, &quot;errors&quot;: {&quot;json&quot;: {&quot;tags&quot;: [&quot;Length must be between 1 and 5.&quot;]}}, &quot;message&quot;: &quot;Some fields are invalid.&quot;,…</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>TC-212</td>
+<td><code>test_a_problem_outside_the_limits_is_refused[no-outcome]</code></td>
+<td><code>POST /api/problems</code></td>
+<td>{&quot;description&quot;: &quot;I want advice on choosing between two Computer Vision electives and planning a project.&quot;, &quot;t…</td>
+<td>A problem outside the limits is refused[no-outcome].<br>422 Unprocessable Entity</td>
+<td>422: {&quot;code&quot;: 422, &quot;errors&quot;: {&quot;json&quot;: {&quot;desired_outcome&quot;: [&quot;Length must be between 1 and 300.&quot;]}}, &quot;message&quot;: &quot;Some fields a…</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>TC-213</td>
+<td><code>test_a_problem_at_the_limits_is_accepted</code></td>
+<td><code>POST /api/problems</code></td>
+<td>{&quot;description&quot;: &quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx…</td>
+<td>A problem at the limits is accepted.<br>201 Created</td>
+<td>201: {&quot;close_reason&quot;: null, &quot;closed_at&quot;: null, &quot;description&quot;: &quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx…</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>TC-214</td>
+<td><code>test_mentors_cannot_see_problems_that_are_not_assigned_to_them</code></td>
+<td>1. <code>GET /api/problems/queue</code><br>2. <code>GET /api/problems/1</code><br>3. <code>GET /api/mentors/me/dashboard</code><br>4. <code>POST /api/problems/1/assign</code><br>5. <code>GET /api/mentors/me/dashboard</code></td>
+<td>1. none<br>2. none<br>3. none<br>4. {&quot;mentor_id&quot;: 1}<br>5. none</td>
+<td>Mentors cannot see problems that are not assigned to them.<br>1. 403 Forbidden<br>2. 403 Forbidden<br>3. 200 OK<br>4. 200 OK<br>5. 200 OK</td>
+<td>1. 403: {&quot;code&quot;: 403, &quot;message&quot;: &quot;Your role does not allow this.&quot;, &quot;status&quot;: &quot;Forbidden&quot;}<br>2. 403: {&quot;code&quot;: 403, &quot;message&quot;: &quot;Your role does not allow this.&quot;, &quot;status&quot;: &quot;Forbidden&quot;}<br>3. 200: {&quot;assignments&quot;: [], &quot;capacity&quot;: 2, &quot;capacity_request&quot;: null, &quot;confirmed&quot;: 0, &quot;load&quot;: 0, &quot;mentorships&quot;: [], &quot;next_checkp…<br>4. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T16:13:23.605637+00:00&quot;, &quot;assigned_by&quot;: &quot;user652&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…<br>5. 200: {&quot;assignments&quot;: [{&quot;assigned_at&quot;: &quot;2026-11-24T16:13:23.605637&quot;, &quot;assigned_by&quot;: &quot;user652&quot;, &quot;deadline&quot;: &quot;2026-11-27T16:13:…</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>TC-215</td>
+<td><code>test_another_mentor_does_not_see_the_assignment</code></td>
+<td>1. <code>POST /api/problems/1/assign</code><br>2. <code>GET /api/mentors/me/dashboard</code><br>3. <code>GET /api/mentors/mentorships/1</code></td>
+<td>1. {&quot;mentor_id&quot;: 1}<br>2. none<br>3. none</td>
+<td>Another mentor does not see the assignment.<br>1. 200 OK<br>2. 200 OK<br>3. 403 Forbidden</td>
+<td>1. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T16:13:24.431360+00:00&quot;, &quot;assigned_by&quot;: &quot;user657&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…<br>2. 200: {&quot;assignments&quot;: [], &quot;capacity&quot;: 1, &quot;capacity_request&quot;: null, &quot;confirmed&quot;: 0, &quot;load&quot;: 0, &quot;mentorships&quot;: [], &quot;next_checkp…<br>3. 403: {&quot;code&quot;: 403, &quot;message&quot;: &quot;This mentorship is not yours.&quot;, &quot;status&quot;: &quot;Forbidden&quot;}</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>TC-216</td>
+<td><code>test_the_student_gets_the_mentors_contact_only_after_they_accept</code></td>
+<td>1. <code>POST /api/problems/1/assign</code><br>2. <code>GET /api/mentorships/me</code><br>3. <code>GET /api/students/me/home</code><br>4. <code>POST /api/mentors/mentorships/1/accept</code><br>5. <code>GET /api/mentorships/me</code></td>
+<td>1. {&quot;mentor_id&quot;: 1}<br>2. none<br>3. none<br>4. none<br>5. none</td>
+<td>The student gets the mentors contact only after they accept.<br>1. 200 OK<br>2. 200 OK<br>3. 200 OK<br>4. 200 OK<br>5. 200 OK</td>
+<td>1. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T16:13:25.125049+00:00&quot;, &quot;assigned_by&quot;: &quot;user663&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…<br>2. 200: {&quot;mentorship&quot;: null}<br>3. 200: {&quot;accept_hours&quot;: 72, &quot;mentorship&quot;: null, &quot;problem&quot;: {&quot;close_reason&quot;: null, &quot;closed_at&quot;: null, &quot;description&quot;: &quot;Need guid…<br>4. 200: {&quot;held&quot;: 0, &quot;id&quot;: 1, &quot;next_session&quot;: null, &quot;started_at&quot;: &quot;2026-11-24T16:13:25.125049&quot;, &quot;student&quot;: {&quot;name&quot;: &quot;Sample Stud…<br>5. 200: {&quot;mentorship&quot;: {&quot;answered_at&quot;: &quot;2026-11-24T16:13:25.186522&quot;, &quot;assigned_at&quot;: &quot;2026-11-24T16:13:25.125049&quot;, &quot;case_open&quot;:…</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>TC-217</td>
+<td><code>test_the_student_is_told_at_each_status_change</code></td>
+<td>1. <code>POST /api/problems/1/assign</code><br>2. <code>POST /api/mentors/mentorships/1/accept</code></td>
+<td>1. {&quot;mentor_id&quot;: 1}<br>2. none</td>
+<td>The student is told at each status change.<br>1. 200 OK<br>2. 200 OK</td>
+<td>1. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T16:13:25.893739+00:00&quot;, &quot;assigned_by&quot;: &quot;user668&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…<br>2. 200: {&quot;held&quot;: 0, &quot;id&quot;: 1, &quot;next_session&quot;: null, &quot;started_at&quot;: &quot;2026-11-24T16:13:25.893739&quot;, &quot;student&quot;: {&quot;name&quot;: &quot;Sample Stud…</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>TC-218</td>
+<td><code>test_the_student_is_told_when_iic_closes_their_problem</code></td>
+<td><code>POST /api/problems/1/close</code></td>
+<td>{&quot;reason&quot;: &quot;Out of scope.&quot;}</td>
+<td>The student is told when iic closes their problem.<br>200 OK</td>
+<td>200: {&quot;assigned_at&quot;: null, &quot;assigned_by&quot;: null, &quot;close_reason&quot;: &quot;Out of scope.&quot;, &quot;closed_at&quot;: &quot;2026-11-24T16:13:26.731070&quot;,…</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>TC-219</td>
+<td><code>test_a_declined_problem_goes_back_to_the_top_of_the_queue</code></td>
+<td>1. <code>POST /api/problems/1/assign</code><br>2. <code>POST /api/mentors/mentorships/1/decline</code><br>3. <code>GET /api/problems/queue</code></td>
+<td>1. {&quot;mentor_id&quot;: 1}<br>2. {&quot;reason&quot;: &quot;No time right now&quot;, &quot;note&quot;: &quot;Travelling this month.&quot;}<br>3. none</td>
+<td>A declined problem goes back to the top of the queue.<br>1. 200 OK<br>2. 200 OK<br>3. 200 OK</td>
+<td>1. 200: {&quot;assigned_at&quot;: &quot;2026-11-24T16:13:27.422783+00:00&quot;, &quot;assigned_by&quot;: &quot;user676&quot;, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null,…<br>2. 200: {&quot;id&quot;: 1, &quot;status&quot;: &quot;reassignment_needed&quot;}<br>3. 200: {&quot;problems&quot;: [{&quot;assigned_at&quot;: null, &quot;assigned_by&quot;: null, &quot;close_reason&quot;: null, &quot;closed_at&quot;: null, &quot;description&quot;: &quot;Need…</td>
+<td>Success</td>
+</tr>
+</tbody></table>
 <h4>Login, logout and role checks</h4>
 <p>Test file: <a href="../../backend/tests/test_auth.py"><code>backend/tests/test_auth.py</code></a>. SCRUM-71: login, logout, tokens, role checks and ownership checks.</p>
 <table>
@@ -2693,7 +2820,7 @@ pytest -v
 </tr>
 </thead>
 <tbody><tr>
-<td>TC-208</td>
+<td>TC-220</td>
 <td><code>test_login_returns_a_token_that_identifies_the_user</code></td>
 <td>1. <code>POST /api/auth/login</code><br>2. <code>GET /api/auth/me</code></td>
 <td>1. {&quot;email&quot;: &quot;<a href="mailto:user17@ds.study.iitm.ac.in">user17@ds.study.iitm.ac.in</a>&quot;, &quot;password&quot;: &quot;correct-horse-battery&quot;}<br>2. none</td>
@@ -2702,7 +2829,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-209</td>
+<td>TC-221</td>
 <td><code>test_login_returns_the_profile_name_and_roll_number</code></td>
 <td><code>POST /api/auth/login</code></td>
 <td>{&quot;email&quot;: &quot;<a href="mailto:user18@ds.study.iitm.ac.in">user18@ds.study.iitm.ac.in</a>&quot;, &quot;password&quot;: &quot;correct-horse-battery&quot;}</td>
@@ -2711,7 +2838,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-210</td>
+<td>TC-222</td>
 <td><code>test_login_ignores_email_case_and_spaces</code></td>
 <td><code>POST /api/auth/login</code></td>
 <td>{&quot;email&quot;: &quot; <a href="mailto:Meera.Iyer@Example.com">Meera.Iyer@Example.com</a> &quot;, &quot;password&quot;: &quot;correct-horse-battery&quot;}</td>
@@ -2720,7 +2847,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-211</td>
+<td>TC-223</td>
 <td><code>test_wrong_password_and_unknown_email_get_the_same_401</code></td>
 <td>1. <code>POST /api/auth/login</code><br>2. <code>POST /api/auth/login</code></td>
 <td>1. {&quot;email&quot;: &quot;<a href="mailto:user20@ds.study.iitm.ac.in">user20@ds.study.iitm.ac.in</a>&quot;, &quot;password&quot;: &quot;not-the-password&quot;}<br>2. {&quot;email&quot;: &quot;<a href="mailto:nobody@ds.study.iitm.ac.in">nobody@ds.study.iitm.ac.in</a>&quot;, &quot;password&quot;: &quot;correct-horse-battery&quot;}</td>
@@ -2729,7 +2856,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-212</td>
+<td>TC-224</td>
 <td><code>test_unverified_email_cannot_log_in</code></td>
 <td><code>POST /api/auth/login</code></td>
 <td>{&quot;email&quot;: &quot;<a href="mailto:user21@ds.study.iitm.ac.in">user21@ds.study.iitm.ac.in</a>&quot;, &quot;password&quot;: &quot;correct-horse-battery&quot;}</td>
@@ -2738,7 +2865,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-213</td>
+<td>TC-225</td>
 <td><code>test_account_without_a_password_cannot_log_in</code></td>
 <td><code>POST /api/auth/login</code></td>
 <td>{&quot;email&quot;: &quot;<a href="mailto:user22@ds.study.iitm.ac.in">user22@ds.study.iitm.ac.in</a>&quot;, &quot;password&quot;: &quot;anything&quot;}</td>
@@ -2747,7 +2874,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-214</td>
+<td>TC-226</td>
 <td><code>test_login_validates_its_fields[body0-email]</code></td>
 <td><code>POST /api/auth/login</code></td>
 <td>{&quot;password&quot;: &quot;correct-horse-battery&quot;}</td>
@@ -2756,7 +2883,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-215</td>
+<td>TC-227</td>
 <td><code>test_login_validates_its_fields[body1-email]</code></td>
 <td><code>POST /api/auth/login</code></td>
 <td>{&quot;email&quot;: &quot;not-an-email&quot;, &quot;password&quot;: &quot;correct-horse-battery&quot;}</td>
@@ -2765,7 +2892,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-216</td>
+<td>TC-228</td>
 <td><code>test_login_validates_its_fields[body2-password]</code></td>
 <td><code>POST /api/auth/login</code></td>
 <td>{&quot;email&quot;: &quot;<a href="mailto:a@b.co">a@b.co</a>&quot;}</td>
@@ -2774,7 +2901,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-217</td>
+<td>TC-229</td>
 <td><code>test_me_needs_a_token</code></td>
 <td><code>GET /api/auth/me</code></td>
 <td>none</td>
@@ -2783,7 +2910,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-218</td>
+<td>TC-230</td>
 <td><code>test_malformed_token_is_rejected</code></td>
 <td><code>GET /api/auth/me</code></td>
 <td>none</td>
@@ -2792,7 +2919,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-219</td>
+<td>TC-231</td>
 <td><code>test_expired_token_is_rejected</code></td>
 <td><code>GET /api/auth/me</code></td>
 <td>none</td>
@@ -2801,7 +2928,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-220</td>
+<td>TC-232</td>
 <td><code>test_token_of_a_deleted_user_is_rejected</code></td>
 <td><code>GET /api/auth/me</code></td>
 <td>none</td>
@@ -2810,7 +2937,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-221</td>
+<td>TC-233</td>
 <td><code>test_logout_revokes_the_token</code></td>
 <td>1. <code>POST /api/auth/logout</code><br>2. <code>GET /api/auth/me</code></td>
 <td>1. none<br>2. none</td>
@@ -2819,7 +2946,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-222</td>
+<td>TC-234</td>
 <td><code>test_logout_leaves_other_tokens_working</code></td>
 <td>1. <code>POST /api/auth/logout</code><br>2. <code>GET /api/auth/me</code></td>
 <td>1. none<br>2. none</td>
@@ -2828,7 +2955,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-223</td>
+<td>TC-235</td>
 <td><code>test_roles_decide_access[/iic-iic-200]</code></td>
 <td><code>GET /api/roles-demo/iic</code></td>
 <td>none</td>
@@ -2837,7 +2964,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-224</td>
+<td>TC-236</td>
 <td><code>test_roles_decide_access[/iic-student-403]</code></td>
 <td><code>GET /api/roles-demo/iic</code></td>
 <td>none</td>
@@ -2846,7 +2973,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-225</td>
+<td>TC-237</td>
 <td><code>test_roles_decide_access[/iic-mentor-403]</code></td>
 <td><code>GET /api/roles-demo/iic</code></td>
 <td>none</td>
@@ -2855,7 +2982,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-226</td>
+<td>TC-238</td>
 <td><code>test_roles_decide_access[/iic-leadership-403]</code></td>
 <td><code>GET /api/roles-demo/iic</code></td>
 <td>none</td>
@@ -2864,7 +2991,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-227</td>
+<td>TC-239</td>
 <td><code>test_roles_decide_access[/student-or-iic-student-200]</code></td>
 <td><code>GET /api/roles-demo/student-or-iic</code></td>
 <td>none</td>
@@ -2873,7 +3000,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-228</td>
+<td>TC-240</td>
 <td><code>test_roles_decide_access[/student-or-iic-iic-200]</code></td>
 <td><code>GET /api/roles-demo/student-or-iic</code></td>
 <td>none</td>
@@ -2882,7 +3009,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-229</td>
+<td>TC-241</td>
 <td><code>test_roles_decide_access[/student-or-iic-mentor-403]</code></td>
 <td><code>GET /api/roles-demo/student-or-iic</code></td>
 <td>none</td>
@@ -2891,7 +3018,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-230</td>
+<td>TC-242</td>
 <td><code>test_roles_decide_access[/anyone-leadership-200]</code></td>
 <td><code>GET /api/roles-demo/anyone</code></td>
 <td>none</td>
@@ -2900,7 +3027,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-231</td>
+<td>TC-243</td>
 <td><code>test_roles_decide_access[/anyone-mentor-200]</code></td>
 <td><code>GET /api/roles-demo/anyone</code></td>
 <td>none</td>
@@ -2909,7 +3036,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-232</td>
+<td>TC-244</td>
 <td><code>test_protected_endpoints_need_a_login</code></td>
 <td>1. <code>GET /api/roles-demo/iic</code><br>2. <code>GET /api/roles-demo/student-or-iic</code><br>3. <code>GET /api/roles-demo/anyone</code></td>
 <td>1. none<br>2. none<br>3. none</td>
@@ -2918,7 +3045,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-233</td>
+<td>TC-245</td>
 <td><code>test_login_is_public_and_me_is_protected_in_the_document</code></td>
 <td><code>GET /api/docs/openapi.json</code></td>
 <td>none</td>
@@ -2942,7 +3069,7 @@ pytest -v
 </tr>
 </thead>
 <tbody><tr>
-<td>TC-234</td>
+<td>TC-246</td>
 <td><code>test_listing_needs_a_login</code></td>
 <td><code>GET /api/notifications</code></td>
 <td>none</td>
@@ -2951,34 +3078,34 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-235</td>
+<td>TC-247</td>
 <td><code>test_users_see_only_their_own_notices_newest_first</code></td>
 <td><code>GET /api/notifications</code></td>
 <td>none</td>
 <td>Users see only their own notices newest first.<br>200 OK</td>
-<td>200: [{&quot;body&quot;: &quot;Your problem is Under review.&quot;, &quot;created_at&quot;: &quot;2026-11-24T15:47:21.490658&quot;, &quot;id&quot;: 2, &quot;link&quot;: &quot;/student&quot;, &quot;re…</td>
+<td>200: [{&quot;body&quot;: &quot;Your problem is Under review.&quot;, &quot;created_at&quot;: &quot;2026-11-24T16:11:10.397129&quot;, &quot;id&quot;: 2, &quot;link&quot;: &quot;/student&quot;, &quot;re…</td>
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-236</td>
+<td>TC-248</td>
 <td><code>test_unread_gives_the_bells_count</code></td>
 <td><code>GET /api/notifications?unread=true</code></td>
 <td>none</td>
 <td>Unread gives the bells count.<br>200 OK</td>
-<td>200: [{&quot;body&quot;: &quot;Your problem is Under review.&quot;, &quot;created_at&quot;: &quot;2026-11-24T15:48:22.248129&quot;, &quot;id&quot;: 1, &quot;link&quot;: &quot;/student&quot;, &quot;re…</td>
+<td>200: [{&quot;body&quot;: &quot;Your problem is Under review.&quot;, &quot;created_at&quot;: &quot;2026-11-24T16:12:10.695411&quot;, &quot;id&quot;: 1, &quot;link&quot;: &quot;/student&quot;, &quot;re…</td>
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-237</td>
+<td>TC-249</td>
 <td><code>test_mark_one_notice_read</code></td>
 <td>1. <code>POST /api/notifications/1/read</code><br>2. <code>POST /api/notifications/1/read</code></td>
 <td>1. none<br>2. none</td>
 <td>Mark one notice read.<br>1. 200 OK<br>2. 200 OK</td>
-<td>1. 200: {&quot;body&quot;: &quot;Your problem is Under review.&quot;, &quot;created_at&quot;: &quot;2026-11-24T15:48:22.941466&quot;, &quot;id&quot;: 1, &quot;link&quot;: &quot;/student&quot;, &quot;rea…<br>2. 200: {&quot;body&quot;: &quot;Your problem is Under review.&quot;, &quot;created_at&quot;: &quot;2026-11-24T15:48:22.941466&quot;, &quot;id&quot;: 1, &quot;link&quot;: &quot;/student&quot;, &quot;rea…</td>
+<td>1. 200: {&quot;body&quot;: &quot;Your problem is Under review.&quot;, &quot;created_at&quot;: &quot;2026-11-24T16:12:11.028688&quot;, &quot;id&quot;: 1, &quot;link&quot;: &quot;/student&quot;, &quot;rea…<br>2. 200: {&quot;body&quot;: &quot;Your problem is Under review.&quot;, &quot;created_at&quot;: &quot;2026-11-24T16:12:11.028688&quot;, &quot;id&quot;: 1, &quot;link&quot;: &quot;/student&quot;, &quot;rea…</td>
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-238</td>
+<td>TC-250</td>
 <td><code>test_anyone_elses_notice_is_not_found</code></td>
 <td>1. <code>POST /api/notifications/1/read</code><br>2. <code>POST /api/notifications/9999/read</code></td>
 <td>1. none<br>2. none</td>
@@ -2987,7 +3114,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-239</td>
+<td>TC-251</td>
 <td><code>test_mark_all_read_touches_only_my_notices</code></td>
 <td><code>POST /api/notifications/read-all</code></td>
 <td>none</td>
@@ -2996,7 +3123,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-240</td>
+<td>TC-252</td>
 <td><code>test_browsers_can_read_the_pagination_header</code></td>
 <td><code>GET /api/health</code></td>
 <td>none</td>
@@ -3020,7 +3147,7 @@ pytest -v
 </tr>
 </thead>
 <tbody><tr>
-<td>TC-241</td>
+<td>TC-253</td>
 <td><code>test_listing_needs_a_login</code></td>
 <td><code>GET /api/audit</code></td>
 <td>none</td>
@@ -3029,7 +3156,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-242</td>
+<td>TC-254</td>
 <td><code>test_only_iic_can_read_the_audit_log[student]</code></td>
 <td><code>GET /api/audit</code></td>
 <td>none</td>
@@ -3038,7 +3165,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-243</td>
+<td>TC-255</td>
 <td><code>test_only_iic_can_read_the_audit_log[mentor]</code></td>
 <td><code>GET /api/audit</code></td>
 <td>none</td>
@@ -3047,7 +3174,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-244</td>
+<td>TC-256</td>
 <td><code>test_only_iic_can_read_the_audit_log[leadership]</code></td>
 <td><code>GET /api/audit</code></td>
 <td>none</td>
@@ -3056,25 +3183,25 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-245</td>
+<td>TC-257</td>
 <td><code>test_iic_sees_entries_newest_first_with_their_actor</code></td>
 <td><code>GET /api/audit</code></td>
 <td>none</td>
 <td>Iic sees entries newest first with their actor.<br>200 OK</td>
-<td>200: [{&quot;action&quot;: &quot;raise_flag&quot;, &quot;actor&quot;: null, &quot;created_at&quot;: &quot;2026-11-24T15:44:46.086803&quot;, &quot;details&quot;: null, &quot;entity_id&quot;: 2, &quot;…</td>
+<td>200: [{&quot;action&quot;: &quot;raise_flag&quot;, &quot;actor&quot;: null, &quot;created_at&quot;: &quot;2026-11-24T16:09:56.761156&quot;, &quot;details&quot;: null, &quot;entity_id&quot;: 2, &quot;…</td>
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-246</td>
+<td>TC-258</td>
 <td><code>test_filters_give_one_records_history</code></td>
 <td>1. <code>GET /api/audit?entity_type=mentor&amp;entity_id=3</code><br>2. <code>GET /api/audit?action=verify_mentor</code></td>
 <td>1. none<br>2. none</td>
 <td>Filters give one records history.<br>1. 200 OK<br>2. 200 OK</td>
-<td>1. 200: [{&quot;action&quot;: &quot;verify_mentor&quot;, &quot;actor&quot;: {&quot;email&quot;: &quot;<a href="mailto:user11@ds.study.iitm.ac.in">user11@ds.study.iitm.ac.in</a>&quot;, &quot;id&quot;: 1}, &quot;created_at&quot;: &quot;2026-11-24T15:45…<br>2. 200: [{&quot;action&quot;: &quot;verify_mentor&quot;, &quot;actor&quot;: {&quot;email&quot;: &quot;<a href="mailto:user11@ds.study.iitm.ac.in">user11@ds.study.iitm.ac.in</a>&quot;, &quot;id&quot;: 1}, &quot;created_at&quot;: &quot;2026-11-24T15:45…</td>
+<td>1. 200: [{&quot;action&quot;: &quot;verify_mentor&quot;, &quot;actor&quot;: {&quot;email&quot;: &quot;<a href="mailto:user11@ds.study.iitm.ac.in">user11@ds.study.iitm.ac.in</a>&quot;, &quot;id&quot;: 1}, &quot;created_at&quot;: &quot;2026-11-24T16:10…<br>2. 200: [{&quot;action&quot;: &quot;verify_mentor&quot;, &quot;actor&quot;: {&quot;email&quot;: &quot;<a href="mailto:user11@ds.study.iitm.ac.in">user11@ds.study.iitm.ac.in</a>&quot;, &quot;id&quot;: 1}, &quot;created_at&quot;: &quot;2026-11-24T16:10…</td>
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-247</td>
+<td>TC-259</td>
 <td><code>test_entity_id_without_a_type_is_refused</code></td>
 <td><code>GET /api/audit?entity_id=3</code></td>
 <td>none</td>
@@ -3083,12 +3210,12 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-248</td>
+<td>TC-260</td>
 <td><code>test_the_list_is_paginated</code></td>
 <td><code>GET /api/audit?page=2&amp;page_size=10</code></td>
 <td>none</td>
 <td>The list is paginated.<br>200 OK</td>
-<td>200: [{&quot;action&quot;: &quot;verify_mentor&quot;, &quot;actor&quot;: {&quot;email&quot;: &quot;<a href="mailto:user15@ds.study.iitm.ac.in">user15@ds.study.iitm.ac.in</a>&quot;, &quot;id&quot;: 1}, &quot;created_at&quot;: &quot;2026-11-24T15:35…</td>
+<td>200: [{&quot;action&quot;: &quot;verify_mentor&quot;, &quot;actor&quot;: {&quot;email&quot;: &quot;<a href="mailto:user15@ds.study.iitm.ac.in">user15@ds.study.iitm.ac.in</a>&quot;, &quot;id&quot;: 1}, &quot;created_at&quot;: &quot;2026-11-24T16:00…</td>
 <td>Success</td>
 </tr>
 </tbody></table>
@@ -3107,7 +3234,7 @@ pytest -v
 </tr>
 </thead>
 <tbody><tr>
-<td>TC-249</td>
+<td>TC-261</td>
 <td><code>test_any_logged_in_user_can_list_the_tags</code></td>
 <td><code>GET /api/settings/tags</code></td>
 <td>none</td>
@@ -3116,7 +3243,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-250</td>
+<td>TC-262</td>
 <td><code>test_the_tag_list_needs_a_login</code></td>
 <td><code>GET /api/settings/tags</code></td>
 <td>none</td>
@@ -3125,7 +3252,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-251</td>
+<td>TC-263</td>
 <td><code>test_iic_adds_a_tag</code></td>
 <td><code>POST /api/settings/tags</code></td>
 <td>{&quot;name&quot;: &quot; Robotics &quot;, &quot;group&quot;: &quot;Technical skills&quot;}</td>
@@ -3134,7 +3261,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-252</td>
+<td>TC-264</td>
 <td><code>test_a_tag_name_is_unique_ignoring_case</code></td>
 <td><code>POST /api/settings/tags</code></td>
 <td>{&quot;name&quot;: &quot;python PROGRAMMING&quot;, &quot;group&quot;: &quot;Technical skills&quot;}</td>
@@ -3143,7 +3270,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-253</td>
+<td>TC-265</td>
 <td><code>test_only_iic_adds_tags</code></td>
 <td>1. <code>POST /api/settings/tags</code><br>2. <code>POST /api/settings/tags</code></td>
 <td>1. {&quot;name&quot;: &quot;Robotics&quot;, &quot;group&quot;: &quot;Technical skills&quot;}<br>2. {&quot;name&quot;: &quot;Robotics&quot;, &quot;group&quot;: &quot;Technical skills&quot;}</td>
@@ -3152,7 +3279,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-254</td>
+<td>TC-266</td>
 <td><code>test_a_new_tag_validates_its_fields</code></td>
 <td><code>POST /api/settings/tags</code></td>
 <td>{&quot;name&quot;: &quot;x&quot;, &quot;group&quot;: &quot;&quot;}</td>
@@ -3161,7 +3288,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-255</td>
+<td>TC-267</td>
 <td><code>test_iic_retires_and_restores_a_tag</code></td>
 <td>1. <code>PUT /api/settings/tags/31</code><br>2. <code>PUT /api/settings/tags/31</code></td>
 <td>1. {&quot;active&quot;: false}<br>2. {&quot;active&quot;: true}</td>
@@ -3170,7 +3297,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-256</td>
+<td>TC-268</td>
 <td><code>test_retiring_the_same_state_twice_changes_nothing</code></td>
 <td>1. <code>PUT /api/settings/tags/31</code><br>2. <code>PUT /api/settings/tags/31</code><br>3. <code>PUT /api/settings/tags/31</code></td>
 <td>1. {&quot;active&quot;: true}<br>2. {&quot;active&quot;: false}<br>3. {&quot;active&quot;: false}</td>
@@ -3179,7 +3306,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-257</td>
+<td>TC-269</td>
 <td><code>test_a_retired_tag_cannot_be_used_for_a_new_problem</code></td>
 <td><code>POST /api/problems</code></td>
 <td>{&quot;description&quot;: &quot;I need help with a course project in my current term.&quot;, &quot;tags&quot;: [&quot;Old topic&quot;], &quot;desired_outc…</td>
@@ -3188,7 +3315,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-258</td>
+<td>TC-270</td>
 <td><code>test_an_unknown_tag_gets_404</code></td>
 <td><code>PUT /api/settings/tags/9999</code></td>
 <td>{&quot;active&quot;: false}</td>
@@ -3197,7 +3324,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-259</td>
+<td>TC-271</td>
 <td><code>test_only_iic_retires_tags</code></td>
 <td><code>PUT /api/settings/tags/1</code></td>
 <td>{&quot;active&quot;: false}</td>
@@ -3221,7 +3348,7 @@ pytest -v
 </tr>
 </thead>
 <tbody><tr>
-<td>TC-260</td>
+<td>TC-272</td>
 <td><code>test_a_student_plans_a_session</code></td>
 <td><code>POST /api/sessions</code></td>
 <td>{&quot;mentorship_id&quot;: 1, &quot;status&quot;: &quot;planned&quot;, &quot;date&quot;: &quot;2026-12-01&quot;, &quot;time&quot;: &quot;18:00&quot;, &quot;channel&quot;: &quot;Google Meet&quot;, &quot;l…</td>
@@ -3230,7 +3357,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-261</td>
+<td>TC-273</td>
 <td><code>test_a_mentor_logs_a_held_session_without_a_time</code></td>
 <td><code>POST /api/sessions</code></td>
 <td>{&quot;mentorship_id&quot;: 1, &quot;status&quot;: &quot;held&quot;, &quot;date&quot;: &quot;2026-12-01&quot;, &quot;duration&quot;: 45, &quot;topic&quot;: &quot;Project code review&quot;}</td>
@@ -3239,7 +3366,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-262</td>
+<td>TC-274</td>
 <td><code>test_a_session_needs_a_mentorship</code></td>
 <td><code>POST /api/sessions</code></td>
 <td>{&quot;status&quot;: &quot;planned&quot;, &quot;date&quot;: &quot;2026-12-01&quot;}</td>
@@ -3248,7 +3375,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-263</td>
+<td>TC-275</td>
 <td><code>test_a_session_for_an_unknown_mentorship_gets_404</code></td>
 <td><code>POST /api/sessions</code></td>
 <td>{&quot;mentorship_id&quot;: 9999, &quot;status&quot;: &quot;planned&quot;, &quot;date&quot;: &quot;2026-12-01&quot;, &quot;time&quot;: &quot;18:00&quot;, &quot;channel&quot;: &quot;Google Meet&quot;,…</td>
@@ -3257,7 +3384,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-264</td>
+<td>TC-276</td>
 <td><code>test_an_outsider_cannot_add_a_session</code></td>
 <td><code>POST /api/sessions</code></td>
 <td>{&quot;mentorship_id&quot;: 1, &quot;status&quot;: &quot;planned&quot;, &quot;date&quot;: &quot;2026-12-01&quot;, &quot;time&quot;: &quot;18:00&quot;, &quot;channel&quot;: &quot;Google Meet&quot;, &quot;l…</td>
@@ -3266,7 +3393,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-265</td>
+<td>TC-277</td>
 <td><code>test_a_session_validates_its_fields</code></td>
 <td><code>POST /api/sessions</code></td>
 <td>{&quot;mentorship_id&quot;: 1, &quot;status&quot;: &quot;done&quot;, &quot;date&quot;: &quot;&quot;}</td>
@@ -3275,7 +3402,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-266</td>
+<td>TC-278</td>
 <td><code>test_editing_a_session_clears_the_confirmation</code></td>
 <td>1. <code>POST /api/sessions</code><br>2. <code>POST /api/sessions/1/confirm</code><br>3. <code>PUT /api/sessions/1</code></td>
 <td>1. {&quot;mentorship_id&quot;: 1, &quot;status&quot;: &quot;held&quot;, &quot;date&quot;: &quot;2026-12-01&quot;, &quot;duration&quot;: 45, &quot;topic&quot;: &quot;Project code review&quot;}<br>2. none<br>3. {&quot;mentorship_id&quot;: 1, &quot;status&quot;: &quot;held&quot;, &quot;date&quot;: &quot;2026-12-01&quot;, &quot;duration&quot;: 60, &quot;topic&quot;: &quot;Longer review&quot;}</td>
@@ -3284,7 +3411,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-267</td>
+<td>TC-279</td>
 <td><code>test_the_other_participant_confirms_a_held_session</code></td>
 <td>1. <code>POST /api/sessions</code><br>2. <code>POST /api/sessions/1/confirm</code></td>
 <td>1. {&quot;mentorship_id&quot;: 1, &quot;status&quot;: &quot;held&quot;, &quot;date&quot;: &quot;2026-12-01&quot;, &quot;duration&quot;: 45, &quot;topic&quot;: &quot;Project code review&quot;}<br>2. none</td>
@@ -3293,7 +3420,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-268</td>
+<td>TC-280</td>
 <td><code>test_confirming_your_own_log_or_twice_gets_409</code></td>
 <td>1. <code>POST /api/sessions</code><br>2. <code>POST /api/sessions/1/confirm</code><br>3. <code>POST /api/sessions/1/confirm</code><br>4. <code>POST /api/sessions/1/confirm</code></td>
 <td>1. {&quot;mentorship_id&quot;: 1, &quot;status&quot;: &quot;held&quot;, &quot;date&quot;: &quot;2026-12-01&quot;, &quot;duration&quot;: 45, &quot;topic&quot;: &quot;Project code review&quot;}<br>2. none<br>3. none<br>4. none</td>
@@ -3302,7 +3429,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-269</td>
+<td>TC-281</td>
 <td><code>test_a_planned_session_can_be_cancelled</code></td>
 <td>1. <code>POST /api/sessions</code><br>2. <code>POST /api/sessions/1/cancel</code></td>
 <td>1. {&quot;mentorship_id&quot;: 1, &quot;status&quot;: &quot;planned&quot;, &quot;date&quot;: &quot;2026-12-01&quot;, &quot;time&quot;: &quot;18:00&quot;, &quot;channel&quot;: &quot;Google Meet&quot;, &quot;l…<br>2. none</td>
@@ -3311,7 +3438,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-270</td>
+<td>TC-282</td>
 <td><code>test_a_held_session_cannot_be_cancelled</code></td>
 <td>1. <code>POST /api/sessions</code><br>2. <code>POST /api/sessions/1/cancel</code></td>
 <td>1. {&quot;mentorship_id&quot;: 1, &quot;status&quot;: &quot;held&quot;, &quot;date&quot;: &quot;2026-12-01&quot;, &quot;duration&quot;: 45, &quot;topic&quot;: &quot;Project code review&quot;}<br>2. none</td>
@@ -3320,7 +3447,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-271</td>
+<td>TC-283</td>
 <td><code>test_an_unknown_session_gets_404</code></td>
 <td>1. <code>POST /api/sessions/9999/confirm</code><br>2. <code>POST /api/sessions/9999/cancel</code></td>
 <td>1. none<br>2. none</td>
@@ -3344,7 +3471,7 @@ pytest -v
 </tr>
 </thead>
 <tbody><tr>
-<td>TC-272</td>
+<td>TC-284</td>
 <td><code>test_a_student_reports_progress</code></td>
 <td><code>POST /api/feedback</code></td>
 <td>{&quot;mentorship_id&quot;: 1, &quot;progress_status&quot;: &quot;some_progress&quot;, &quot;comment&quot;: &quot; Two sessions done. &quot;}</td>
@@ -3353,7 +3480,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-273</td>
+<td>TC-285</td>
 <td><code>test_the_comment_is_optional</code></td>
 <td><code>POST /api/feedback</code></td>
 <td>{&quot;mentorship_id&quot;: 1, &quot;progress_status&quot;: &quot;some_progress&quot;}</td>
@@ -3362,7 +3489,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-274</td>
+<td>TC-286</td>
 <td><code>test_the_mentor_reports_progress_separately</code></td>
 <td>1. <code>POST /api/feedback</code><br>2. <code>POST /api/feedback</code></td>
 <td>1. {&quot;mentorship_id&quot;: 1, &quot;progress_status&quot;: &quot;no_progress&quot;}<br>2. {&quot;mentorship_id&quot;: 1, &quot;progress_status&quot;: &quot;goal_met&quot;}</td>
@@ -3371,7 +3498,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-275</td>
+<td>TC-287</td>
 <td><code>test_each_report_increments_that_participants_checkpoint</code></td>
 <td>1. <code>POST /api/feedback</code><br>2. <code>POST /api/feedback</code></td>
 <td>1. {&quot;mentorship_id&quot;: 1, &quot;progress_status&quot;: &quot;some_progress&quot;}<br>2. {&quot;mentorship_id&quot;: 1, &quot;progress_status&quot;: &quot;some_progress&quot;}</td>
@@ -3380,7 +3507,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-276</td>
+<td>TC-288</td>
 <td><code>test_feedback_validates_its_fields</code></td>
 <td><code>POST /api/feedback</code></td>
 <td>{&quot;mentorship_id&quot;: 1, &quot;progress_status&quot;: &quot;great&quot;, &quot;comment&quot;: &quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx…</td>
@@ -3389,7 +3516,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-277</td>
+<td>TC-289</td>
 <td><code>test_feedback_for_an_unknown_mentorship_gets_404</code></td>
 <td><code>POST /api/feedback</code></td>
 <td>{&quot;mentorship_id&quot;: 9999, &quot;progress_status&quot;: &quot;some_progress&quot;}</td>
@@ -3398,7 +3525,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-278</td>
+<td>TC-290</td>
 <td><code>test_an_outsider_cannot_report_progress</code></td>
 <td><code>POST /api/feedback</code></td>
 <td>{&quot;mentorship_id&quot;: 1, &quot;progress_status&quot;: &quot;some_progress&quot;}</td>
@@ -3422,7 +3549,7 @@ pytest -v
 </tr>
 </thead>
 <tbody><tr>
-<td>TC-279</td>
+<td>TC-291</td>
 <td><code>test_a_student_opens_a_case_for_iic</code></td>
 <td><code>POST /api/cases</code></td>
 <td>{&quot;mentorship_id&quot;: 1, &quot;case_type&quot;: &quot;change&quot;, &quot;details&quot;: &quot;The sessions are not covering the technical depth I a…</td>
@@ -3431,7 +3558,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-280</td>
+<td>TC-292</td>
 <td><code>test_the_mentor_can_also_open_a_case</code></td>
 <td><code>POST /api/cases</code></td>
 <td>{&quot;mentorship_id&quot;: 1, &quot;case_type&quot;: &quot;end&quot;, &quot;details&quot;: &quot;The sessions are not covering the technical depth I aske…</td>
@@ -3440,7 +3567,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-281</td>
+<td>TC-293</td>
 <td><code>test_only_one_case_per_mentorship_is_open</code></td>
 <td>1. <code>POST /api/cases</code><br>2. <code>POST /api/cases</code></td>
 <td>1. {&quot;mentorship_id&quot;: 1, &quot;case_type&quot;: &quot;change&quot;, &quot;details&quot;: &quot;The sessions are not covering the technical depth I a…<br>2. {&quot;mentorship_id&quot;: 1, &quot;case_type&quot;: &quot;change&quot;, &quot;details&quot;: &quot;The sessions are not covering the technical depth I a…</td>
@@ -3449,7 +3576,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-282</td>
+<td>TC-294</td>
 <td><code>test_a_case_validates_its_type_and_details</code></td>
 <td><code>POST /api/cases</code></td>
 <td>{&quot;mentorship_id&quot;: 1, &quot;case_type&quot;: &quot;complaint&quot;, &quot;details&quot;: &quot;too short&quot;}</td>
@@ -3458,7 +3585,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-283</td>
+<td>TC-295</td>
 <td><code>test_a_case_for_an_unknown_mentorship_gets_404</code></td>
 <td><code>POST /api/cases</code></td>
 <td>{&quot;mentorship_id&quot;: 9999, &quot;case_type&quot;: &quot;change&quot;, &quot;details&quot;: &quot;The sessions are not covering the technical depth…</td>
@@ -3467,7 +3594,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-284</td>
+<td>TC-296</td>
 <td><code>test_an_outsider_cannot_open_a_case</code></td>
 <td><code>POST /api/cases</code></td>
 <td>{&quot;mentorship_id&quot;: 1, &quot;case_type&quot;: &quot;change&quot;, &quot;details&quot;: &quot;The sessions are not covering the technical depth I a…</td>
@@ -3476,16 +3603,16 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-285</td>
+<td>TC-297</td>
 <td><code>test_the_mentorship_shows_that_a_case_is_open</code></td>
 <td>1. <code>POST /api/cases</code><br>2. <code>GET /api/mentorships/me</code></td>
 <td>1. {&quot;mentorship_id&quot;: 1, &quot;case_type&quot;: &quot;change&quot;, &quot;details&quot;: &quot;The sessions are not covering the technical depth I a…<br>2. none</td>
 <td>The mentorship shows that a case is open.<br>1. 201 Created<br>2. 200 OK</td>
-<td>1. 201: {&quot;case_type&quot;: &quot;change&quot;, &quot;decision&quot;: null, &quot;decision_reason&quot;: null, &quot;details&quot;: &quot;The sessions are not covering the techni…<br>2. 200: {&quot;mentorship&quot;: {&quot;answered_at&quot;: &quot;2026-11-23T15:46:38.811377&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T15:46:38.811377&quot;, &quot;case_open&quot;:…</td>
+<td>1. 201: {&quot;case_type&quot;: &quot;change&quot;, &quot;decision&quot;: null, &quot;decision_reason&quot;: null, &quot;details&quot;: &quot;The sessions are not covering the techni…<br>2. 200: {&quot;mentorship&quot;: {&quot;answered_at&quot;: &quot;2026-11-23T16:11:21.992695&quot;, &quot;assigned_at&quot;: &quot;2026-11-22T16:11:21.992689&quot;, &quot;case_open&quot;:…</td>
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-286</td>
+<td>TC-298</td>
 <td><code>test_a_decided_case_no_longer_blocks_a_new_one</code></td>
 <td>1. <code>POST /api/cases</code><br>2. <code>POST /api/cases</code></td>
 <td>1. {&quot;mentorship_id&quot;: 1, &quot;case_type&quot;: &quot;change&quot;, &quot;details&quot;: &quot;The sessions are not covering the technical depth I a…<br>2. {&quot;mentorship_id&quot;: 1, &quot;case_type&quot;: &quot;change&quot;, &quot;details&quot;: &quot;The sessions are not covering the technical depth I a…</td>
@@ -3509,7 +3636,7 @@ pytest -v
 </tr>
 </thead>
 <tbody><tr>
-<td>TC-287</td>
+<td>TC-299</td>
 <td><code>test_health_check</code></td>
 <td><code>GET /api/health</code></td>
 <td>none</td>
@@ -3518,7 +3645,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-288</td>
+<td>TC-300</td>
 <td><code>test_unknown_url_returns_json_404</code></td>
 <td><code>GET /api/no-such-thing</code></td>
 <td>none</td>
@@ -3527,7 +3654,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-289</td>
+<td>TC-301</td>
 <td><code>test_wrong_method_returns_json_405</code></td>
 <td><code>POST /api/health</code></td>
 <td>none</td>
@@ -3536,7 +3663,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-290</td>
+<td>TC-302</td>
 <td><code>test_abort_message_and_validation_errors_are_kept</code></td>
 <td><code>GET /api/_test/abort</code></td>
 <td>none</td>
@@ -3545,7 +3672,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-291</td>
+<td>TC-303</td>
 <td><code>test_unexpected_error_returns_json_500_without_details</code></td>
 <td><code>GET /api/_test/crash</code></td>
 <td>none</td>
@@ -3554,7 +3681,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-292</td>
+<td>TC-304</td>
 <td><code>test_openapi_document_is_valid_and_lists_every_module</code></td>
 <td><code>GET /api/docs/openapi.json</code></td>
 <td>none</td>
@@ -3563,7 +3690,7 @@ pytest -v
 <td>Success</td>
 </tr>
 <tr>
-<td>TC-293</td>
+<td>TC-305</td>
 <td><code>test_swagger_ui_is_served</code></td>
 <td><code>GET /api/docs/swagger</code></td>
 <td>none</td>
@@ -3573,77 +3700,166 @@ pytest -v
 </tr>
 </tbody></table>
 
-<h2>User Feedback Session (Sprint 1)</h2>
-<blockquote>
-<p><strong>Status: to be filled in after the session.</strong> Everything in a <code>[square-bracket]</code> placeholder must be replaced with what the participants actually said and did. Delete this note before submitting.</p>
-</blockquote>
-<p>The team demonstrated the Sprint 1 features to end users and recorded their feedback (SCRUM-79). The feedback was then used to adjust the Sprint 2 backlog in Jira; the changes are in the <a href="03-sprint-2-plan.md">Sprint 2 plan</a>.</p>
-<h3>Session details</h3>
+<h2>Interview Report (Sprint 1 user testing)</h2>
+<p>The team showed the Sprint 1 work to three people and recorded what each said. This section is the record of each interview. The <a href="02-user-feedback.md">user feedback report</a> that follows turns them into findings and decisions, and the <a href="03-sprint-2-plan.md">Sprint 2 plan</a> shows what changed in the backlog.</p>
+<p>Participants are identified by the same IDs as in the Milestone 1 report. S01 and M01 were both interviewed in Milestone 1, so this round could check the Sprint 1 work against the problems they described then.</p>
 <table>
 <thead>
 <tr>
-<th></th>
-<th></th>
+<th>Interview</th>
+<th>Participant</th>
+<th>Perspective</th>
+<th>Date</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Date and time</td>
-<td>[date, time]</td>
+<td>I-1</td>
+<td>Teaching assistant</td>
+<td>Reviewer of the project, and IIC&#39;s point of view</td>
+<td>Minutes shared with the team on 21 Nov 2026</td>
 </tr>
 <tr>
-<td>Format</td>
-<td>[Google Meet, screen shared; recorded with consent / not recorded]</td>
+<td>I-2</td>
+<td>S01</td>
+<td>Student: degree-level student planning a master&#39;s or PhD abroad</td>
+<td>22 Nov 2026</td>
 </tr>
 <tr>
-<td>Facilitator</td>
-<td>Saloni Puri (Product Manager)</td>
-</tr>
-<tr>
-<td>Note-taker</td>
-<td>[name]</td>
-</tr>
-<tr>
-<td>Build shown</td>
-<td><code>main</code> at commit [short hash], run locally with <code>bash scripts/wsl/start.sh</code> (API, web app and Mailpit)</td>
+<td>I-3</td>
+<td>M01</td>
+<td>Mentor: IITM BS graduate who already guides juniors informally</td>
+<td>23 Nov 2026</td>
 </tr>
 </tbody></table>
-<p>Participants are identified by the same IDs as in the Milestone 1 report.</p>
+<p>S02, who was planned for this round, was not interviewed. Their perspective is carried into the Milestone 4 session (SCRUM-84).</p>
+<h3>I-1: Teaching assistant</h3>
+<p><strong>What the team showed</strong></p>
+<ul>
+<li><strong>Backend, presented by Abhijeet Kumar:</strong> the backend setup, the data models, the OpenAPI (Swagger) setup, authentication and role-based access control, the pytest setup, and continuous integration with GitHub Actions.</li>
+<li><strong>Frontend, presented by Khushi:</strong> how the web app&#39;s pages were being connected to the API.</li>
+</ul>
+<p><strong>What the TA asked, and the team&#39;s answers</strong></p>
 <table>
 <thead>
 <tr>
-<th>ID</th>
-<th>Role in the demo</th>
-<th>Who they are (from Milestone 1)</th>
+<th>TA&#39;s question</th>
+<th>Team&#39;s answer</th>
 </tr>
 </thead>
 <tbody><tr>
+<td>What is each member responsible for?</td>
+<td>Saloni: project management, the API documentation and compiling the report. Khushi and Shreya: the sub-tasks assigned at each scrum. Abhijeet and Priyanshu: connecting the frontend to the API as each backend component is built</td>
+</tr>
+<tr>
+<td>How does the team manage version control?</td>
+<td>Each member works on their own branch. Finished work goes into <code>main</code> through a pull request, and a reviewer is assigned</td>
+</tr>
+<tr>
+<td>How does the team find and manage issues?</td>
+<td>Mostly through internal communication</td>
+</tr>
+</tbody></table>
+<p><strong>What the TA recommended</strong></p>
+<ol>
+<li>Keep a separate branch for each member.</li>
+<li>Follow the pull request review process before merging into <code>main</code>.</li>
+<li>Track problems with GitHub Issues instead of only internal communication.</li>
+<li>Document each issue with the solution or fix.</li>
+<li>Keep the API documentation up to date, and compile the project documentation systematically.</li>
+</ol>
+<h3>I-2: S01 (student), 22 Nov 2026</h3>
+<p><strong>What S01 saw:</strong> the Sprint 1 flow from a student&#39;s side:</p>
+<ul>
+<li>signing up with an institute email on IIC&#39;s roster;</li>
+<li>completing the profile;</li>
+<li>submitting a problem;</li>
+<li>following it until a mentor accepted;</li>
+<li>seeing the assigned mentor and reaching out to them.</li>
+</ul>
+<p><strong>Overall:</strong> S01 found the flow intuitive and easy to follow without help, and their response was positive. They did not ask for any change to the Sprint 1 flow.</p>
+<p><strong>What S01 liked</strong></p>
+<ul>
+<li><strong>Specific topic tags.</strong> S01 described their problem in their own words and tagged it with narrow topics such as <em>Computer vision</em>, <em>Speech technology</em> and <em>Research careers</em>, not a broad field like data science. In Milestone 1 this was S01&#39;s main request: a mentor who has worked in their niche, not a general one.</li>
+<li><strong>Knowing where the request is.</strong> The tracker shows four steps: <em>Submitted</em>, <em>Under review</em>, <em>Awaiting mentor</em>, <em>Mentor assigned</em>. A notice appears at each change. In Milestone 1, S01 described posting in groups and hoping someone would reply, with no guarantee of help. Here they could see that IIC had the request and what was happening to it.</li>
+<li><strong>A mentor page ready to act on.</strong> Once the mentor accepted, S01 saw the mentor&#39;s expertise, experience, preferred channel and contact details, and a first message already drafted for them. It was clear that the student makes the first contact, and how.</li>
+</ul>
+<p><strong>What S01 expects next.</strong> Most of S01&#39;s expectations are for what happens after the first contact, which Sprint 2 builds:</p>
+<ul>
+<li><strong>A mentorship that lasts beyond one conversation.</strong> In Milestone 1, every mentoring S01 had tried ended after a single conversation. S01 expects to:<ul>
+<li>agree a goal and next steps with the mentor and mark them done (<span class="id">US-06</span>);</li>
+<li>plan the next session, with a reminder before it (<span class="id">US-11</span>).</li>
+</ul>
+</li>
+<li><strong>Being guided the way they prefer.</strong> S01 noticed the optional guidance-preferences box on the problem form and expects IIC to take it into account when choosing a mentor (<span class="id">US-20</span>).</li>
+<li><strong>A way out if the match does not work.</strong> S01 would rather ask IIC for a different mentor than drop out quietly (<span class="id">US-07</span>). They also want a place to say whether the mentorship is helping (<span class="id">US-08</span>).</li>
+</ul>
+<h3>I-3: M01 (mentor), 23 Nov 2026</h3>
+<p><strong>What M01 saw:</strong> the Sprint 1 flow from a mentor&#39;s side:</p>
+<ul>
+<li>activating the account from IIC&#39;s email;</li>
+<li>setting availability and contact details;</li>
+<li>reading an assigned student&#39;s request;</li>
+<li>accepting it, and declining another with a reason.</li>
+</ul>
+<p><strong>Overall:</strong> M01 found the flow intuitive and their response was positive. They did not ask for any change to the Sprint 1 flow.</p>
+<p><strong>What M01 liked</strong></p>
+<ul>
+<li><p><strong>Context before committing.</strong> The assignment card shows the student&#39;s level, completed courses, career interest, problem, what they hope to achieve and the topic tags, with the hours left to respond. M01 could judge whether they could help before accepting. In Milestone 1, M01 said they mostly help people they already know. The card gives them the same context about a student they have never met.</p>
+</li>
+<li><p><strong>Control over their own time.</strong> M01 liked these settings:</p>
+<ul>
+<li>the <em>Available for new students</em> switch;</li>
+<li>when they are free, and their time zone;</li>
+<li>a capacity limit that IIC cannot go over without asking them first, and they can say no.</li>
+</ul>
+<p>In Milestone 1, M01 said they help in short, irregular slots, often late at night, so they want to decide how much they take on.</p>
+</li>
+<li><p><strong>Declining without guilt.</strong> A decline needs only a reason from a short list, and the student goes straight back to the top of IIC&#39;s queue, so nobody is left waiting on them.</p>
+</li>
+<li><p><strong>The student reaches out first,</strong> on the channel M01 chose, and sees M01&#39;s contact details only after M01 accepts.</p>
+</li>
+</ul>
+<p><strong>What M01 expects next.</strong> Like S01, M01&#39;s expectations are about the mentorship itself, which Sprint 2 builds:</p>
+<ul>
+<li><strong>Logging short calls.</strong> M01 often helps in a quick call of a few minutes. They expect to log such a session quickly and count it, without writing down what was said (<span class="id">US-11</span>).</li>
+<li><strong>Seeing whether the student acts on the advice.</strong> M01 does not spoon-feed; the student has to put in the effort. They expect to see the next steps the student marks as done (<span class="id">US-06</span>), and to send IIC short progress feedback (<span class="id">US-12</span>).</li>
+<li><strong>Ending a mentorship cleanly.</strong> M01 wants to end a mentorship from their side, with a reason, when the goal is met or they can no longer continue (<span class="id">US-13</span>).</li>
+</ul>
+
+<h2>User Feedback Report (Sprint 1)</h2>
+<p>The team demonstrated the Sprint 1 work to end users and recorded their feedback (SCRUM-79). The <a href="02-interview-report.md">interview report</a> has the record of each interview. This report lists the findings, what the team decided, and the changes made. The resulting backlog is in the <a href="03-sprint-2-plan.md">Sprint 2 plan</a>.</p>
+<h3>Who gave feedback</h3>
+<table>
+<thead>
+<tr>
+<th>Interview</th>
+<th>Participant</th>
+<th>Role in the platform</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>I-1</td>
+<td>Teaching assistant</td>
+<td>Reviewer, and IIC&#39;s point of view</td>
+</tr>
+<tr>
+<td>I-2</td>
 <td>S01</td>
 <td>Student</td>
-<td>Degree-level student planning a master&#39;s or PhD abroad</td>
 </tr>
 <tr>
-<td>S02</td>
-<td>Student</td>
-<td>Graduating student choosing between a job, a startup and the family business</td>
-</tr>
-<tr>
+<td>I-3</td>
 <td>M01</td>
 <td>Mentor</td>
-<td>IITM BS graduate who already guides juniors informally</td>
-</tr>
-<tr>
-<td>[TA name]</td>
-<td>IIC coordinator</td>
-<td>Teaching assistant acting as IIC</td>
 </tr>
 </tbody></table>
 <h3>What was demonstrated</h3>
-<p>The demo followed one student from IIC&#39;s roster to an accepted mentorship, using the seeded demo accounts (password <code>Password123!</code>) and Mailpit at <a href="http://localhost:8025">http://localhost:8025</a> for emails.</p>
+<p>The demo follows one student from IIC&#39;s roster to an accepted mentorship, using the seeded demo accounts and Mailpit (<a href="http://localhost:8025">http://localhost:8025</a>) for the emails.</p>
 <table>
 <thead>
 <tr>
 <th>Step</th>
-<th>Who drove it</th>
+<th>Who drives it</th>
 <th>Feature and user story</th>
 <th>Pages and endpoints</th>
 </tr>
@@ -3664,7 +3880,7 @@ pytest -v
 <td>3</td>
 <td>Student</td>
 <td>Sign up with an institute email on the roster and verify it (<span class="id">US-01</span>), complete the profile (<span class="id">US-02</span>), submit a problem (<span class="id">US-03</span>)</td>
-<td>Swagger UI for sign-up; <code>/student/profile</code>, <code>/student/problem/new</code></td>
+<td>Sign-up and verify pages; <code>/student/profile</code>, <code>/student/problem/new</code></td>
 </tr>
 <tr>
 <td>4</td>
@@ -3675,86 +3891,24 @@ pytest -v
 <tr>
 <td>5</td>
 <td>Mentor, then student</td>
-<td>The mentor accepts with the student&#39;s context (<span class="id">US-09</span>); the student sees their mentor and records that they reached out (<span class="id">US-05</span>)</td>
-<td>Mentor dashboard, student home; <code>POST /api/mentors/mentorships/{id}/accept</code>, <code>POST /api/mentorships/{id}/reached-out</code></td>
+<td>The mentor accepts with the student&#39;s context, and declines a second assignment with a reason (<span class="id">US-09</span>). The student sees their mentor and records that they reached out (<span class="id">US-05</span>)</td>
+<td>Mentor dashboard, student home; <code>POST /api/mentors/mentorships/{id}/accept</code>, <code>POST /api/mentors/mentorships/{id}/decline</code>, <code>POST /api/mentorships/{id}/reached-out</code></td>
 </tr>
 </tbody></table>
-<h3>Questions asked</h3>
-<p>After each step the participant whose role it was answered:</p>
-<ol>
-<li>Was it clear what to do next? Where did you hesitate?</li>
-<li>Is anything missing that you expected to see or do here?</li>
-<li>Is anything here that you would not use?</li>
-</ol>
-<p>At the end, everyone answered:</p>
-<ol start="4">
-<li><strong>Students:</strong> Would you trust the mentor IIC assigns from these recommendations? What would make you more likely to reach out?</li>
-<li><strong>Mentor:</strong> Does the assignment give you enough context to accept or decline quickly? Is setting availability and capacity reasonable for how much time you have?</li>
-<li><strong>IIC:</strong> Does the queue and the recommendation list let you assign a mentor without leaving the platform?</li>
-<li><strong>All:</strong> On a scale of 1 to 5, how useful would this be to you today? What is the one change that would help you most?</li>
-</ol>
 <h3>Feedback received</h3>
-<p>Record each point separately, with who raised it and what the team decided. &quot;Sprint 2 change&quot; should name the Jira issue that was created or changed.</p>
 <table>
 <thead>
 <tr>
 <th>#</th>
 <th>From</th>
-<th>Step</th>
-<th>Feedback (their words where possible)</th>
+<th>Feedback</th>
 <th>Type</th>
 <th>Decision</th>
-<th>Sprint 2 change</th>
+<th>Change made</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>F-01</td>
-<td>[S01]</td>
-<td>[3]</td>
-<td>[feedback]</td>
-<td>[Bug / Usability / Missing feature / Positive]</td>
-<td>[Fix in Sprint 2 / Later / No change, because …]</td>
-<td>[SCRUM-xxx]</td>
-</tr>
-<tr>
-<td>F-02</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>F-03</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>F-04</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>F-05</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>F-06</td>
-<td></td>
+<td>Both end users found the Sprint 1 flow intuitive and asked for no change to it. Their findings below are what each one liked (Positive), and what they expect the platform to do next (Expectation). Every expectation is about what happens after a student and mentor are matched, which is Sprint 2&#39;s work.</td>
 <td></td>
 <td></td>
 <td></td>
@@ -3762,53 +3916,218 @@ pytest -v
 <td></td>
 </tr>
 </tbody></table>
-<h3>Ratings</h3>
+<p><strong>From S01 (student)</strong></p>
 <table>
 <thead>
 <tr>
-<th>Participant</th>
-<th>Usefulness (1–5)</th>
-<th>The one change that would help most</th>
+<th>#</th>
+<th>Feedback</th>
+<th>Type</th>
+<th>Decision</th>
+<th>Where it goes</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>S01</td>
-<td>[ ]</td>
-<td>[ ]</td>
+<td><span class="id">F-01</span></td>
+<td>Liked tagging the problem with narrow topics (<em>Computer vision</em>, <em>Speech technology</em>, <em>Research careers</em>) instead of a broad field. This was their main request in Milestone 1</td>
+<td>Positive</td>
+<td>Keep as it is</td>
+<td>—</td>
 </tr>
 <tr>
-<td>S02</td>
-<td>[ ]</td>
-<td>[ ]</td>
+<td><span class="id">F-02</span></td>
+<td>Liked the four-step tracker and the notice at each change: they knew IIC had the request and what was happening, instead of posting in groups and hoping for a reply</td>
+<td>Positive</td>
+<td>Keep as it is</td>
+<td>—</td>
 </tr>
 <tr>
-<td>M01</td>
-<td>[ ]</td>
-<td>[ ]</td>
+<td><span class="id">F-03</span></td>
+<td>Liked the mentor page: expertise, experience, preferred channel and contact, with a first message drafted for them</td>
+<td>Positive</td>
+<td>Keep as it is</td>
+<td>—</td>
 </tr>
 <tr>
-<td>[TA]</td>
-<td>[ ]</td>
-<td>[ ]</td>
+<td><span class="id">F-04</span></td>
+<td>Expects the mentorship to last beyond one conversation: a shared goal and next steps, and planned sessions with a reminder</td>
+<td>Expectation</td>
+<td>Build in Sprint 2, week 1</td>
+<td><span class="id">US-06</span> (SCRUM-25), <span class="id">US-11</span> (SCRUM-28)</td>
+</tr>
+<tr>
+<td><span class="id">F-05</span></td>
+<td>Expects IIC to take the guidance-preferences box into account when choosing the mentor</td>
+<td>Expectation</td>
+<td>Build in Sprint 2</td>
+<td><span class="id">US-20</span> (SCRUM-34)</td>
+</tr>
+<tr>
+<td><span class="id">F-06</span></td>
+<td>Expects a way to ask IIC for a different mentor if the match does not work, and to say whether the mentorship is helping</td>
+<td>Expectation</td>
+<td>Build in Sprint 2</td>
+<td><span class="id">US-07</span> (SCRUM-26), <span class="id">US-08</span> (SCRUM-27)</td>
+</tr>
+</tbody></table>
+<p><strong>From M01 (mentor)</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Feedback</th>
+<th>Type</th>
+<th>Decision</th>
+<th>Where it goes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id">F-07</span></td>
+<td>Liked seeing the student&#39;s level, courses, career interest, problem, goal and tags before accepting, so they can judge whether they can help a student they have never met</td>
+<td>Positive</td>
+<td>Keep as it is</td>
+<td>—</td>
+</tr>
+<tr>
+<td><span class="id">F-08</span></td>
+<td>Liked controlling their own time: the availability switch, free time and time zone, and a capacity that IIC cannot exceed without asking them</td>
+<td>Positive</td>
+<td>Keep as it is</td>
+<td>—</td>
+</tr>
+<tr>
+<td><span class="id">F-09</span></td>
+<td>Liked that declining needs only a reason from a short list, and the student goes back to the top of IIC&#39;s queue</td>
+<td>Positive</td>
+<td>Keep as it is</td>
+<td>—</td>
+</tr>
+<tr>
+<td><span class="id">F-10</span></td>
+<td>Expects to log a short call of a few minutes as a session, without writing down what was said</td>
+<td>Expectation</td>
+<td>Build in Sprint 2, week 1</td>
+<td><span class="id">US-11</span> (SCRUM-28)</td>
+</tr>
+<tr>
+<td><span class="id">F-11</span></td>
+<td>Expects to see the next steps the student marks as done, and to send IIC short progress feedback</td>
+<td>Expectation</td>
+<td>Build in Sprint 2, week 1</td>
+<td><span class="id">US-06</span> (SCRUM-25), <span class="id">US-12</span> (SCRUM-29)</td>
+</tr>
+<tr>
+<td><span class="id">F-12</span></td>
+<td>Expects to end a mentorship from their side, with a reason, when the goal is met or they can no longer continue</td>
+<td>Expectation</td>
+<td>Build in Sprint 2</td>
+<td><span class="id">US-13</span> (SCRUM-30)</td>
+</tr>
+</tbody></table>
+<p><strong>From the TA</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Feedback</th>
+<th>Type</th>
+<th>Decision</th>
+<th>Change made</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><span class="id">F-13</span></td>
+<td>Keep a separate branch for each member</td>
+<td>Process</td>
+<td>Keep doing it</td>
+<td>Every member has their own branch (<code>abhijeet</code>, <code>priyanshu</code>, <code>shreya</code>, <code>khushi</code>, <code>saloni</code>)</td>
+</tr>
+<tr>
+<td><span class="id">F-14</span></td>
+<td>Follow the pull request review process before merging into <code>main</code></td>
+<td>Process</td>
+<td>Keep doing it, and enforce it</td>
+<td>Since 16 Nov, <code>main</code> is protected: a change goes in only through a pull request that passes the CI check, and a review is required. Review findings are posted on the pull request, for example the one on #28</td>
+</tr>
+<tr>
+<td><span class="id">F-15</span></td>
+<td>Track problems with GitHub Issues instead of only internal communication</td>
+<td>Process</td>
+<td>Adopted in Sprint 1</td>
+<td>15 GitHub issues, each with its cause and fix, all closed. Every new problem is opened as an issue</td>
+</tr>
+<tr>
+<td><span class="id">F-16</span></td>
+<td>Document each issue with its solution</td>
+<td>Documentation</td>
+<td>Adopted in Sprint 1</td>
+<td>The <a href="issue-log.md">issue log</a>, and each &quot;actual output differed from expected&quot; case in the <a href="01-api-test-cases.md">API test cases</a></td>
+</tr>
+<tr>
+<td><span class="id">F-17</span></td>
+<td>Keep the API documentation up to date and compile documentation systematically</td>
+<td>Documentation</td>
+<td>Adopted in Sprint 1</td>
+<td><code>backend/openapi.yaml</code> is generated from the code and checked by a test (SCRUM-76). The milestone documents are built into one PDF with <code>npm run pdf:m3</code></td>
+</tr>
+</tbody></table>
+<h3>Keeping the Sprint 2 work within scope</h3>
+<p>Every expectation above is met by a user story already in the Milestone 1 report, so none needs a new story. The table shows what Sprint 2 builds for each one, and where it stops. The limits come from the client&#39;s clarifications in Milestone 1.</p>
+<table>
+<thead>
+<tr>
+<th>Expectation</th>
+<th>What Sprint 2 builds</th>
+<th>What stays out, and why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>F-04: keep the mentorship going</td>
+<td>A goal for each mentorship and next steps for each meeting, each open or done with a completion date (<span class="id">US-06</span>). Sessions planned with a date, time, channel (Google Meet, phone, email or other) and an optional meeting link, an email reminder 24 hours before, then marked held or cancelled (<span class="id">US-11</span>)</td>
+<td>No in-app chat, video or calendar integration. The client confirmed that conversations happen on Google Meet, email or phone</td>
+</tr>
+<tr>
+<td>F-05: guidance preferences</td>
+<td>An optional choice from a fixed list on the problem form, shown to IIC beside each recommended mentor&#39;s style (<span class="id">US-20</span>)</td>
+<td>The student still does not choose the mentor; IIC assigns every one. Only IIC sees the preferences</td>
+</tr>
+<tr>
+<td>F-06: a way out, and saying whether it helps</td>
+<td>A request to change or end the mentorship goes to IIC as a case (<span class="id">US-07</span>), which IIC resolves (<span class="id">US-18</span>). A progress status (no progress, some progress, goal met) with a comment, seen only by IIC (<span class="id">US-08</span>)</td>
+<td>No star ratings. IIC, not the student, picks the next mentor</td>
+</tr>
+<tr>
+<td>F-10: log short calls</td>
+<td>A held session records its duration (5 to 240 minutes, so a five-minute call counts) and a topic category. The other side confirms it, and IIC sees both counts (<span class="id">US-11</span>)</td>
+<td>No field for what was said, only an optional private note that just its author sees. Conversations stay confidential</td>
+</tr>
+<tr>
+<td>F-11: next steps and progress feedback</td>
+<td>The mentor sees the goal and next steps (<span class="id">US-06</span>). A progress status every two weeks, seen only by IIC, and flagged when 7 days overdue (<span class="id">US-12</span>)</td>
+<td>No grades: the platform does not hold students&#39; marks</td>
+</tr>
+<tr>
+<td>F-12: end a mentorship</td>
+<td>Ending with a reason (no longer available, goal achieved, not a good fit, other). The student and IIC are told, the mentor&#39;s capacity is freed, and the student is listed for reassignment if needed (<span class="id">US-13</span>)</td>
+<td>—</td>
 </tr>
 </tbody></table>
 <h3>What we learned</h3>
-<p>[Three to five sentences summarising the themes: what worked, what confused people, and what the team will change. Refer to the feedback by its F number.]</p>
+<ul>
+<li><strong>Sprint 1 solves the first half of the problems these users described in Milestone 1.</strong> S01 could not find anyone with experience in their niche, and posted in groups without knowing if anyone would reply. Narrow tags and a visible status address both (F-01, F-02). M01 mostly helped people they already knew, in short slots. The student&#39;s context and control over capacity address both (F-07 to F-09).</li>
+<li><strong>Their expectations are the second half, and Sprint 2 already plans it.</strong> In Milestone 1, S01&#39;s mentoring always ended after one conversation, and M01 wanted the student to put in the effort. Both now expect goals, next steps, sessions and feedback (F-04, F-10, F-11). These are the first stories in Sprint 2 (<span class="id">US-06</span>, <span class="id">US-11</span>, <span class="id">US-12</span>), and their endpoints were started in Sprint 1.</li>
+<li><strong>No expectation goes beyond the project&#39;s scope.</strong> Each one maps to a Milestone 1 story. The client&#39;s limits stay in place: no chat or video, no record of what was said, IIC assigns every mentor (see the table above).</li>
+<li><strong>The TA&#39;s feedback was about process and documentation, not features.</strong> The team adopted all five recommendations during Sprint 1 (F-13 to F-17), and continues them in Sprint 2.</li>
+<li><strong>One perspective is still missing.</strong> S02 was not interviewed in this round, so the Milestone 4 session (SCRUM-84) includes a second student. It also shows S01 and M01 the Sprint 2 features, to check them against these expectations.</li>
+</ul>
 
 <h2>Sprint 2 Plan</h2>
-<blockquote>
-<p><strong>Status: draft until the feedback session.</strong> The backlog below is the Sprint 2 scope from the Milestone 2 schedule, updated with what Sprint 1 actually delivered. Fill in &quot;Changes from user feedback&quot; after the session, make the same changes in Jira, and delete this note before submitting.</p>
-</blockquote>
 <p>Sprint 2 (Milestone 4) runs from <strong>23 November to 6 December 2026</strong>. Its theme is <strong>tracking</strong>: once a student has a mentor (the end point of Sprint 1), the platform helps both sides keep the mentorship moving and gives IIC and leadership a view of it.</p>
 <h3>What Sprint 1 delivered</h3>
 <ul>
-<li><strong>All ten Sprint 1 stories have tested APIs:</strong> <span class="id">US-01</span> to <span class="id">US-05</span>, <span class="id">US-09</span>, <span class="id">US-10</span> and <span class="id">US-14</span> to <span class="id">US-16</span>. 58 operations are in <code>openapi.yaml</code>, every one has at least one test case, and the suite of 361 tests passes in CI (see the <a href="01-api-test-cases.md">API test cases</a>).</li>
-<li><strong>The student, mentor and IIC pages of Sprint 1 call the API.</strong></li>
-<li><strong>Carried over into Sprint 2:</strong><ul>
-<li>The sign-up and password-reset pages still use the in-memory mock. Students sign up through Swagger UI for now.</li>
-<li>Password reset has no endpoint yet.</li>
-</ul>
-</li>
+<li><strong>All ten Sprint 1 stories have tested APIs:</strong> <span class="id">US-01</span> to <span class="id">US-05</span>, <span class="id">US-09</span>, <span class="id">US-10</span> and <span class="id">US-14</span> to <span class="id">US-16</span>. 58 operations are in <code>openapi.yaml</code>, every one has at least one test case, and the suite of 373 tests passes in CI (see the <a href="01-api-test-cases.md">API test cases</a>).</li>
+<li><strong>The student, mentor and IIC pages of Sprint 1 call the API,</strong> including sign-up and email verification.</li>
+<li><strong>Carried over into Sprint 2:</strong> password reset has no endpoint yet, and its pages still use the in-memory mock (SCRUM-172).</li>
 </ul>
 <h3>Sprint 2 backlog</h3>
 <p>The owners are those in the Milestone 2 schedule (backend / frontend / tests). &quot;Started&quot; means some endpoints were built in Sprint 1 ahead of time and already have tests.</p>
@@ -3943,14 +4262,14 @@ pytest -v
 </tr>
 <tr>
 <td>(carry-over)</td>
-<td>[new issue]</td>
-<td>Connect the sign-up and password-reset pages to the API, and add the password-reset endpoint</td>
-<td>[owner]</td>
+<td>SCRUM-172</td>
+<td>Add the password-reset endpoint and connect its pages</td>
+<td>To be assigned at sprint planning</td>
 <td>To do</td>
 </tr>
 </tbody></table>
 <h3>Changes from user feedback</h3>
-<p>Each change below comes from the <a href="02-user-feedback.md">user feedback session</a> and was made in Jira on [date].</p>
+<p>Each change below comes from the <a href="02-user-feedback.md">user feedback report</a> and was made in Jira on 24 Nov 2026.</p>
 <table>
 <thead>
 <tr>
@@ -3960,19 +4279,44 @@ pytest -v
 </tr>
 </thead>
 <tbody><tr>
-<td>[F-01]</td>
-<td>[new story / sub-task, re-prioritised, or acceptance criteria changed]</td>
-<td>[SCRUM-xxx]</td>
+<td>F-04, F-10, F-11: S01 and M01 expect goals, next steps, sessions and progress feedback</td>
+<td><span class="id">US-06</span>, <span class="id">US-11</span> and <span class="id">US-12</span> stay first, in week 1. Each story now lists the user&#39;s expectation, to check in the Milestone 4 demo</td>
+<td>SCRUM-25, SCRUM-28, SCRUM-29</td>
 </tr>
 <tr>
-<td>[F-02]</td>
-<td></td>
-<td></td>
+<td>F-05, F-06, F-12: guidance preferences, a way to change mentor, feedback on the mentorship, ending from the mentor&#39;s side</td>
+<td>Kept in the backlog as planned. Each story now lists the user&#39;s expectation, to check in the Milestone 4 demo</td>
+<td>SCRUM-34, SCRUM-26, SCRUM-27, SCRUM-30</td>
+</tr>
+<tr>
+<td>Every expectation stays within the Milestone 1 scope (see the scope table in the feedback report)</td>
+<td>No new story: no chat or video, no record of what was said, and IIC still assigns every mentor</td>
+<td>—</td>
+</tr>
+<tr>
+<td>F-01 to F-03, F-07 to F-09: what S01 and M01 liked in Sprint 1</td>
+<td>None: kept as it is</td>
+<td>—</td>
+</tr>
+<tr>
+<td>F-13 to F-17: the TA&#39;s process and documentation recommendations</td>
+<td>None needed: all five were adopted in Sprint 1, and every Sprint 2 story follows them (its own branch, a reviewed pull request, a GitHub issue for each problem, the issue log, the generated YAML)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>S02 was not interviewed in Sprint 1, and S01 and M01 should see their expectations built</td>
+<td>The Milestone 4 feedback session includes S02, and shows S01 and M01 the Sprint 2 features</td>
+<td>SCRUM-84</td>
+</tr>
+<tr>
+<td>Password reset was not finished in Sprint 1</td>
+<td>Carried over as its own task</td>
+<td>SCRUM-172</td>
 </tr>
 </tbody></table>
 <h3>Order of work</h3>
 <ol>
-<li><strong>Week 1 (23–29 Nov):</strong> SCRUM-170 first. Then finish the started stories (<span class="id">US-06</span>, <span class="id">US-11</span>, <span class="id">US-12</span>, <span class="id">US-07</span>) and connect their pages, plus the sign-up carry-over and the feedback fixes marked &quot;Fix in Sprint 2&quot;.</li>
+<li><strong>Week 1 (23–29 Nov):</strong> SCRUM-170 first. Then finish the started stories (<span class="id">US-06</span>, <span class="id">US-11</span>, <span class="id">US-12</span>, <span class="id">US-07</span>) and connect their pages, plus the password-reset carry-over (SCRUM-172).</li>
 <li><strong>Week 2 (30 Nov – 6 Dec):</strong> <span class="id">US-13</span>, <span class="id">US-17</span>, <span class="id">US-18</span>, <span class="id">US-21</span>, <span class="id">US-19</span>, <span class="id">US-20</span> and <span class="id">US-08</span>. Then the Milestone 4 deliverables: YAML, test cases, pytest report, feedback session and submission, due 6 Dec.</li>
 </ol>
 <h3>Risks</h3>
@@ -3980,4 +4324,292 @@ pytest -v
 <li><strong>Short sprint.</strong> Milestone 3 was extended to 25 Nov, so Sprint 2 effectively starts late. The started stories go first so that some are finished early.</li>
 <li><strong>SCRUM-170 blocks reminders and escalations.</strong> If it slips, <span class="id">US-11</span>&#39;s reminders and all of <span class="id">US-21</span> slip with it. It is reviewed at every scrum meeting.</li>
 </ul>
+
+<h2>pytest Report (Sprint 1)</h2>
+<p>The backend&#39;s automated tests are pytest tests in <a href="../../backend/tests/"><code>backend/tests/</code></a>. This report gives the results of a full run (SCRUM-78). The complete output, with one line per test and the coverage of each file, is in <a href="build/pytest-output.txt"><code>build/pytest-output.txt</code></a>.</p>
+<h3>Result</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Tests</td>
+<td><strong>373</strong></td>
+</tr>
+<tr>
+<td>Passed</td>
+<td><strong>373</strong></td>
+</tr>
+<tr>
+<td>Failed, errors, skipped</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Duration</td>
+<td>3 min 21 s</td>
+</tr>
+<tr>
+<td>Line coverage of <code>backend/app/</code></td>
+<td><strong>98%</strong> (2,903 statements, 51 not run)</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>24 Nov 2026</td>
+</tr>
+</tbody></table>
+<h3>How it was run</h3>
+<pre><code class="language-text">platform: Linux (WSL2), Python 3.12.16, pytest 9.2.0, pytest-cov 7.1.0
+database: SQLite in memory, a fresh one for each test (FLASK_CONFIG=testing)
+command:  cd backend &amp;&amp; pytest -o addopts=&quot;&quot; -v --cov=app --cov-report=term-missing
+</code></pre>
+<p>The same suite runs in continuous integration (GitHub Actions, the &quot;Backend Tests &amp; Linting&quot; check) on every pull request and every push to <code>main</code>. A pull request cannot be merged into <code>main</code> unless it passes. Each CI run keeps its output as the <code>pytest-output</code> and <code>coverage-report</code> artifacts.</p>
+<h3>Results by test file</h3>
+<table>
+<thead>
+<tr>
+<th>Test file</th>
+<th>What it tests</th>
+<th>Tests</th>
+<th>Passed</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>test_signup.py</code></td>
+<td><span class="id">US-01</span> sign-up, email verification and links</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr>
+<td><code>test_students.py</code></td>
+<td><span class="id">US-02</span> student profile</td>
+<td>14</td>
+<td>14</td>
+</tr>
+<tr>
+<td><code>test_problems.py</code></td>
+<td><span class="id">US-03</span> submitting, editing and withdrawing a problem</td>
+<td>16</td>
+<td>16</td>
+</tr>
+<tr>
+<td><code>test_recommendations.py</code></td>
+<td><span class="id">US-04</span> recommended mentors</td>
+<td>21</td>
+<td>21</td>
+</tr>
+<tr>
+<td><code>test_mentorships.py</code></td>
+<td><span class="id">US-05</span> tracking the mentorship and reaching out</td>
+<td>15</td>
+<td>15</td>
+</tr>
+<tr>
+<td><code>test_mentors.py</code></td>
+<td><span class="id">US-09</span> accepting and declining, <span class="id">US-10</span> availability</td>
+<td>17</td>
+<td>17</td>
+</tr>
+<tr>
+<td><code>test_capacity_requests.py</code></td>
+<td><span class="id">US-10</span> and <span class="id">US-18</span> capacity requests</td>
+<td>11</td>
+<td>11</td>
+</tr>
+<tr>
+<td><code>test_mentor_pool.py</code></td>
+<td><span class="id">US-14</span> adding, importing, verifying and activating mentors</td>
+<td>33</td>
+<td>33</td>
+</tr>
+<tr>
+<td><code>test_roster.py</code></td>
+<td><span class="id">US-15</span> IIC&#39;s student roster</td>
+<td>29</td>
+<td>29</td>
+</tr>
+<tr>
+<td><code>test_problem_queue.py</code></td>
+<td><span class="id">US-16</span> the problem queue, assignment and closing</td>
+<td>26</td>
+<td>26</td>
+</tr>
+<tr>
+<td><code>test_student_journey.py</code></td>
+<td>Across roles: problem limits, what mentors can see, notices to the student</td>
+<td>12</td>
+<td>12</td>
+</tr>
+<tr>
+<td><code>test_auth.py</code></td>
+<td>Login, logout, tokens and role checks</td>
+<td>36</td>
+<td>36</td>
+</tr>
+<tr>
+<td><code>test_notifications.py</code></td>
+<td>Dashboard notices and emails</td>
+<td>21</td>
+<td>21</td>
+</tr>
+<tr>
+<td><code>test_audit.py</code></td>
+<td>The audit log</td>
+<td>21</td>
+<td>21</td>
+</tr>
+<tr>
+<td><code>test_settings.py</code></td>
+<td>Topic tags</td>
+<td>11</td>
+<td>11</td>
+</tr>
+<tr>
+<td><code>test_sessions.py</code></td>
+<td>Sessions (built ahead of Sprint 2)</td>
+<td>12</td>
+<td>12</td>
+</tr>
+<tr>
+<td><code>test_feedback.py</code></td>
+<td>Progress feedback (built ahead of Sprint 2)</td>
+<td>7</td>
+<td>7</td>
+</tr>
+<tr>
+<td><code>test_cases.py</code></td>
+<td>Change requests to IIC (built ahead of Sprint 2)</td>
+<td>8</td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>test_app.py</code></td>
+<td>The application, configuration and error format</td>
+<td>14</td>
+<td>14</td>
+</tr>
+<tr>
+<td><code>test_openapi.py</code></td>
+<td>The OpenAPI document: valid, complete and up to date</td>
+<td>13</td>
+<td>13</td>
+</tr>
+<tr>
+<td><code>test_models.py</code>, <code>test_migrations.py</code>, <code>test_seed.py</code>, <code>test_fixtures.py</code></td>
+<td>Models, migrations, sample data and test fixtures</td>
+<td>11</td>
+<td>11</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td><strong>373</strong></td>
+<td><strong>373</strong></td>
+</tr>
+</tbody></table>
+<h3>Coverage by module</h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Statements</th>
+<th>Not run</th>
+<th>Coverage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>auth</code> (sign-up, login, roles)</td>
+<td>374</td>
+<td>5</td>
+<td>99%</td>
+</tr>
+<tr>
+<td><code>students</code> (profile, roster)</td>
+<td>304</td>
+<td>5</td>
+<td>98%</td>
+</tr>
+<tr>
+<td><code>problems</code> (problems, IIC queue)</td>
+<td>284</td>
+<td>1</td>
+<td>100%</td>
+</tr>
+<tr>
+<td><code>matching</code> (recommendations)</td>
+<td>80</td>
+<td>1</td>
+<td>99%</td>
+</tr>
+<tr>
+<td><code>mentors</code> (mentor pool, dashboard, capacity)</td>
+<td>553</td>
+<td>17</td>
+<td>97%</td>
+</tr>
+<tr>
+<td><code>mentorships</code></td>
+<td>218</td>
+<td>4</td>
+<td>98%</td>
+</tr>
+<tr>
+<td><code>notifications</code></td>
+<td>191</td>
+<td>4</td>
+<td>98%</td>
+</tr>
+<tr>
+<td><code>audit</code></td>
+<td>83</td>
+<td>1</td>
+<td>99%</td>
+</tr>
+<tr>
+<td><code>settings</code></td>
+<td>110</td>
+<td>4</td>
+<td>96%</td>
+</tr>
+<tr>
+<td><code>sessions</code>, <code>feedback</code>, <code>cases</code> (ahead of Sprint 2)</td>
+<td>300</td>
+<td>4</td>
+<td>99%</td>
+</tr>
+<tr>
+<td><code>monitoring</code>, <code>insights</code> (Sprint 2, models only)</td>
+<td>19</td>
+<td>1</td>
+<td>95%</td>
+</tr>
+<tr>
+<td>Shared code (app factory, configuration, errors, OpenAPI, logging)</td>
+<td>387</td>
+<td>4</td>
+<td>99%</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>2,903</strong></td>
+<td><strong>51</strong></td>
+<td><strong>98%</strong></td>
+</tr>
+</tbody></table>
+<p>The statements not run are mostly:</p>
+<ul>
+<li>the models&#39; <code>__repr__</code> methods, used only when debugging;</li>
+<li>the command-line wrapper of <code>flask seed-data</code>, whose function is tested directly;</li>
+<li>the safety net that logs a failure to record an email&#39;s delivery;</li>
+<li>a few rare branches, such as an over-long experience entry in a mentor import, or adding back a student IIC had removed.</li>
+</ul>
+<p>Each file&#39;s missing line numbers are in <a href="build/pytest-output.txt"><code>build/pytest-output.txt</code></a>.</p>
+<h3>Reproducing the run</h3>
+<p>From <code>backend/</code>, with the virtual environment active (see the <a href="../../backend/README.md">backend README</a>):</p>
+<pre><code class="language-bash">pytest                         # quick: one dot per test
+pytest --cov=app               # with coverage, as CI runs it
+pytest -o addopts=&quot;&quot; -v --cov=app --cov-report=term-missing   # this report&#39;s run: one line per test
+</code></pre>
 </body></html>
